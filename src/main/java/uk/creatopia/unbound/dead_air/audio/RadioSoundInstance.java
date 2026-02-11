@@ -27,10 +27,10 @@ public class RadioSoundInstance extends AbstractTickableSoundInstance {
     private static final int TICKS_PER_TRACK = 20 * 60 * 3; // 3 minutes per track (approximate)
 
     public RadioSoundInstance(RadioStation station, float signalStrength) {
-        // Default: RECORDS (game's "Records" slider) so radio is audible when Music slider is 0%.
-        // Config radioUseMusicSlider=true uses "Music" slider instead.
+        // Always use MUSIC - radio replaces vanilla music entirely (MusicManagerMixin disables vanilla music).
+        // Never use AMBIENT or RECORDS - music only plays through radio stations.
         super(getValidSoundEventForStation(station),
-            Config.radioUseMusicSlider ? SoundSource.MUSIC : SoundSource.RECORDS,
+            SoundSource.MUSIC,
             SoundInstance.createUnseededRandom());
         this.station = station;
         this.signalStrength = signalStrength;
@@ -39,25 +39,38 @@ public class RadioSoundInstance extends AbstractTickableSoundInstance {
         this.baseVolume = configMax >= 0.01f ? configMax : 0.7f;
         this.looping = false;
         this.attenuation = Attenuation.NONE;
-        this.tracks = MusicStationManager.getTracksForStation(station.getId());
+        this.tracks = Config.simplifiedMusicDebug ? List.of(SIMPLE_DEBUG_TRACK) : MusicStationManager.getTracksForStation(station.getId());
         updateVolume();
         
-        Dead_air.LOGGER.info("Created RadioSoundInstance for station {} with {} tracks", 
-            station.getId(), tracks != null ? tracks.size() : 0);
+        Dead_air.LOGGER.info("Created RadioSoundInstance for station {} with {} tracks (simplified={})", 
+            station.getId(), tracks != null ? tracks.size() : 0, Config.simplifiedMusicDebug);
         if (tracks != null && !tracks.isEmpty()) {
             Dead_air.LOGGER.info("Playing track: {}", getCurrentTrackId());
         }
     }
     
+    /** Single known-good track for simplified debug mode (bypasses playlist/track logic). */
+    private static final ResourceLocation SIMPLE_DEBUG_TRACK = ResourceLocation.withDefaultNamespace("music_disc.13");
+
     /**
-     * Get a valid SoundEvent for the station, cycling through tracks in order.
-     * This ensures tracks play in sequence and cycle through the playlist.
+     * Get a valid SoundEvent for the station.
+     * When simplifiedMusicDebug is true: always plays music_disc.13 (no playlist/track logic).
+     * Otherwise: cycles through the station's playlist.
      */
     private static SoundEvent getValidSoundEventForStation(RadioStation station) {
         if (station == null) {
             return getPlaceholderSound();
         }
-        
+
+        // DEBUG: Bypass playlist/track logic - just play any known-good track
+        if (Config.simplifiedMusicDebug) {
+            SoundEvent simple = ForgeRegistries.SOUND_EVENTS.getValue(SIMPLE_DEBUG_TRACK);
+            if (simple != null) {
+                Dead_air.LOGGER.info("[Dead Air MUSIC] Simplified debug mode: playing {} (no playlist)", SIMPLE_DEBUG_TRACK);
+                return simple;
+            }
+        }
+
         // Get tracks for this station
         List<ResourceLocation> stationTracks = MusicStationManager.getTracksForStation(station.getId());
         if (stationTracks != null && !stationTracks.isEmpty()) {
@@ -180,7 +193,7 @@ public class RadioSoundInstance extends AbstractTickableSoundInstance {
         }
         // Strong signal (>= 0.7) - clear audio, no static
         
-        this.volume = Math.max(0.05f, Math.max(minVol, Math.min(maxVol, volume)));
+        this.volume = Math.max(0.15f, Math.max(minVol, Math.min(maxVol, volume))); // 0.15 min so radio is clearly audible
         
         if (this.volume < 0.01f) {
             Dead_air.LOGGER.warn("Volume very low for station {}: {} (signal: {}, minVol: {}, maxVol: {})", 
@@ -203,6 +216,6 @@ public class RadioSoundInstance extends AbstractTickableSoundInstance {
     
     @Override
     public boolean canStartSilent() {
-        return true;
+        return false; // We need to be audible so the sound manager actually plays us
     }
 }

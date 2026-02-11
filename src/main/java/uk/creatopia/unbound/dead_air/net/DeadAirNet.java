@@ -29,5 +29,9 @@ public class DeadAirNet {
             RadioSignalResponsePacket::encode,
             RadioSignalResponsePacket::decode,
             RadioSignalResponsePacket::handle);
+        CHANNEL.registerMessage(id++, KnownTowersSyncPacket.class,
+            KnownTowersSyncPacket::encode,
+            KnownTowersSyncPacket::decode,
+            KnownTowersSyncPacket::handle);
     }
 }

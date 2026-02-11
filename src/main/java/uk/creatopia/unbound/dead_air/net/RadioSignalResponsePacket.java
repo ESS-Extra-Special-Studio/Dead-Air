@@ -10,6 +10,9 @@ import java.util.function.Supplier;
 
 /** Server -> Client: signal strength for a station (0 = no tower / not in range). */
 public class RadioSignalResponsePacket {
+    private static long lastLogTime = 0;
+    private static final long LOG_INTERVAL_MS = 3000;
+
     private final ResourceLocation stationId;
     private final float signal;
 
@@ -30,10 +33,15 @@ public class RadioSignalResponsePacket {
     public static void handle(RadioSignalResponsePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
         NetworkEvent.Context ctx = ctxSupplier.get();
         ctx.enqueueWork(() -> {
-            if (msg.signal >= 0.1f) {
-                Dead_air.LOGGER.info("Radio signal response: station {} signal {} (will play if tuned)", msg.stationId, msg.signal);
+            long now = System.currentTimeMillis();
+            if (msg.signal >= 0.1f || now - lastLogTime > LOG_INTERVAL_MS) {
+                lastLogTime = now;
+                Dead_air.LOGGER.info("[Dead Air] Received signal: station={} signal={}", msg.stationId, String.format("%.2f", msg.signal));
             }
             AudioManager.setServerSignal(msg.stationId, msg.signal);
+            if (msg.signal >= 0.1f) {
+                AudioManager.tryPlayFromServerSignal(msg.stationId, msg.signal);
+            }
         });
         ctx.setPacketHandled(true);
     }

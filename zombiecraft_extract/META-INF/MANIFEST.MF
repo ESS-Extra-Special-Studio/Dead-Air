@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Specification-Title: dead_air
+Specification-Vendor: Extra_Special_K â¢ Vorlaut â¢ twgmike â
+ ¢ manialate
+Specification-Version: 1
+Implementation-Title: dead-air
+Implementation-Version: 1.0
+Implementation-Vendor: Extra_Special_K â¢ Vorlaut â¢ twgmike â�
+ �¢ manialate
+Implementation-Timestamp: 2026-02-04T02:33:54+0000
+MixinConfigs: dead_air.mixins.json
+

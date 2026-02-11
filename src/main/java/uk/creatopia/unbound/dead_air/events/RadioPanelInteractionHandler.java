@@ -13,93 +13,98 @@ import uk.creatopia.unbound.dead_air.radio.TowerManager;
 import uk.creatopia.unbound.dead_air.station.StationUnlockManager;
 import uk.creatopia.unbound.dead_air.tower.ApocalypseTowerDetector;
 import uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType;
+import uk.creatopia.unbound.dead_air.tower.KnownTowerStorage;
 import uk.creatopia.unbound.dead_air.tower.RadioPanelManager;
 
 /**
  * Handles player interactions with Radio Panels from RadioTowers mod.
- * Integrates with the mod's Radio Panel system for tower activation.
+ * Once a panel is clicked by any player, we store it and it stays active (we override the power system).
  */
 @Mod.EventBusSubscriber(modid = Dead_air.MODID)
 @SuppressWarnings("null")
 public class RadioPanelInteractionHandler {
     
     /**
-     * Handle right-click on Radio Panel blocks.
-     * This hooks into the Radio Panel's existing right-click behavior.
-     * Uses LOW priority to ensure we don't interfere with other mods' handlers.
+     * Handle right-click on Radio Panel blocks. Runs at HIGHEST so we record the click before
+     * any other mod consumes the event. One click = panel stays active (persisted to backup).
      */
-    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOW)
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        // CRITICAL: Only handle BLOCK right-clicks, not item right-clicks
-        // This ensures we don't interfere with walkie-talkie mod's item right-click
-        if (event.getLevel().isClientSide) {
-            return;
-        }
-        
-        if (!(event.getLevel() instanceof ServerLevel level)) {
-            return;
-        }
-        
-        // Don't process if player is holding an item (item right-clicks should be handled by item mods)
-        // This prevents interference with walkie-talkie mod's right-click functionality
-        if (event.getItemStack() != null && !event.getItemStack().isEmpty()) {
-            // Player is holding an item - let item mods handle this
-            // Only process if they're right-clicking a block (not using the item)
-            // Check if the interaction was actually on a block (not air)
-            if (event.getHitVec() == null || event.getPos() == null) {
-                return; // Not a block interaction
-            }
-        }
-        
+        if (event.getLevel().isClientSide) return;
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
         BlockPos pos = event.getPos();
+        if (pos == null) return;
         
-        // Check if this is a Radio Panel from RadioTowers mod
         if (ApocalypseTowerDetector.isRadioPanel(level, pos)) {
-            // Activate the Radio Panel (this integrates with RadioTowers mod's system)
+            // Check if panel is already known (locked to a station) - never re-assign
+            net.minecraft.resources.ResourceLocation existingStation = KnownTowerStorage.getStationForPanel(level, pos);
+            if (existingStation != null) {
+                // Panel already activated and locked to a station - only update power, do not register again
+                RadioPanelManager.activatePanel(level, pos);
+                RadioTower tower = findTowerAtPanel(level, pos);
+                if (tower == null) {
+                    // Tower not in TowerManager but we have it in KnownTowerStorage - restore it
+                    uk.creatopia.unbound.dead_air.radio.RadioStation station =
+                        uk.creatopia.unbound.dead_air.radio.StationRegistry.getStation(existingStation);
+                    if (station != null) {
+                        ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
+                        if (towerType != ApocalypseTowerType.UNKNOWN) {
+                            TowerManager.registerTower(level, pos, station, towerType);
+                        } else {
+                            TowerManager.registerPlayerTower(level, pos, station);
+                        }
+                        tower = findTowerAtPanel(level, pos);
+                    }
+                }
+                if (tower != null) {
+                    updateTowerPowerImmediately(level, tower);
+                    if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                        ModEvents.syncKnownTowersToPlayer(serverPlayer);
+                    }
+                    if (tower.isPowered()) {
+                        triggerStationDiscovery(level, tower, event.getEntity());
+                    }
+                }
+                return; // Done - panel locked, no new registration
+            }
+
+            // First-time activation - register tower and assign station
             RadioPanelManager.activatePanel(level, pos);
-            
-            // Find the tower associated with this Radio Panel
-            // The tower position is the Radio Panel position
             RadioTower tower = findTowerAtPanel(level, pos);
-            
+
             if (tower == null) {
-                // No tower registered yet - check if it's an official tower or player-built
                 ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
-                
+                uk.creatopia.unbound.dead_air.radio.RadioStation station;
+
                 if (towerType != ApocalypseTowerType.UNKNOWN) {
-                    // Official tower - register it
-                    uk.creatopia.unbound.dead_air.radio.RadioStation station = 
-                        uk.creatopia.unbound.dead_air.radio.TowerManager.determineStationForTower(level, pos, towerType);
-                    
+                    station = TowerManager.determineStationForTower(level, pos, towerType);
                     if (station != null) {
                         TowerManager.registerTower(level, pos, station, towerType);
                         tower = findTowerAtPanel(level, pos);
-                        Dead_air.LOGGER.info("Registered official tower at {} after Radio Panel interaction", pos);
+                        Dead_air.LOGGER.info("Registered official tower at {} for station {} (first activation)", pos, station.getName());
                     }
                 } else {
-                    // Player-built tower - register with a default station (player can change later)
-                    // For now, use Emergency Broadcast as default for player-built towers
-                    uk.creatopia.unbound.dead_air.radio.RadioStation defaultStation = 
-                        uk.creatopia.unbound.dead_air.radio.StationRegistry.getStation(
-                            uk.creatopia.unbound.dead_air.radio.StationRegistry.EMERGENCY_BROADCAST_ID);
-                    if (defaultStation != null) {
-                        TowerManager.registerPlayerTower(level, pos, defaultStation);
+                    station = uk.creatopia.unbound.dead_air.radio.StationRegistry.getStation(
+                        uk.creatopia.unbound.dead_air.radio.StationRegistry.EMERGENCY_BROADCAST_ID);
+                    if (station != null) {
+                        TowerManager.registerPlayerTower(level, pos, station);
                         tower = findTowerAtPanel(level, pos);
-                        Dead_air.LOGGER.info("Registered player-built tower at {} after Radio Panel interaction", pos);
+                        Dead_air.LOGGER.info("Registered player-built tower at {} for station {} (first activation)", pos, station.getName());
                     }
                 }
             }
             
             if (tower != null) {
+                // Persist as "known tower" so tuning to this station in GUI works without chunk scan
+                BlockPos panelPos = tower.getRadioPanelPos() != null ? tower.getRadioPanelPos() : pos;
+                KnownTowerStorage.addKnownTower(level, tower.getPosition(), panelPos, tower.getStation().getId());
+                if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                    ModEvents.syncKnownTowersToPlayer(serverPlayer);
+                }
                 // Immediately update tower power state based on panel activation
-                // This ensures discovery happens immediately, not after a delay
                 updateTowerPowerImmediately(level, tower);
-                
                 Dead_air.LOGGER.info("Player {} interacted with Radio Panel at {}, tower power updated", 
                     event.getEntity().getName().getString(), pos);
-                
-                // Trigger station discovery for nearby players
-                // This ensures players discover the station when they activate a panel
                 if (tower.isPowered()) {
                     triggerStationDiscovery(level, tower, event.getEntity());
                 }

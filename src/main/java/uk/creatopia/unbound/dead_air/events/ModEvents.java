@@ -179,7 +179,27 @@ public class ModEvents {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             uk.creatopia.unbound.dead_air.station.StationUnlockManager.restoreFromStorage(serverPlayer);
+            // Sync known towers to client so it can compute signal locally (no per-tick packets needed)
+            syncKnownTowersToPlayer(serverPlayer);
         }
+    }
+
+    /** Resync known towers to a player (e.g. after they add one via panel). Call from server only. */
+    public static void syncKnownTowersToPlayer(ServerPlayer player) {
+        if (player == null || player.level() == null) return;
+        if (!(player.level() instanceof ServerLevel level)) return;
+        if (level.dimension() != net.minecraft.world.level.Level.OVERWORLD) return;
+        uk.creatopia.unbound.dead_air.events.ChunkEvents.ensureOverworldReadyForSignal(level);
+        var entries = uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.getKnownTowers(level.dimension());
+        if (entries.isEmpty()) return;
+        var list = new java.util.ArrayList<uk.creatopia.unbound.dead_air.net.KnownTowersSyncPacket.TowerEntry>();
+        for (var e : entries) {
+            list.add(new uk.creatopia.unbound.dead_air.net.KnownTowersSyncPacket.TowerEntry(
+                e.towerPos, e.panelPos, e.stationId));
+        }
+        uk.creatopia.unbound.dead_air.net.DeadAirNet.CHANNEL.send(
+            net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
+            new uk.creatopia.unbound.dead_air.net.KnownTowersSyncPacket(list));
     }
 
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
@@ -197,6 +217,10 @@ public class ModEvents {
     public static void onWorldUnload(LevelEvent.Unload event) {
         uk.creatopia.unbound.dead_air.Dead_air.setShutdownRequested(true);
         if (event.getLevel() instanceof ServerLevel serverLevel) {
+            // Persist known towers when overworld unloads (exit to menu or full game exit) so they survive full restart
+            if (serverLevel.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
+                uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.persistToFile(serverLevel);
+            }
             WORLD_LOAD_DELAYS.remove(serverLevel.dimension());
             uk.creatopia.unbound.dead_air.commands.SpawnTowerCommand.clearPendingScans(serverLevel.dimension());
             uk.creatopia.unbound.dead_air.events.ChunkEvents.clearWorldReady(serverLevel.dimension());
@@ -210,6 +234,24 @@ public class ModEvents {
         WORLD_LOAD_DELAYS.clear();
         uk.creatopia.unbound.dead_air.commands.SpawnTowerCommand.clearAllPendingScans();
         NOTIFIED_TOWERS.clear();
+        // Last-chance write of panel backup so activations persist after full game exit
+        try {
+            var server = event.getServer();
+            if (server != null) {
+                var overworld = server.overworld();
+                if (overworld != null) {
+                    var storage = uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.getForSave(overworld);
+                    if (storage != null) {
+                        storage.setDirty();
+                        storage.writeBackup(overworld);
+                        Dead_air.LOGGER.info("Dead Air: wrote panel backup on server stop ({} panels)", storage.getActivatedCount());
+                    }
+                    uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.persistToFile(overworld);
+                }
+            }
+        } catch (Exception e) {
+            Dead_air.LOGGER.warn("Dead Air: failed to write panel backup on stop: {}", e.getMessage());
+        }
         Dead_air.LOGGER.debug("Dead Air: server stopping, cleared pending work");
     }
     
@@ -229,6 +271,7 @@ public class ModEvents {
                     storage.setDirty();
                     storage.writeBackup(serverLevel);
                 }
+                uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.persistToFile(serverLevel);
             }
         }
     }
@@ -248,35 +291,26 @@ public class ModEvents {
     @SubscribeEvent
     public static void onWorldLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
-            Dead_air.LOGGER.info("World loaded in dimension: {} - will initialize after server is ready...", 
-                serverLevel.dimension().location());
-            
-            // Don't do anything during world load - wait for server to be fully ready
-            // This prevents any blocking operations during world initialization
-            // Chunks will be scanned as they load via ChunkEvents.onChunkLoad (after world is ready)
-            
-            // Schedule a delayed refresh - short delay to ensure server is ready
-            WORLD_LOAD_DELAYS.put(serverLevel.dimension(), 20); // 20 ticks (1 second)
-            if (serverLevel.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
-                var storage = uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.get(serverLevel);
-                if (storage != null) {
-                    uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.loadBackupInto(serverLevel, storage);
-                    Dead_air.LOGGER.info("Pre-loaded panel activations for overworld ({} panels from backup)", storage.getActivatedCount());
-                    // Refresh tower power immediately so signal requests see correct state
-                    TowerManager.updateTowerPower(serverLevel);
-                }
-            }
+            Dead_air.LOGGER.info("World loaded in dimension: {} - panel init deferred to first chunk load", serverLevel.dimension().location());
+            // Do NOT touch storage, getChunk, or SavedData here - any of that can block/deadlock during world load.
+            // Panel backup load + READY_WORLDS flag happen in ChunkEvents when the first overworld chunk loads.
+            WORLD_LOAD_DELAYS.put(serverLevel.dimension(), 5);
         }
     }
     
     /**
      * Refresh power states for all registered towers from persistent panel activation storage.
      * Called after world load so towers that were activated before save stay powered after reload.
+     * For overworld, ensures backup is loaded first (fallback if LevelEvent.Load was too early).
      */
     private static void refreshAllTowerPowerStates(ServerLevel level) {
         try {
-            if (level == null) {
-                return;
+            if (level == null) return;
+            if (level.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
+                var storage = uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.get(level);
+                if (storage != null) {
+                    uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.loadBackupInto(level, storage);
+                }
             }
             TowerManager.updateTowerPower(level);
             Dead_air.LOGGER.info("Refreshed tower power states from saved panel activations for dimension {}", level.dimension().location());

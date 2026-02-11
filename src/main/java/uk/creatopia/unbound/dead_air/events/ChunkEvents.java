@@ -9,7 +9,6 @@ import uk.creatopia.unbound.dead_air.Dead_air;
 import uk.creatopia.unbound.dead_air.tower.ApocalypseTowerDetector;
 import uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType;
 import uk.creatopia.unbound.dead_air.radio.RadioStation;
-import uk.creatopia.unbound.dead_air.radio.StationRegistry;
 import uk.creatopia.unbound.dead_air.radio.TowerManager;
 import net.minecraft.core.BlockPos;
 
@@ -33,9 +32,16 @@ public class ChunkEvents {
     public static void markWorldReady(ServerLevel level) {
         if (level == null || Dead_air.isShutdownRequested()) return;
         net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension = level.dimension();
+        Dead_air.LOGGER.info("[Dead Air] markWorldReady: dimension={}", dimension.location());
         READY_WORLDS.put(dimension, true);
-        // Eager-load panel activations from disk so isPanelActivated() sees saved state when we register towers
-        uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.get(level);
+        // Eager-load panel activations and known towers from backup so signal resolution works immediately after world load (no panel click needed)
+        if (dimension == net.minecraft.world.level.Level.OVERWORLD) {
+            var storage = uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.get(level);
+            if (storage != null) {
+                uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.loadBackupInto(level, storage);
+            }
+            uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.loadBackupFileDirect(level);
+        }
         scanLoadedChunks(level);
     }
     
@@ -43,31 +49,81 @@ public class ChunkEvents {
     public static void clearWorldReady(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension) {
         READY_WORLDS.remove(dimension);
     }
+
+    /**
+     * Call from packet handler only (never during world/chunk load). Loads backup into cache and sets
+     * READY_WORLDS so scanChunkIfReady can run. Safe because it runs when player already in world.
+     * Also loads known towers if cache is empty (fallback if markWorldReady ran before overworld was ready).
+     */
+    public static void ensureOverworldReadyForSignal(ServerLevel level) {
+        if (level == null || level.dimension() != net.minecraft.world.level.Level.OVERWORLD) return;
+        boolean alreadyReady = READY_WORLDS.containsKey(level.dimension());
+        if (!alreadyReady) {
+            READY_WORLDS.put(level.dimension(), true);
+            uk.creatopia.unbound.dead_air.tower.PanelActivationStorage.loadBackupFileDirect(level);
+        }
+        // Always ensure known towers are loaded (in case packet arrives before markWorldReady, or markWorldReady skipped overworld)
+        uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.loadBackupFileDirect(level);
+    }
+
+    /**
+     * Scan a single chunk for towers (e.g. when handling signal request and tower not found).
+     * Safe to call from network thread; only scans if world is ready.
+     */
+    public static void scanChunkIfReady(ServerLevel level, int chunkX, int chunkZ) {
+        if (level == null || Dead_air.isShutdownRequested()) return;
+        if (!READY_WORLDS.containsKey(level.dimension())) return;
+        if (!level.hasChunk(chunkX, chunkZ)) return;
+        try {
+            var chunk = level.getChunk(chunkX, chunkZ);
+            if (chunk instanceof LevelChunk) {
+                scanChunk(level, (LevelChunk) chunk);
+            }
+        } catch (Exception e) {
+            Dead_air.LOGGER.debug("Scan chunk ({}, {}) failed: {}", chunkX, chunkZ, e.getMessage());
+        }
+    }
     
     /**
-     * Scan chunks around spawn for radio towers.
-     * Called when world becomes ready to catch chunks that loaded during the initial delay.
+     * Scan chunks for radio towers: spawn area plus chunks around each player.
+     * This ensures we find towers near the player even when they're far from world spawn.
      */
     private static void scanLoadedChunks(ServerLevel level) {
         try {
+            java.util.Set<net.minecraft.world.level.ChunkPos> toScan = new java.util.HashSet<>();
+            // 1) Spawn area
             var spawnPos = level.getSharedSpawnPos();
             int spawnChunkX = spawnPos.getX() >> 4;
             int spawnChunkZ = spawnPos.getZ() >> 4;
-            int radius = 12; // 12 chunks (192 blocks) each direction from spawn
-            int scanned = 0;
-            
+            int radius = 12;
             for (int cx = spawnChunkX - radius; cx <= spawnChunkX + radius; cx++) {
                 for (int cz = spawnChunkZ - radius; cz <= spawnChunkZ + radius; cz++) {
-                    if (level.hasChunk(cx, cz)) {
-                        var chunk = level.getChunk(cx, cz);
-                        if (chunk instanceof LevelChunk) {
-                            scanChunk(level, (LevelChunk) chunk);
-                            scanned++;
-                        }
+                    if (level.hasChunk(cx, cz))
+                        toScan.add(new net.minecraft.world.level.ChunkPos(cx, cz));
+                }
+            }
+            // 2) Chunks around each player (so towers near player are found even far from spawn)
+            for (net.minecraft.server.level.ServerPlayer player : level.players()) {
+                if (player == null) continue;
+                int pcx = player.getBlockX() >> 4;
+                int pcz = player.getBlockZ() >> 4;
+                int pr = 4;
+                for (int cx = pcx - pr; cx <= pcx + pr; cx++) {
+                    for (int cz = pcz - pr; cz <= pcz + pr; cz++) {
+                        if (level.hasChunk(cx, cz))
+                            toScan.add(new net.minecraft.world.level.ChunkPos(cx, cz));
                     }
                 }
             }
-            Dead_air.LOGGER.info("Scanned {} chunks around spawn for radio towers in {}", scanned, level.dimension().location());
+            int scanned = 0;
+            for (net.minecraft.world.level.ChunkPos cp : toScan) {
+                var chunk = level.getChunk(cp.x, cp.z);
+                if (chunk instanceof LevelChunk) {
+                    scanChunk(level, (LevelChunk) chunk);
+                    scanned++;
+                }
+            }
+            Dead_air.LOGGER.info("Scanned {} chunks for radio towers in {} (spawn + player areas)", scanned, level.dimension().location());
         } catch (Exception e) {
             Dead_air.LOGGER.error("Error scanning chunks for towers", e);
         }
@@ -100,7 +156,7 @@ public class ChunkEvents {
                         }
                         if (!alreadyRegistered) {
                             ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, panelPos);
-                            RadioStation station = determineStationForTower(level, panelPos);
+                            RadioStation station = TowerManager.determineStationForTower(level, panelPos, towerType);
                             if (station != null) {
                                 TowerManager.registerTower(level, panelPos, station, towerType);
                                 processedPanels.add(panelPos);
@@ -114,16 +170,12 @@ public class ChunkEvents {
     
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
+        // Do nothing here. Forge: "Do not perform direct level interactions in ChunkEvent.Load"
+        // (can deadlock). Panel backup load + tower scan happen only on first signal request (lazy init).
         if (Dead_air.isShutdownRequested()) return;
-        if (!(event.getLevel() instanceof ServerLevel level)) {
-            return;
-        }
-        
-        // Don't scan chunks during world load - wait until world is ready
-        if (!READY_WORLDS.containsKey(level.dimension())) {
-            return;
-        }
-        
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+        if (!READY_WORLDS.containsKey(level.dimension())) return;
+
         if (event.getChunk() instanceof LevelChunk chunk) {
             try {
                 scanChunk(level, chunk);
@@ -134,45 +186,4 @@ public class ChunkEvents {
         }
     }
     
-    /**
-     * Determine which station a tower should broadcast.
-     * Takes tower type into account for preferred stations.
-     */
-    private static RadioStation determineStationForTower(ServerLevel level, BlockPos pos) {
-        // Get tower type to determine preferred station
-        ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
-        
-        // All towers can broadcast Emergency Broadcast (no restriction)
-        // But we'll assign music stations more often for variety
-        
-        java.util.Random random = new java.util.Random(pos.asLong());
-        
-        // Determine station based on tower type
-        if (towerType == ApocalypseTowerType.STANDARD) {
-            // Standard towers: Prefer Bedrock Radio (vanilla music)
-            if (random.nextDouble() < 0.6) { // 60% chance for Bedrock Radio
-                RadioStation bedrockRadio = StationRegistry.getStation(StationRegistry.BEDROCK_RADIO_ID);
-                if (bedrockRadio != null) {
-                    return bedrockRadio;
-                }
-            }
-        } else if (towerType == ApocalypseTowerType.OVERRUN) {
-            // Overrun towers: Prefer Zombiecraft Radio
-            if (random.nextDouble() < 0.6) { // 60% chance for Zombiecraft Radio
-                RadioStation zombiecraftRadio = StationRegistry.getStation(StationRegistry.ZOMBIECRAFT_RADIO_ID);
-                if (zombiecraftRadio != null) {
-                    return zombiecraftRadio;
-                }
-            }
-        }
-        
-        // Otherwise, randomly assign from all music stations
-        var musicStations = StationRegistry.getStationsByType(RadioStation.StationType.MUSIC);
-        if (!musicStations.isEmpty()) {
-            return musicStations.get(random.nextInt(musicStations.size()));
-        }
-        
-        // Fallback to Emergency Broadcast
-        return StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-    }
 }

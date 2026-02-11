@@ -14,7 +14,7 @@ public class KeyBindings {
         "key.dead_air.tune_walkie",
         KeyConflictContext.IN_GAME,
         InputConstants.Type.KEYSYM,
-        GLFW.GLFW_KEY_H,  // Changed from G to H to avoid conflicts (H for "Hear" or "Headphones")
+        GLFW.GLFW_KEY_N,  // N = tune radio (H = mute, G = other menu, B = walkie on/off)
         "key.categories.dead_air"
     );
     

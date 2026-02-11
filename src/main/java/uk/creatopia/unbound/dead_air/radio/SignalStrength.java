@@ -7,12 +7,18 @@ import uk.creatopia.unbound.dead_air.Config;
 
 /**
  * Calculates signal strength between a player position and a radio tower.
+ * Each tower has its own signal radius: 5/5 next to tower, drops 1 bar per 50 blocks. Rain: -1 bar at each level.
  */
 @SuppressWarnings("null")
 public class SignalStrength {
+    /** 1 bar per 50 blocks: 0=5/5, 50=4/5, 100=3/5, 150=2/5, 200=1/5, 250=0/5 */
+    private static final double SIGNAL_RADIUS_BLOCKS = 250.0;
+    /** Rain reduces signal by 1 bar (0.2 in 0-1 scale) */
+    private static final float RAIN_PENALTY = 0.2f;
     
     /**
      * Calculate signal strength (0.0 to 1.0) based on distance to tower.
+     * 0 blocks = 1.0 (5/5), 50 blocks = 0.8 (4/5), 100 = 0.6, 150 = 0.4, 200 = 0.2, 250+ = 0.
      */
     public static float calculateDistanceStrength(RadioTower tower, Vec3 playerPos) {
         double distance = tower.getDistanceTo(playerPos);
@@ -22,10 +28,8 @@ public class SignalStrength {
             return 0.0f;
         }
         
-        // Signal strength decreases with distance
-        // At 0 distance: 1.0, at max range: ~0.1
-        double normalizedDistance = distance / range;
-        float strength = (float) (1.0 - (normalizedDistance * 0.9));
+        // Linear falloff: 1 bar per 50 blocks, 0 at 250 blocks
+        float strength = (float) Math.max(0.0, 1.0 - (distance / SIGNAL_RADIUS_BLOCKS));
         return Math.max(0.0f, Math.min(1.0f, strength));
     }
     
@@ -63,7 +67,7 @@ public class SignalStrength {
     }
     
     /**
-     * Calculate weather penalty (storms reduce signal).
+     * Calculate weather penalty. Rain/thunder reduces signal by 1 bar (0.2) at each distance level.
      */
     public static float calculateWeatherPenalty(Level level) {
         if (!Config.enableWeatherEffects) {
@@ -71,24 +75,49 @@ public class SignalStrength {
         }
         
         if (level.isRaining() || level.isThundering()) {
-            return 0.7f; // 30% reduction in storms
+            return 1.0f - RAIN_PENALTY; // -1 bar
         }
         return 1.0f;
     }
     
+    /** When player is within this many blocks of the tower, skip LOS/weather so "right next to" = full bars (5/5). Weather still affects signal when further away. */
+    private static final double CLOSE_RANGE_BLOCKS = 6.0;
+
     /**
      * Get final signal strength combining all factors.
+     * When very close to the tower, LOS and weather are skipped so you get 5/5 bars. As you move away, weather and LOS both apply.
      */
     public static float getFinalSignalStrength(Level level, RadioTower tower, Vec3 playerPos) {
         if (!tower.isPowered() || !tower.isInRange(playerPos)) {
             return 0.0f;
         }
         
+        double distance = tower.getDistanceTo(playerPos);
         float distanceStrength = calculateDistanceStrength(tower, playerPos);
-        float losPenalty = calculateLineOfSightPenalty(level, tower.getPositionVec(), playerPos);
-        float weatherPenalty = calculateWeatherPenalty(level);
+        // Right up close: no LOS or weather penalty. Further away: weather and LOS both apply.
+        boolean veryClose = distance <= CLOSE_RANGE_BLOCKS;
+        float losPenalty = veryClose ? 1.0f : calculateLineOfSightPenalty(level, tower.getPositionVec(), playerPos);
+        float weatherPenalty = veryClose ? 1.0f : calculateWeatherPenalty(level);
         
-        return distanceStrength * losPenalty * weatherPenalty;
+        return Math.max(0.0f, Math.min(1.0f, distanceStrength * losPenalty * weatherPenalty));
+    }
+
+    /**
+     * Compute signal from tower position + station (no RadioTower object).
+     * Used when resolving from persisted known towers (no chunk scan).
+     */
+    public static float getFinalSignalStrengthFromPosition(Level level, Vec3 towerPos, RadioStation station, Vec3 playerPos) {
+        if (station == null) return 0.0f;
+        double distance = towerPos.distanceTo(playerPos);
+        int range = station.getBroadcastRange();
+        if (distance > range) return 0.0f;
+        // Same formula: 1 bar per 50 blocks, 0 at 250
+        float distanceStrength = (float) Math.max(0.0, 1.0 - (distance / SIGNAL_RADIUS_BLOCKS));
+        distanceStrength = Math.max(0.0f, Math.min(1.0f, distanceStrength));
+        boolean veryClose = distance <= CLOSE_RANGE_BLOCKS;
+        float losPenalty = veryClose ? 1.0f : calculateLineOfSightPenalty(level, towerPos, playerPos);
+        float weatherPenalty = veryClose ? 1.0f : calculateWeatherPenalty(level);
+        return Math.max(0.0f, Math.min(1.0f, distanceStrength * losPenalty * weatherPenalty));
     }
     
     /**

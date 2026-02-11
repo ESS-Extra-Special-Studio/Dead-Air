@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "uk.creatopia.unbound.dead_air.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "dead_air.refmap.json",
+  "mixins": [
+    "ItemStackMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "MusicManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

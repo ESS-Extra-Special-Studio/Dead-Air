@@ -31,6 +31,12 @@ public class RadioPanelManager {
      */
     public static boolean isPanelActivated(ServerLevel level, BlockPos pos) {
         BlockPos immutablePos = pos.immutable();
+        // Check backup cache first (no SavedData/get(level)) so chunk load never blocks
+        if (PanelActivationStorage.isInBackupCache(level.dimension(), immutablePos)) {
+            SESSION_ACTIVATED.computeIfAbsent(level.dimension(), k -> ConcurrentHashMap.newKeySet()).add(immutablePos);
+            PANEL_STATES.put(immutablePos, true);
+            return true;
+        }
         if (level.getServer() != null) {
             try {
                 if (level.getServer().isStopped() || !level.getServer().isRunning() || level.getServer().isShutdown()) {
@@ -69,6 +75,19 @@ public class RadioPanelManager {
     private static void mergeStorageIntoSession(ServerLevel level, PanelActivationStorage storage) {
         ResourceKey<Level> dim = level.dimension();
         SESSION_ACTIVATED.computeIfAbsent(dim, k -> ConcurrentHashMap.newKeySet()).addAll(storage.getActivatedPositions(dim));
+    }
+
+    /**
+     * Add panel to persistent storage and write backup immediately so it survives restart.
+     * Called when we see activation (from click or from NBT). One click = stays on.
+     */
+    private static void syncPanelToStorageAndBackup(ServerLevel level, BlockPos pos, PanelActivationStorage storage) {
+        storage.setActivated(level.dimension(), pos.immutable(), true);
+        var overworld = level.getServer() != null ? level.getServer().overworld() : null;
+        if (overworld != null) {
+            storage.writeBackup(overworld);
+            Dead_air.LOGGER.info("Dead Air: panel at {} synced to storage and backup (total: {})", pos, storage.getActivatedCount());
+        }
     }
 
     /** Check session cache first (we saw this pos as activated from storage earlier), then NBT. */
@@ -121,12 +140,12 @@ public class RadioPanelManager {
                 return false;
             }
             
-            // Check for various possible NBT keys that RadioTowers might use
+            // Check for various possible NBT keys that RadioTowers might use.
+            // If NBT says activated, sync to our storage (single source of truth) and persist backup.
             if (nbt.contains("activated")) {
                 boolean activated = nbt.getBoolean("activated");
                 if (activated && storage != null) {
-                    // If NBT says activated but storage doesn't, sync it
-                    storage.setActivated(level.dimension(), pos, true);
+                    syncPanelToStorageAndBackup(level, pos, storage);
                 }
                 PANEL_STATES.put(pos, activated);
                 return activated;
@@ -134,7 +153,7 @@ public class RadioPanelManager {
             if (nbt.contains("active")) {
                 boolean activated = nbt.getBoolean("active");
                 if (activated && storage != null) {
-                    storage.setActivated(level.dimension(), pos, true);
+                    syncPanelToStorageAndBackup(level, pos, storage);
                 }
                 PANEL_STATES.put(pos, activated);
                 return activated;
@@ -142,7 +161,7 @@ public class RadioPanelManager {
             if (nbt.contains("powered")) {
                 boolean activated = nbt.getBoolean("powered");
                 if (activated && storage != null) {
-                    storage.setActivated(level.dimension(), pos, true);
+                    syncPanelToStorageAndBackup(level, pos, storage);
                 }
                 PANEL_STATES.put(pos, activated);
                 return activated;
@@ -150,28 +169,24 @@ public class RadioPanelManager {
             if (nbt.contains("enabled")) {
                 boolean activated = nbt.getBoolean("enabled");
                 if (activated && storage != null) {
-                    storage.setActivated(level.dimension(), pos, true);
+                    syncPanelToStorageAndBackup(level, pos, storage);
                 }
                 PANEL_STATES.put(pos, activated);
                 return activated;
             }
             
-            // Check for MCreator-specific NBT (RadioTowers is made with MCreator)
             for (String key : nbt.getAllKeys()) {
                 String lowerKey = key.toLowerCase();
                 if (lowerKey.contains("activated") || lowerKey.contains("active") || 
                     lowerKey.contains("powered") || lowerKey.contains("enabled") ||
                     lowerKey.contains("on") || lowerKey.contains("state")) {
                     boolean activated = false;
-                    if (nbt.contains(key, 1)) { // byte
-                        activated = nbt.getBoolean(key);
-                    } else if (nbt.contains(key, 3)) { // int
-                        activated = (nbt.getInt(key) != 0);
+                    if (nbt.contains(key, 1)) activated = nbt.getBoolean(key);
+                    else if (nbt.contains(key, 3)) activated = (nbt.getInt(key) != 0);
+                    if (activated && storage != null) {
+                        syncPanelToStorageAndBackup(level, pos, storage);
                     }
                     if (activated) {
-                        if (storage != null) {
-                            storage.setActivated(level.dimension(), pos, true);
-                        }
                         PANEL_STATES.put(pos, true);
                         return true;
                     }
@@ -179,12 +194,10 @@ public class RadioPanelManager {
             }
         }
         
-        // Check cache
         if (PANEL_STATES.containsKey(pos)) {
             return PANEL_STATES.get(pos);
         }
         
-        // Check block state properties
         BlockState state = level.getBlockState(pos);
         for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
             if (prop instanceof net.minecraft.world.level.block.state.properties.BooleanProperty boolProp) {
@@ -193,13 +206,11 @@ public class RadioPanelManager {
                     try {
                         boolean activated = state.getValue(boolProp);
                         if (activated && storage != null) {
-                            storage.setActivated(level.dimension(), pos, true);
+                            syncPanelToStorageAndBackup(level, pos, storage);
                         }
                         PANEL_STATES.put(pos, activated);
                         return activated;
-                    } catch (Exception e) {
-                        // Property value not available, continue
-                    }
+                    } catch (Exception e) { }
                 }
             }
         }
@@ -221,15 +232,19 @@ public class RadioPanelManager {
         PANEL_STATES.put(immutablePos, true);
         SESSION_ACTIVATED.computeIfAbsent(level.dimension(), k -> ConcurrentHashMap.newKeySet()).add(immutablePos);
 
+        var server = level.getServer();
+        var overworld = server != null ? server.overworld() : null;
         PanelActivationStorage storage = PanelActivationStorage.get(level);
+        if (storage == null && overworld != null) {
+            storage = PanelActivationStorage.getForSave(overworld);
+        }
         if (storage != null) {
             storage.setActivated(level.dimension(), immutablePos, true);
             Dead_air.LOGGER.info("Radio Panel activated at {} and saved to persistent storage (total saved: {})", pos, storage.getActivatedCount());
-            // Write backup file immediately so activation persists even if SavedData save fails
-            var overworld = level.getServer() != null ? level.getServer().overworld() : null;
             if (overworld != null) storage.writeBackup(overworld);
         } else {
-            Dead_air.LOGGER.warn("Radio Panel activated at {} but persistent storage was null - activation may not survive reload", pos);
+            Dead_air.LOGGER.warn("Radio Panel activated at {} but persistent storage was null - writing direct backup", pos);
+            PanelActivationStorage.writeSinglePanelBackup(overworld, level.dimension(), immutablePos);
         }
         
         // Also try to update block entity NBT as a backup

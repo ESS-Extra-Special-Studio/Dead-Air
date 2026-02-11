@@ -2,6 +2,7 @@ package uk.creatopia.unbound.dead_air.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
@@ -22,11 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GUI screen for tuning walkie-talkie to different stations using a Pip-Boy style interface.
- * Features a retro radio tuner dial and Fallout 4-inspired radio selection.
+ * GUI screen for walkie-talkie: Radio tab (tune stations) and Walkie tab (channel, voice, power).
+ * Opened by right-clicking the walkie in hand or by the tune key (N). Replaces the walkie mod's own GUI.
  */
 @SuppressWarnings("null")
 public class WalkieTalkieTuningScreen extends Screen {
+    private static final int TAB_RADIO = 0;
+    private static final int TAB_WALKIE = 1;
+    private static final int TAB_BAR_HEIGHT = 28;
     private static final float MIN_FREQUENCY = 88.0f;
     private static final float MAX_FREQUENCY = 108.0f;
     
@@ -37,14 +41,26 @@ public class WalkieTalkieTuningScreen extends Screen {
     private static final int BORDER_COLOR = 0xFF00E050; // Crisp neon green border
     private static final int PANEL_BG = 0x70001808; // Semi-transparent dark green (~44% opacity)
     
+    private int selectedTab = TAB_RADIO;
+    private Button tabRadioButton;
+    private Button tabWalkieButton;
     private List<RadioStation> availableStations;
     private float currentFrequency = 88.0f;
     private RadioStation nearestStation = null;
-    private AbstractSliderButton frequencySlider;
+    /** Slider type that can be synced from a frequency (e.g. when clicking a station in the list). */
+    private FrequencySliderWidget frequencySlider;
     private AbstractSliderButton volumeSlider;
     private Button tuneButton;
     private Button powerButton;
     private Button pingLocationButton;
+    // Walkie tab
+    private int walkieChannel = 1;
+    /** Visual only: reflects voice on/off (actual voice is B key; this lets the user see state in GUI). */
+    private boolean voiceIndicatorOn = false;
+    private Button channelLeftButton;
+    private Button channelRightButton;
+    private Button walkieMicButton;
+    private Button walkiePowerButton;
     
     // Waveform animation
     private float waveformTime = 0.0f;
@@ -55,7 +71,7 @@ public class WalkieTalkieTuningScreen extends Screen {
     private static final int LIST_LINE_HEIGHT = 12;
     
     public WalkieTalkieTuningScreen() {
-        super(Component.literal("Radio Tuning"));
+        super(Component.literal("Walkie-Talkie"));
         
         // Initialize frequency to current station if tuned
         Minecraft mc = Minecraft.getInstance();
@@ -82,10 +98,46 @@ public class WalkieTalkieTuningScreen extends Screen {
         }
         
         this.clearWidgets();
+        int topOffset = TAB_BAR_HEIGHT;
         listBoundsX = Math.max(12, width / 50);
-        listBoundsY = Math.max(15, height / 25);
+        listBoundsY = Math.max(15, height / 25) + topOffset;
         listBoundsWidth = Math.min(180, width / 4);
         listContentStartY = listBoundsY + 18;
+        
+        // Tab bar: Radio | Walkie
+        int tabW = 80;
+        int tabH = 22;
+        tabRadioButton = Button.builder(Component.literal("Radio"), b -> { selectedTab = TAB_RADIO; updateTabVisibility(); })
+            .bounds(width / 2 - tabW - 4, 4, tabW, tabH).build();
+        tabWalkieButton = Button.builder(Component.literal("Walkie"), b -> { selectedTab = TAB_WALKIE; updateTabVisibility(); })
+            .bounds(width / 2 + 4, 4, tabW, tabH).build();
+        addRenderableWidget(tabRadioButton);
+        addRenderableWidget(tabWalkieButton);
+        
+        // Walkie tab: channel < 1 >, mic button, power (radio) button
+        channelLeftButton = Button.builder(Component.literal("<"), b -> { walkieChannel = Math.max(1, walkieChannel - 1); })
+            .bounds(0, 0, 28, 22).build();
+        channelRightButton = Button.builder(Component.literal(">"), b -> { walkieChannel = Math.min(99, walkieChannel + 1); })
+            .bounds(0, 0, 28, 22).build();
+        walkieMicButton = Button.builder(getVoiceButtonMessage(), b -> {
+                voiceIndicatorOn = !voiceIndicatorOn;
+                if (walkieMicButton != null) walkieMicButton.setMessage(getVoiceButtonMessage());
+            })
+            .bounds(0, 0, 100, 24).build();
+        WalkieTalkieManager.WalkieTalkieState powerState = WalkieTalkieManager.getState(mc.player);
+        walkiePowerButton = Button.builder(
+            Component.literal(powerState.isOn() ? "\u26A1 Radio ON" : "\u26A1 Radio OFF"),
+            button -> {
+                WalkieTalkieManager.WalkieTalkieState s = WalkieTalkieManager.getState(mc.player);
+                if (s.isOn()) WalkieTalkieManager.turnOff(mc.player);
+                else WalkieTalkieManager.turnOn(mc.player);
+                button.setMessage(Component.literal(WalkieTalkieManager.getState(mc.player).isOn() ? "\u26A1 Radio ON" : "\u26A1 Radio OFF"));
+            }
+        ).bounds(0, 0, 100, 24).build();
+        addRenderableWidget(channelLeftButton);
+        addRenderableWidget(channelRightButton);
+        addRenderableWidget(walkieMicButton);
+        addRenderableWidget(walkiePowerButton);
         
         // Ensure widgets list is ready
         if (this.renderables == null) {
@@ -99,68 +151,8 @@ public class WalkieTalkieTuningScreen extends Screen {
         updateNearestStation();
         
         // Frequency slider - positioned below the dial, separate from it
-        // Make the clickable area match the handle size (not the full track)
         float sliderValue = (currentFrequency - MIN_FREQUENCY) / (MAX_FREQUENCY - MIN_FREQUENCY);
-        // Don't set positions in init() - they'll be set in render() when width/height are correct
-        // Use temporary positions that will be updated in render()
-        frequencySlider = new AbstractSliderButton(
-            0, 0, 240, 20,
-            Component.empty(), // Empty message - we'll draw the text separately to avoid overflow
-            sliderValue
-        ) {
-            {
-                this.visible = true;
-                this.active = true;
-            }
-            @Override
-            protected void updateMessage() {
-                currentFrequency = (float) Mth.lerp(this.value, MIN_FREQUENCY, MAX_FREQUENCY);
-                // Round to 0.1 MHz increments
-                currentFrequency = Math.round(currentFrequency * 10.0f) / 10.0f;
-                // Don't set message here - we'll draw it separately
-                updateNearestStation();
-            }
-            
-            @Override
-            protected void applyValue() {
-                // Value is already applied in updateMessage
-            }
-            
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (!this.active || !this.visible || button != 0) {
-                    return false;
-                }
-                
-                // Calculate handle position based on current value
-                int handleWidth = 8; // Width of the draggable handle
-                int handleHeight = this.height;
-                double handleX = this.getX() + (this.value * (this.width - handleWidth));
-                double handleY = this.getY();
-                
-                // Only respond to clicks on or very near the handle (with some tolerance)
-                double tolerance = 4.0; // Pixels of tolerance around the handle
-                if (mouseX >= handleX - tolerance && mouseX <= handleX + handleWidth + tolerance &&
-                    mouseY >= handleY - tolerance && mouseY <= handleY + handleHeight + tolerance) {
-                    // Click is on the handle - allow dragging
-                    return super.mouseClicked(mouseX, mouseY, button);
-                }
-                
-                // Click is on the track but not the handle - snap to that position
-                if (mouseX >= this.getX() && mouseX <= this.getX() + this.width &&
-                    mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
-                    // Calculate new value based on click position
-                    double relativeX = mouseX - this.getX();
-                    double newValue = Mth.clamp(relativeX / this.width, 0.0, 1.0);
-                    this.value = newValue;
-                    this.updateMessage();
-                    this.onDrag(mouseX, mouseY, 0, 0); // Trigger drag to update
-                    return true;
-                }
-                
-                return false;
-            }
-        };
+        frequencySlider = new FrequencySliderWidget(0, 0, 240, 20, sliderValue, this);
         addRenderableWidget(frequencySlider);
         
         // Volume slider - will be positioned in volume section (right panel)
@@ -275,6 +267,33 @@ public class WalkieTalkieTuningScreen extends Screen {
             }
         ).bounds(rightPanelX, rightPanelY + 25, 120, 20).build(); // Narrower width
         addRenderableWidget(powerButton);
+        updateTabVisibility();
+    }
+    
+    private Component getVoiceButtonMessage() {
+        return voiceIndicatorOn
+            ? Component.literal("\uD83D\uDD0A Voice ON").withStyle(ChatFormatting.GREEN)
+            : Component.literal("Voice OFF").withStyle(ChatFormatting.GRAY);
+    }
+
+    private void updateTabVisibility() {
+        boolean radio = (selectedTab == TAB_RADIO);
+        if (frequencySlider != null) frequencySlider.visible = radio;
+        if (tuneButton != null) tuneButton.visible = radio;
+        if (powerButton != null) powerButton.visible = radio;
+        if (volumeSlider != null) volumeSlider.visible = radio;
+        if (pingLocationButton != null) pingLocationButton.visible = radio;
+        if (tabRadioButton != null) tabRadioButton.active = !radio;
+        if (tabWalkieButton != null) tabWalkieButton.active = radio;
+        if (channelLeftButton != null) channelLeftButton.visible = !radio;
+        if (channelRightButton != null) channelRightButton.visible = !radio;
+        if (walkieMicButton != null) walkieMicButton.visible = !radio;
+        if (walkiePowerButton != null) {
+            walkiePowerButton.visible = !radio;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null)
+                walkiePowerButton.setMessage(Component.literal(WalkieTalkieManager.getState(mc.player).isOn() ? "\u26A1 Radio ON" : "\u26A1 Radio OFF"));
+        }
     }
     
     /**
@@ -411,11 +430,28 @@ public class WalkieTalkieTuningScreen extends Screen {
         RenderSystem.defaultBlendFunc();
         guiGraphics.fill(0, 0, width, height, 0xD8000810); // ~85% opacity, dark green
         
-        // Layout: center panel central, equal gaps between left-center and center-right
+        // Tab bar background
+        guiGraphics.fill(0, 0, width, TAB_BAR_HEIGHT, 0xE0101820);
+        guiGraphics.fill(0, TAB_BAR_HEIGHT - 2, width, TAB_BAR_HEIGHT, BORDER_COLOR);
+        
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            super.render(guiGraphics, mouseX, mouseY, partialTick);
+            return;
+        }
+        
+        // Walkie tab: only the tab bar + Walkie card, no Radio panels or widgets
+        if (selectedTab == TAB_WALKIE) {
+            drawWalkieTab(guiGraphics);
+            super.render(guiGraphics, mouseX, mouseY, partialTick);
+            return;
+        }
+        
+        // --- Radio tab only below: three panels, dial, slider (just above tune), tune, left list, right signal/volume/ping/power ---
         int padding = Math.max(12, width / 50);
-        int topMargin = Math.max(15, height / 25);
-        int gap = 12;  // Equal gap between panels
-        int sidePanelWidth = Math.min(180, (width - 2 * padding - 2 * gap) / 4);  // Left and right same width
+        int topMargin = Math.max(15, height / 25) + TAB_BAR_HEIGHT;
+        int gap = 12;
+        int sidePanelWidth = Math.min(180, (width - 2 * padding - 2 * gap) / 4);
         int centerSectionWidth = width - 2 * padding - 2 * sidePanelWidth - 2 * gap;
         int leftSectionX = padding;
         int leftSectionY = topMargin;
@@ -426,57 +462,51 @@ public class WalkieTalkieTuningScreen extends Screen {
         int centerContentCenterX = centerSectionX + centerSectionWidth / 2;
         int sectionHeight = height - topMargin - padding;
         
-        // Slider and button anchored in LOWER middle of center panel (reference)
-        int centerBottom = centerSectionY + sectionHeight - padding;
-        int buttonY = centerBottom - 20;
-        int sliderY = buttonY - 24 - 12;  // 24px gap + 12px for freq text above slider
+        // Tune button 1px from bottom border; slider 1px above tune button
+        int bottomInset = 1;
+        int buttonHeight = 20;
+        int sliderHeight = 20;
+        int gapBetweenSliderAndButton = 1;
+        int buttonY = centerSectionY + sectionHeight - bottomInset - buttonHeight;
+        int sliderY = buttonY - sliderHeight - gapBetweenSliderAndButton;
         
-        // Smaller gauge (reference: "gauge is better and smaller in image 2")
         int dialRadius = 45;
         int dialY = centerSectionY + 12 + dialRadius;
-        // Frequency counter anchored just under the gauge needle (user request)
-        int freqTextY = dialY + 10;  // Just below gauge center/needle pivot
-        // Info BELOW gauge - clear space so text never overlaps (reference: "space for all info to fit")
-        int dialBottom = dialY + dialRadius + 8;  // Below full circle border
-        int infoY = dialBottom + 8;
-        int infoBoxHeight = Math.max(32, Math.min(44, sliderY - infoY - 12));
+        int freqTextY = dialY + 10;
+        int dialBottom = dialY + dialRadius + 6;   // slightly closer to dial
+        int infoY = dialBottom + 5;                 // text under dial moved up 3px (was +8 then +8)
         
-        // Slider: fixed left edge, never extends past panel (ZombieCraft reference)
-        int sliderInset = 24;  // Clearance - vanilla slider may add internal padding
+        int sliderInset = 24;
         int sliderWidth = Math.max(100, centerSectionWidth - sliderInset * 2);
         int sliderX = centerSectionX + sliderInset;
-        int sliderYFinal = Mth.clamp(sliderY, centerSectionY + 5, centerSectionY + sectionHeight - 25);
+        int sliderYFinal = Mth.clamp(sliderY, centerSectionY + 5, centerSectionY + sectionHeight - sliderHeight - gapBetweenSliderAndButton - buttonHeight - bottomInset);
         
         if (frequencySlider != null) {
             frequencySlider.setX(sliderX);
             frequencySlider.setY(sliderYFinal);
             frequencySlider.setWidth(sliderWidth);
-            frequencySlider.setHeight(20);
+            frequencySlider.setHeight(sliderHeight);
             frequencySlider.visible = true;
             frequencySlider.active = true;
         }
         
         if (tuneButton != null) {
             int buttonWidth = Math.min(200, centerSectionWidth - 40);
-            int buttonX = centerSectionX + (centerSectionWidth - buttonWidth) / 2;  // Centered
-            buttonY = Mth.clamp(buttonY, centerSectionY + 5, centerSectionY + sectionHeight - 25);
-            
+            int buttonX = centerSectionX + (centerSectionWidth - buttonWidth) / 2;
             tuneButton.setX(buttonX);
             tuneButton.setY(buttonY);
             tuneButton.setWidth(buttonWidth);
-            tuneButton.setHeight(20);
+            tuneButton.setHeight(buttonHeight);
             tuneButton.visible = true;
             tuneButton.active = true;
         }
         
-        // Right panel: SIGNAL in its own box at top, Volume and Buttons smaller below (reference)
         int rightSectionX = centerSectionX + centerSectionWidth + gap;
         int rightContentTop = topMargin + 8;
         int sectionSpacing = 6;
         int signalSectionY = rightContentTop;
-        int signalSectionHeight = 70;   // Signal box - self-contained
-        int volumeSectionHeight = 42;   // Smaller lower panels
-        int buttonsSectionHeight = 48;
+        int signalSectionHeight = 70;
+        int volumeSectionHeight = 42;
         int volumeSectionY = signalSectionY + signalSectionHeight + sectionSpacing;
         int buttonsSectionY = volumeSectionY + volumeSectionHeight + sectionSpacing;
         
@@ -504,12 +534,10 @@ public class WalkieTalkieTuningScreen extends Screen {
             powerButton.active = true;
         }
 
-        // Draw ALL panel backgrounds/borders - semi-transparent, crisp borders (ZombieCraft style)
         int borderThickness = 2;
         int centerSectionHeight = sectionHeight;
         int leftSectionHeight = sectionHeight;
         
-        // LEFT section - transparent background, crisp green border
         guiGraphics.fill(leftSectionX - borderThickness, leftSectionY - borderThickness,
             leftSectionX + leftSectionWidth + borderThickness, leftSectionY + leftSectionHeight + borderThickness, PANEL_BG);
         guiGraphics.fill(leftSectionX - borderThickness, leftSectionY - borderThickness,
@@ -521,7 +549,6 @@ public class WalkieTalkieTuningScreen extends Screen {
         guiGraphics.fill(leftSectionX + leftSectionWidth, leftSectionY - borderThickness,
             leftSectionX + leftSectionWidth + borderThickness, leftSectionY + leftSectionHeight + borderThickness, BORDER_COLOR);
         
-        // CENTER section
         guiGraphics.fill(centerSectionX - borderThickness, centerSectionY - borderThickness,
             centerSectionX + centerSectionWidth + borderThickness, centerSectionY + centerSectionHeight + borderThickness, PANEL_BG);
         guiGraphics.fill(centerSectionX - borderThickness, centerSectionY - borderThickness,
@@ -533,7 +560,6 @@ public class WalkieTalkieTuningScreen extends Screen {
         guiGraphics.fill(centerSectionX + centerSectionWidth, centerSectionY - borderThickness,
             centerSectionX + centerSectionWidth + borderThickness, centerSectionY + centerSectionHeight + borderThickness, BORDER_COLOR);
         
-        // RIGHT section
         guiGraphics.fill(rightSectionX - borderThickness, topMargin - borderThickness,
             rightSectionX + rightSectionWidth + borderThickness, topMargin + sectionHeight + borderThickness, PANEL_BG);
         guiGraphics.fill(rightSectionX - borderThickness, topMargin - borderThickness,
@@ -544,15 +570,6 @@ public class WalkieTalkieTuningScreen extends Screen {
             rightSectionX, topMargin + sectionHeight + borderThickness, BORDER_COLOR);
         guiGraphics.fill(rightSectionX + rightSectionWidth, topMargin - borderThickness,
             rightSectionX + rightSectionWidth + borderThickness, topMargin + sectionHeight + borderThickness, BORDER_COLOR);
-        
-        // We intentionally call super.render() AFTER drawing backgrounds so widgets (sliders/buttons)
-        // always render on top of our custom drawing.
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) {
-            // Still render widgets (e.g. close button) even if player is null
-            super.render(guiGraphics, mouseX, mouseY, partialTick);
-            return;
-        }
         
         // Update waveform animation
         waveformTime += partialTick * 0.1f;
@@ -663,6 +680,55 @@ public class WalkieTalkieTuningScreen extends Screen {
 
         // Draw widgets LAST so they can't be painted over by any guiGraphics.fill/draw calls above.
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+    
+    /**
+     * Draw the Walkie tab: title, channel selector (< 1 >), Voice and Radio buttons.
+     */
+    private void drawWalkieTab(GuiGraphics guiGraphics) {
+        int cardW = 220;
+        int cardH = 140;
+        int cx = width / 2;
+        int cy = TAB_BAR_HEIGHT + (height - TAB_BAR_HEIGHT) / 2;
+        int cardX = cx - cardW / 2;
+        int cardY = cy - cardH / 2;
+        int border = 2;
+        guiGraphics.fill(cardX - border, cardY - border, cardX + cardW + border, cardY + cardH + border, BORDER_COLOR);
+        guiGraphics.fill(cardX, cardY, cardX + cardW, cardY + cardH, PANEL_BG);
+        guiGraphics.drawCenteredString(font, "Walkie-Talkie", cx, cardY + 8, PIPBOY_TEXT);
+        int channelY = cardY + 28;
+        int btnY = cardY + 58;
+        // Equal distance from center: both arrow buttons same offset from cx (button width 28, center offset 24)
+        int buttonWidth = 28;
+        int centerOffset = 24; // distance from screen center to center of each button
+        int leftButtonX = cx - centerOffset - buttonWidth / 2;
+        int rightButtonX = cx + centerOffset - buttonWidth / 2;
+        if (channelLeftButton != null) {
+            channelLeftButton.setX(leftButtonX);
+            channelLeftButton.setY(channelY - 11);
+            channelLeftButton.setWidth(buttonWidth);
+            channelLeftButton.setHeight(22);
+        }
+        if (channelRightButton != null) {
+            channelRightButton.setX(rightButtonX);
+            channelRightButton.setY(channelY - 11);
+            channelRightButton.setWidth(buttonWidth);
+            channelRightButton.setHeight(22);
+        }
+        guiGraphics.drawCenteredString(font, String.valueOf(walkieChannel), cx, channelY - 7, PIPBOY_TEXT);
+        if (walkieMicButton != null) {
+            walkieMicButton.setX(cardX + 12);
+            walkieMicButton.setY(btnY);
+            walkieMicButton.setWidth(90);
+            walkieMicButton.setHeight(24);
+        }
+        if (walkiePowerButton != null) {
+            walkiePowerButton.setX(cardX + cardW - 102);
+            walkiePowerButton.setY(btnY);
+            walkiePowerButton.setWidth(90);
+            walkiePowerButton.setHeight(24);
+        }
+        guiGraphics.drawString(font, "Press B for voice chat", cardX + 12, cardY + cardH - 18, 0x808080, false);
     }
     
     /**
@@ -1072,6 +1138,17 @@ public class WalkieTalkieTuningScreen extends Screen {
         }
         
         try {
+            // Emergency Broadcast always full signal
+            if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST) {
+                return 1.0f;
+            }
+            
+            // Use server-provided signal when available (single source of truth)
+            Float serverSignal = uk.creatopia.unbound.dead_air.audio.AudioManager.getServerSignal(station.getId());
+            if (serverSignal != null) {
+                return serverSignal;
+            }
+            
             Vec3 playerPos = mc.player.position();
             float bestSignal = 0.0f;
             
@@ -1108,6 +1185,14 @@ public class WalkieTalkieTuningScreen extends Screen {
             } catch (Exception e) {
                 // Server-side data not available, will use client-side scan
             }
+            
+            // KnownTowersClientCache (synced from server on login - same as overlay)
+            if (bestSignal < 0.1f && uk.creatopia.unbound.dead_air.tower.KnownTowersClientCache.hasCachedTowers()) {
+                float cacheSignal = uk.creatopia.unbound.dead_air.tower.KnownTowersClientCache.getSignalFromCache(
+                    station.getId(), playerPos, mc.level);
+                if (cacheSignal > bestSignal) bestSignal = cacheSignal;
+            }
+            if (bestSignal >= 0.1f) return bestSignal;
             
             // Fallback: On client side, scan for Radio Panels directly
             // Check a reasonable area around the player (within max broadcast range)
@@ -1266,14 +1351,16 @@ public class WalkieTalkieTuningScreen extends Screen {
                 
                 // Send message on next tick to avoid issues
                 mc.execute(() -> {
-                    if (mc.player != null && validatedStation != null) {
+                    if (mc.player != null && validatedStation != null && mc.gui != null) {
                         try {
                             String stationName = validatedStation.getName();
                             if (stationName == null) {
                                 stationName = "Unknown";
                             }
-                            mc.player.sendSystemMessage(Component.literal("Tuned to: " + stationName + 
-                                " (" + String.format("%.1f", validatedStation.getFrequency()) + " MHz)"));
+                            // Send to chat so we don't trigger the action bar record/mute icon
+                            Component msg = Component.literal("Tuned to: " + stationName +
+                                " (" + String.format("%.1f", validatedStation.getFrequency()) + " MHz)");
+                            mc.gui.getChat().addMessage(msg);
                         } catch (Exception e) {
                             Dead_air.LOGGER.error("Error sending tune message", e);
                         }
@@ -1282,8 +1369,8 @@ public class WalkieTalkieTuningScreen extends Screen {
             } else {
                 // No station at this frequency
                 mc.execute(() -> {
-                    if (mc.player != null) {
-                        mc.player.sendSystemMessage(Component.literal("No station found at " + 
+                    if (mc.player != null && mc.gui != null) {
+                        mc.gui.getChat().addMessage(Component.literal("No station found at " +
                             String.format("%.1f", currentFrequency) + " MHz"));
                     }
                 });
@@ -1293,8 +1380,8 @@ public class WalkieTalkieTuningScreen extends Screen {
             // Log full stack trace for debugging
             Dead_air.LOGGER.error("Stack trace:", e);
             mc.execute(() -> {
-                if (mc.player != null) {
-                    mc.player.sendSystemMessage(Component.literal("§cError tuning to station: " + e.getMessage()));
+                if (mc.player != null && mc.gui != null) {
+                    mc.gui.getChat().addMessage(Component.literal("§cError tuning to station: " + e.getMessage()));
                 }
             });
         }
@@ -1311,6 +1398,9 @@ public class WalkieTalkieTuningScreen extends Screen {
                         RadioStation clickedStation = availableStations.get(clickedIndex);
                         if (clickedStation != null) {
                             currentFrequency = clickedStation.getFrequency();
+                            if (frequencySlider != null) {
+                                frequencySlider.setValueFromFrequency(currentFrequency);
+                            }
                             updateNearestStation();
                             tuneToCurrentFrequency();
                             return true;
@@ -1325,5 +1415,63 @@ public class WalkieTalkieTuningScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    /**
+     * Frequency slider that can be synced from code when the user clicks a station in the list
+     * (so the slider thumb moves to match the needle).
+     */
+    private static final class FrequencySliderWidget extends AbstractSliderButton {
+        private final WalkieTalkieTuningScreen screen;
+
+        FrequencySliderWidget(int x, int y, int w, int h, double sliderValue, WalkieTalkieTuningScreen screen) {
+            super(x, y, w, h, Component.empty(), sliderValue);
+            this.screen = screen;
+            this.visible = true;
+            this.active = true;
+        }
+
+        @Override
+        protected void updateMessage() {
+            float freq = (float) Mth.lerp(this.value, MIN_FREQUENCY, MAX_FREQUENCY);
+            freq = Math.round(freq * 10.0f) / 10.0f;
+            screen.setCurrentFrequencyFromSlider(freq);
+            screen.updateNearestStation();
+        }
+
+        @Override
+        protected void applyValue() {}
+
+        /** Set slider position from a frequency (e.g. when user clicks a station in the list). */
+        void setValueFromFrequency(float freq) {
+            this.value = Mth.clamp((double) (freq - MIN_FREQUENCY) / (MAX_FREQUENCY - MIN_FREQUENCY), 0.0, 1.0);
+            updateMessage();
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!this.active || !this.visible || button != 0) return false;
+            int handleWidth = 8;
+            double handleX = this.getX() + (this.value * (this.width - handleWidth));
+            double handleY = this.getY();
+            double tolerance = 4.0;
+            if (mouseX >= handleX - tolerance && mouseX <= handleX + handleWidth + tolerance &&
+                mouseY >= handleY - tolerance && mouseY <= handleY + this.height + tolerance) {
+                return super.mouseClicked(mouseX, mouseY, button);
+            }
+            if (mouseX >= this.getX() && mouseX <= this.getX() + this.width &&
+                mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
+                double relativeX = mouseX - this.getX();
+                this.value = Mth.clamp(relativeX / this.width, 0.0, 1.0);
+                updateMessage();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    /** Called by the frequency slider when its value changes (so currentFrequency stays in sync). */
+    void setCurrentFrequencyFromSlider(float freq) {
+        this.currentFrequency = freq;
     }
 }

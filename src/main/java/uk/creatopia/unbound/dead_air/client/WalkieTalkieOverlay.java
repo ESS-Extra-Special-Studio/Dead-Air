@@ -3,18 +3,48 @@ package uk.creatopia.unbound.dead_air.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import uk.creatopia.unbound.dead_air.radio.RadioStation;
+import uk.creatopia.unbound.dead_air.radio.StationRegistry;
 import uk.creatopia.unbound.dead_air.radio.SignalStrength;
 import uk.creatopia.unbound.dead_air.walkie.WalkieTalkieManager;
 
 /**
- * Client-side overlay for walkie-talkie UI.
+ * Client-side overlay for walkie-talkie UI and radio panel tooltips.
  */
 @SuppressWarnings("null")
 public class WalkieTalkieOverlay {
+    /**
+     * Render tooltip when looking at an activated radio panel showing which station it broadcasts.
+     */
+    public static void renderRadioPanelTooltip(GuiGraphics guiGraphics, int width, int height) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return;
+        if (mc.hitResult == null || mc.hitResult.getType() != HitResult.Type.BLOCK) return;
+
+        BlockHitResult hit = (BlockHitResult) mc.hitResult;
+        BlockPos pos = hit.getBlockPos();
+        if (!uk.creatopia.unbound.dead_air.tower.ApocalypseTowerDetector.isRadioPanel(mc.level, pos)) return;
+
+        ResourceLocation stationId = uk.creatopia.unbound.dead_air.tower.KnownTowersClientCache.getStationForPanel(pos);
+        if (stationId == null) return;
+
+        RadioStation station = StationRegistry.getStation(stationId);
+        if (station == null) return;
+
+        String text = station.getName() + " (" + String.format("%.1f", station.getFrequency()) + " MHz)";
+        int textWidth = mc.font.width(text);
+        int x = (width - textWidth) / 2;
+        int y = height - 59; // Above hotbar, similar to vanilla block name
+        guiGraphics.fill(x - 2, y - 2, x + textWidth + 2, y + mc.font.lineHeight + 2, 0x80000000);
+        guiGraphics.drawString(mc.font, text, x, y, 0x55FF55, false); // Green to match radio theme
+    }
+
     /**
      * Render the walkie-talkie overlay.
      */
@@ -198,10 +228,9 @@ public class WalkieTalkieOverlay {
     
     /**
      * Calculate signal strength for a station (client-side).
-     * Always recalculates to ensure accurate signal display.
-     * On client side, we scan for Radio Panels directly since tower data isn't synced.
+     * Used by overlay and AudioManager. Sources: server cache, TowerManager, then client panel scan.
      */
-    private static float calculateSignalStrengthForStation(Minecraft mc, RadioStation station) {
+    public static float calculateSignalStrengthForStation(Minecraft mc, RadioStation station) {
         if (mc.level == null || mc.player == null || station == null) {
             return 0.0f;
         }
@@ -212,105 +241,35 @@ public class WalkieTalkieOverlay {
                 return 1.0f;
             }
             
+            // Use server-provided signal when available (single source of truth; client has no tower data in multiplayer)
+            Float serverSignal = uk.creatopia.unbound.dead_air.audio.AudioManager.getServerSignal(station.getId());
+            if (serverSignal != null) {
+                return serverSignal;
+            }
+            
             Vec3 playerPos = mc.player.position();
             float bestSignal = 0.0f;
             
-            // On client side, try to use server-side tower data first (more accurate)
-            // If that fails, fall back to scanning for Radio Panels
-            boolean useServerData = false;
-            
+            // TowerManager (shared in singleplayer; has exact tower positions)
             try {
                 var serverTowers = uk.creatopia.unbound.dead_air.radio.TowerManager.getAllTowers(mc.level);
                 if (serverTowers != null && !serverTowers.isEmpty()) {
-                    useServerData = true;
-                    
                     for (var tower : serverTowers) {
                         if (!tower.isPowered()) continue;
-                        if (!tower.getStation().getId().equals(station.getId())) {
-                            continue;
-                        }
-                        
+                        if (!tower.getStation().getId().equals(station.getId())) continue;
                         if (tower.isInRange(playerPos)) {
                             float signal = SignalStrength.getFinalSignalStrength(mc.level, tower, playerPos);
-                            if (signal > bestSignal) {
-                                bestSignal = signal;
-                            }
+                            if (signal > bestSignal) bestSignal = signal;
                         }
                     }
                 }
-            } catch (Exception e) {
-                // Server-side data not available, will use client-side scan
-                useServerData = false;
-            }
+            } catch (Exception e) { /* TowerManager not available */ }
             
-            // If server data wasn't available or didn't find anything, scan for Radio Panels
-            if (!useServerData || bestSignal < 0.1f) {
-                // Check a reasonable area around the player (within max broadcast range)
-                int searchRadius = (int) Math.min(500, station.getBroadcastRange()); // Limit to 500 blocks for performance
-                net.minecraft.core.BlockPos playerBlockPos = net.minecraft.core.BlockPos.containing(playerPos);
-                
-                // Scan area around player for Radio Panels (check every 8 blocks for better coverage)
-                for (int x = -searchRadius; x <= searchRadius; x += 8) {
-                    for (int z = -searchRadius; z <= searchRadius; z += 8) {
-                        // Also check Y axis (towers can be at different heights)
-                        for (int y = -10; y <= 10; y += 5) {
-                            net.minecraft.core.BlockPos checkPos = playerBlockPos.offset(x, y, z);
-                            
-                            // Check if this is a Radio Panel
-                            if (uk.creatopia.unbound.dead_air.tower.ApocalypseTowerDetector.isRadioPanel(mc.level, checkPos)) {
-                                // Check if panel is activated (powered) - use NBT check
-                                boolean isActivated = false;
-                                if (mc.level.getBlockEntity(checkPos) != null) {
-                                    net.minecraft.nbt.CompoundTag nbt = mc.level.getBlockEntity(checkPos).saveWithFullMetadata();
-                                    if (nbt != null) {
-                                        // Check multiple possible NBT keys
-                                        isActivated = nbt.contains("activated") && nbt.getBoolean("activated") ||
-                                                     nbt.contains("active") && nbt.getBoolean("active") ||
-                                                     nbt.contains("powered") && nbt.getBoolean("powered") ||
-                                                     nbt.contains("Activated") && nbt.getBoolean("Activated") ||
-                                                     nbt.contains("Active") && nbt.getBoolean("Active") ||
-                                                     nbt.contains("Powered") && nbt.getBoolean("Powered");
-                                        
-                                        // Also check as int/byte (some mods store booleans as 0/1)
-                                        if (!isActivated) {
-                                            isActivated = (nbt.contains("activated") && nbt.getInt("activated") > 0) ||
-                                                          (nbt.contains("active") && nbt.getInt("active") > 0) ||
-                                                          (nbt.contains("powered") && nbt.getInt("powered") > 0);
-                                        }
-                                    }
-                                }
-                                
-                                // For regular stations: if panel is not activated, assume it might be a STANDARD tower (always powered)
-                                // We'll show signal if the panel exists and is in range, even if activation check fails
-                                // This is a best-effort approach since we can't determine tower type on client side
-                                
-                                // Calculate distance and signal strength
-                                Vec3 panelPos = Vec3.atCenterOf(checkPos);
-                                double distance = playerPos.distanceTo(panelPos);
-                                
-                                if (distance > station.getBroadcastRange()) {
-                                    continue; // Out of range
-                                }
-                                
-                                // Calculate signal strength based on distance
-                                double normalizedDistance = distance / station.getBroadcastRange();
-                                float signal = (float) (1.0 - (normalizedDistance * 0.9)); // Same formula as SignalStrength
-                                signal = Math.max(0.0f, Math.min(1.0f, signal));
-                                
-                                // Apply weather penalty if enabled
-                                if (uk.creatopia.unbound.dead_air.Config.enableWeatherEffects) {
-                                    if (mc.level.isRaining() || mc.level.isThundering()) {
-                                        signal *= 0.7f;
-                                    }
-                                }
-                                
-                                if (signal > bestSignal) {
-                                    bestSignal = signal;
-                                }
-                            }
-                        }
-                    }
-                }
+            // KnownTowersClientCache (synced from server on login - persisted tower data)
+            if (bestSignal < 0.1f && uk.creatopia.unbound.dead_air.tower.KnownTowersClientCache.hasCachedTowers()) {
+                float cacheSignal = uk.creatopia.unbound.dead_air.tower.KnownTowersClientCache.getSignalFromCache(
+                    station.getId(), playerPos, mc.level);
+                if (cacheSignal > bestSignal) bestSignal = cacheSignal;
             }
             
             return bestSignal;

@@ -1,0 +1,26 @@
+{
+  "mappings": {
+    "uk/creatopia/unbound/dead_air/mixin/PlayerMixin": {
+      "tick": "Lnet/minecraft/world/entity/player/Player;m_8119_()V"
+    },
+    "uk/creatopia/unbound/dead_air/mixin/ItemStackMixin": {
+      "getDisplayName": "Lnet/minecraft/world/item/ItemStack;m_41611_()Lnet/minecraft/network/chat/Component;"
+    },
+    "uk/creatopia/unbound/dead_air/mixin/MusicManagerMixin": {
+      "tick": "Lnet/minecraft/client/sounds/MusicManager;m_120183_()V"
+    }
+  },
+  "data": {
+    "searge": {
+      "uk/creatopia/unbound/dead_air/mixin/PlayerMixin": {
+        "tick": "Lnet/minecraft/world/entity/player/Player;m_8119_()V"
+      },
+      "uk/creatopia/unbound/dead_air/mixin/ItemStackMixin": {
+        "getDisplayName": "Lnet/minecraft/world/item/ItemStack;m_41611_()Lnet/minecraft/network/chat/Component;"
+      },
+      "uk/creatopia/unbound/dead_air/mixin/MusicManagerMixin": {
+        "tick": "Lnet/minecraft/client/sounds/MusicManager;m_120183_()V"
+      }
+    }
+  }
+}

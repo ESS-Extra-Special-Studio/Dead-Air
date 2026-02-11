@@ -48,11 +48,6 @@ public class Config {
         .comment("Minimum volume for radio stations (0.0 to 1.0)")
         .defineInRange("minVolume", 0.1, 0.0, 0.5);
 
-    private static final ForgeConfigSpec.BooleanValue RADIO_USE_MUSIC_SLIDER = BUILDER
-        .comment("If true, radio volume uses the game's 'Music' slider. If false, uses 'Records' (jukebox) slider. " +
-                 "Use Records if you don't hear radio (Music slider is often at 0%).")
-        .define("radioUseMusicSlider", false);
-
     private static final ForgeConfigSpec.BooleanValue ATTRACT_ZOMBIES = BUILDER
         .comment("Active broadcasts attract zombies")
         .define("attractZombies", true);
@@ -72,6 +67,11 @@ public class Config {
                  "If false, radio only plays while holding the walkie-talkie in hand.")
         .define("radioAlwaysOn", true);
 
+    private static final ForgeConfigSpec.BooleanValue SIMPLIFIED_MUSIC_DEBUG = BUILDER
+        .comment("DEBUG: If true, bypass playlist/track logic and play a single known-good track (music_disc.13). " +
+                 "Use this to narrow down music playback issues. Set to false for normal playlist behavior.")
+        .define("simplifiedMusicDebug", true);
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     // Config values
@@ -83,11 +83,11 @@ public class Config {
     public static boolean enableWeatherEffects;
     public static double maxVolume;
     public static double minVolume;
-    public static boolean radioUseMusicSlider;
     public static boolean attractZombies;
     public static boolean autoDiscoverModMusic;
     public static boolean enableCorruptedStations;
     public static boolean radioAlwaysOn;
+    public static boolean simplifiedMusicDebug;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -99,10 +99,10 @@ public class Config {
         enableWeatherEffects = ENABLE_WEATHER_EFFECTS.get();
         maxVolume = MAX_VOLUME.get();
         minVolume = MIN_VOLUME.get();
-        radioUseMusicSlider = RADIO_USE_MUSIC_SLIDER.get();
         attractZombies = ATTRACT_ZOMBIES.get();
         autoDiscoverModMusic = AUTO_DISCOVER_MOD_MUSIC.get();
         enableCorruptedStations = ENABLE_CORRUPTED_STATIONS.get();
         radioAlwaysOn = RADIO_ALWAYS_ON.get();
+        simplifiedMusicDebug = SIMPLIFIED_MUSIC_DEBUG.get();
     }
 }

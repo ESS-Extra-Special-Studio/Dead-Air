@@ -3,8 +3,10 @@ package uk.creatopia.unbound.dead_air.events;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import uk.creatopia.unbound.dead_air.Dead_air;
@@ -75,6 +77,10 @@ public class ClientEvents {
         
         if (!hasWalkieTalkie) {
             AudioManager.stopAll();
+            if (mc.player.tickCount % 100 == 0) {
+                Dead_air.LOGGER.info("[Dead Air] Client not sending: no walkie in {} (radioAlwaysOn={})",
+                    Config.radioAlwaysOn ? "inventory" : "hand", Config.radioAlwaysOn);
+            }
             return;
         }
         
@@ -82,6 +88,11 @@ public class ClientEvents {
         
         if (!state.isOn() || state.getCurrentStation() == null) {
             AudioManager.stopAll();
+            // Throttled debug: why we're not sending (station must be set and walkie on)
+            if (mc.player.tickCount % 100 == 0) {
+                Dead_air.LOGGER.info("[Dead Air] Client not sending: isOn={} station={} (tune in GUI with walkie ON)",
+                    state.isOn(), state.getCurrentStation() != null ? state.getCurrentStation().getId() : "null");
+            }
             return;
         }
         
@@ -96,6 +107,10 @@ public class ClientEvents {
                 if (mc.player.tickCount % 2 == 0 && mc.getConnection() != null) {
                     uk.creatopia.unbound.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
                         new uk.creatopia.unbound.dead_air.net.RadioSignalRequestPacket(station.getId()));
+                    // Throttled log so logs show client is sending (every ~2 sec)
+                    if (mc.player.tickCount % 40 == 0) {
+                        Dead_air.LOGGER.info("[Dead Air] Client sending signal request: station={}", station.getId());
+                    }
                 }
                 // Music stations - play music (uses local tower or server signal cache)
                 AudioManager.update(mc, station, mc.player.position());
@@ -124,9 +139,10 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onRenderGui(RenderGuiOverlayEvent.Post event) {
         if (event.getOverlay() == VanillaGuiOverlay.CROSSHAIR.type()) {
-            WalkieTalkieOverlay.render(event.getGuiGraphics(), 
-                event.getWindow().getGuiScaledWidth(), 
-                event.getWindow().getGuiScaledHeight());
+            int w = event.getWindow().getGuiScaledWidth();
+            int h = event.getWindow().getGuiScaledHeight();
+            WalkieTalkieOverlay.renderRadioPanelTooltip(event.getGuiGraphics(), w, h);
+            WalkieTalkieOverlay.render(event.getGuiGraphics(), w, h);
         }
     }
     
@@ -137,10 +153,10 @@ public class ClientEvents {
     
     @SubscribeEvent
     public static void onClientDisconnecting(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
-        // Stop all audio when client is disconnecting to prevent hangs
         Dead_air.LOGGER.info("=== CLIENT DISCONNECTING - STOPPING AUDIO ===");
         DISCONNECTING = true;
         uk.creatopia.unbound.dead_air.audio.AudioManager.stopAll();
+        uk.creatopia.unbound.dead_air.tower.KnownTowersClientCache.clear();
     }
     
     @SubscribeEvent
@@ -149,11 +165,25 @@ public class ClientEvents {
             return;
         }
         
-        // Check for keybind press
+        // Check for keybind press (N = open our GUI; right-click walkie also opens it)
         while (KeyBindings.TUNE_WALKIE.consumeClick()) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && WalkieTalkieManager.isHoldingWalkieTalkie(mc.player)) {
                 mc.setScreen(new WalkieTalkieTuningScreen());
+            }
+        }
+    }
+
+    /**
+     * When the player right-clicks with a walkie-talkie in hand, open our GUI instead of the walkie mod's.
+     * This merges everything into one screen (Radio tab + Walkie tab). HIGH priority so we run first and cancel.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        if (event.getLevel().isClientSide() && event.getEntity() == Minecraft.getInstance().player) {
+            if (WalkieTalkieManager.isWalkieTalkieItem(event.getItemStack())) {
+                Minecraft.getInstance().setScreen(new WalkieTalkieTuningScreen());
+                event.setCanceled(true);
             }
         }
     }

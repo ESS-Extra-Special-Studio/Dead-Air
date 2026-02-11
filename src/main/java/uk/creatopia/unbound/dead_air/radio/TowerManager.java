@@ -2,6 +2,7 @@ package uk.creatopia.unbound.dead_air.radio;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -308,7 +309,12 @@ public class TowerManager {
                         break;
                         
                     default:
-                        powered = false;
+                        // Player-built (UNKNOWN): only on if Radio Panel is activated (persists from backup)
+                        if (tower.getRadioPanelPos() != null) {
+                            powered = uk.creatopia.unbound.dead_air.tower.RadioPanelManager.isPanelActivated(
+                                level, tower.getRadioPanelPos());
+                        }
+                        break;
                 }
                 
                 tower.setPowered(powered);
@@ -362,34 +368,90 @@ public class TowerManager {
     }
     
     /**
-     * Determine which station a tower should broadcast based on tower type.
+     * Stations that already have a tower within minTowerSpacing of pos (in-memory or from known-towers file).
+     * Used so we don't assign the same station to two towers in overlapping range.
+     */
+    public static java.util.Set<ResourceLocation> getStationsAlreadyInRangeOf(ServerLevel level, BlockPos pos) {
+        java.util.Set<ResourceLocation> out = new java.util.HashSet<>();
+        if (level == null || pos == null) return out;
+        Vec3 at = Vec3.atCenterOf(pos);
+
+        // In-memory towers
+        List<RadioTower> list = TOWERS_LIST.get(level.dimension());
+        if (list != null) {
+            for (RadioTower t : list) {
+                if (t == null || t.getStation() == null) continue;
+                if (t.getPosition().equals(pos)) continue; // skip self
+                double dist = t.getDistanceTo(at);
+                if (dist < t.getStation().getMinTowerSpacing()) {
+                    out.add(t.getStation().getId());
+                }
+            }
+        }
+
+        // Known towers (persisted) so after restart we still avoid same-station overlap
+        if (level.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
+            uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.loadBackupFileDirect(level);
+            for (uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.KnownTowerEntry e : uk.creatopia.unbound.dead_air.tower.KnownTowerStorage.getKnownTowers(level.dimension())) {
+                if (e.towerPos.equals(pos)) continue;
+                RadioStation st = StationRegistry.getStation(e.stationId);
+                if (st == null) continue;
+                double dist = Vec3.atCenterOf(e.towerPos).distanceTo(at);
+                if (dist < st.getMinTowerSpacing()) {
+                    out.add(e.stationId);
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Determine which station a tower should broadcast. Avoids stations that already have a tower
+     * within minTowerSpacing (so two towers in signal range never share a station — each gets its own discovery).
      */
     public static RadioStation determineStationForTower(ServerLevel level, BlockPos pos, ApocalypseTowerType towerType) {
+        java.util.Set<ResourceLocation> excluded = getStationsAlreadyInRangeOf(level, pos);
+        return determineStationForTower(level, pos, towerType, excluded);
+    }
+
+    /**
+     * Determine which station a tower should broadcast based on tower type.
+     * Excludes any station in excludedStationIds (already in use by a tower within range).
+     */
+    public static RadioStation determineStationForTower(ServerLevel level, BlockPos pos, ApocalypseTowerType towerType,
+                                                       java.util.Set<ResourceLocation> excludedStationIds) {
         Random random = new Random(pos.asLong()); // Use pos hash for deterministic randomness
 
-        // Emergency Broadcast can be assigned to any tower, no longer restricted to one
         RadioStation emergencyStation = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-        if (emergencyStation != null && random.nextDouble() < 0.1) { // 10% chance for emergency broadcast
+        if (emergencyStation != null && random.nextDouble() < 0.1 && !excludedStationIds.contains(emergencyStation.getId())) {
             return emergencyStation;
         }
 
         List<RadioStation> musicStations = StationRegistry.getStationsByType(RadioStation.StationType.MUSIC);
         if (musicStations.isEmpty()) {
-            return emergencyStation; // Fallback
+            return emergencyStation != null ? emergencyStation : null;
         }
 
-        // Specific chances for certain tower types
+        // Prefer type-specific station if not excluded
         if (towerType == ApocalypseTowerType.STANDARD) {
-            if (random.nextDouble() < 0.6) { // 60% chance for Bedrock Radio
-                return StationRegistry.getStation(StationRegistry.BEDROCK_RADIO_ID);
+            RadioStation bedrock = StationRegistry.getStation(StationRegistry.BEDROCK_RADIO_ID);
+            if (bedrock != null && !excludedStationIds.contains(bedrock.getId()) && random.nextDouble() < 0.6) {
+                return bedrock;
             }
         } else if (towerType == ApocalypseTowerType.OVERRUN) {
-            if (random.nextDouble() < 0.6) { // 60% chance for Zombiecraft Radio
-                return StationRegistry.getStation(StationRegistry.ZOMBIECRAFT_RADIO_ID);
+            RadioStation zombie = StationRegistry.getStation(StationRegistry.ZOMBIECRAFT_RADIO_ID);
+            if (zombie != null && !excludedStationIds.contains(zombie.getId()) && random.nextDouble() < 0.6) {
+                return zombie;
             }
         }
 
-        // Otherwise, pick a random music station
-        return musicStations.get(random.nextInt(musicStations.size()));
+        // Pick from music stations that are NOT already in use in range (so new tower gets its own station)
+        List<RadioStation> available = musicStations.stream()
+            .filter(s -> s != null && !excludedStationIds.contains(s.getId()))
+            .toList();
+        if (available.isEmpty()) {
+            available = musicStations; // fallback: all taken, pick any
+        }
+        return available.get(random.nextInt(available.size()));
     }
 }

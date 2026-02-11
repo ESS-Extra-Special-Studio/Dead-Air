@@ -36,8 +36,8 @@ public class BlockEvents {
             ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
             
             if (towerType != ApocalypseTowerType.UNKNOWN) {
-                // Official tower - register it
-                RadioStation station = determineStationForTower(level, pos);
+                // Official tower - register it (TowerManager avoids same station within range)
+                RadioStation station = TowerManager.determineStationForTower(level, pos, towerType);
                 if (station != null) {
                     // Register tower at the Radio Panel position
                     TowerManager.registerTower(level, pos, station, towerType);
@@ -73,42 +73,4 @@ public class BlockEvents {
         }
     }
     
-    /**
-     * Determine which station a tower should broadcast.
-     * Takes tower type into account for preferred stations.
-     */
-    private static RadioStation determineStationForTower(ServerLevel level, BlockPos pos) {
-        // Get tower type to determine preferred station
-        ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
-        
-        java.util.Random random = new java.util.Random(pos.asLong());
-        
-        // Determine station based on tower type
-        if (towerType == ApocalypseTowerType.STANDARD) {
-            // Standard towers: Prefer Bedrock Radio (vanilla music)
-            if (random.nextDouble() < 0.6) { // 60% chance for Bedrock Radio
-                RadioStation bedrockRadio = StationRegistry.getStation(StationRegistry.BEDROCK_RADIO_ID);
-                if (bedrockRadio != null) {
-                    return bedrockRadio;
-                }
-            }
-        } else if (towerType == ApocalypseTowerType.OVERRUN) {
-            // Overrun towers: Prefer Zombiecraft Radio
-            if (random.nextDouble() < 0.6) { // 60% chance for Zombiecraft Radio
-                RadioStation zombiecraftRadio = StationRegistry.getStation(StationRegistry.ZOMBIECRAFT_RADIO_ID);
-                if (zombiecraftRadio != null) {
-                    return zombiecraftRadio;
-                }
-            }
-        }
-        
-        // Otherwise, randomly assign from all music stations
-        var musicStations = StationRegistry.getStationsByType(RadioStation.StationType.MUSIC);
-        if (!musicStations.isEmpty()) {
-            return musicStations.get(random.nextInt(musicStations.size()));
-        }
-        
-        // Fallback to Emergency Broadcast
-        return StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-    }
 }

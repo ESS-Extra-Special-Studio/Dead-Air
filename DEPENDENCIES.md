@@ -23,6 +23,7 @@
 - **CurseForge**: Search for "Walkie Talkie" mod for MC 1.20.1
 - **Required**: YES - Mod will not function without this
 - **Note**: Mod has fallback detection, but primary mod ID `walkietalkie` is recommended
+- **GUI**: Dead Air overrides right-click on the walkie to open its own GUI (Radio + Walkie tabs). Use the **Walkie** tab for channel, voice, and radio on/off. To avoid turning music on/off by accident when pressing the walkie mod's key (e.g. B) to talk, set that key to **voice chat only** in the walkie mod's controls if the option exists; use the Dead Air GUI to toggle **Radio** on/off.
 
 ## Optional Dependencies (Recommended but not Required)
 

@@ -224,8 +224,9 @@ public class WalkieTalkieManager {
 
     /**
      * Check if an ItemStack is a walkie-talkie by examining its properties.
+     * Public so we can intercept right-click and open our GUI instead of the walkie mod's.
      */
-    private static boolean isWalkieTalkieItem(ItemStack stack) {
+    public static boolean isWalkieTalkieItem(ItemStack stack) {
         if (stack.isEmpty()) {
             return false;
         }

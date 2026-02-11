@@ -16,10 +16,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Persistent storage for Radio Panel activation states.
- * Stored on the Overworld's SavedData so it persists reliably (Overworld is never fully unloaded).
+ * <p>
+ * World-only: we store nothing in player data. When a player activates a panel we write
+ * (dimension + block position) into the world: overworld SavedData and a backup file
+ * {@code world/data/dead_air_panels.dat}. On load we read that file and treat those positions
+ * as active. Any player can activate a panel; the tower stays on for the whole world.
  * Entries are keyed by (dimension, pos) to support panels in any dimension.
  */
 @SuppressWarnings("null")
@@ -83,6 +88,61 @@ public class PanelActivationStorage extends SavedData {
     private static final String BACKUP_FILE = "dead_air_panels.dat";
 
     /**
+     * Cache of activated positions read directly from the backup file (no SavedData).
+     * Used so we never call get(level)/computeIfAbsent during world or chunk load (avoids deadlock).
+     * Key format: dimension.location() + "|" + x + "," + y + "," + z.
+     */
+    private static final java.util.Map<ResourceKey<Level>, Set<String>> BACKUP_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * Read backup file from disk only (no SavedData). Safe to call from ChunkEvent.Load.
+     * Populates BACKUP_CACHE so isInBackupCache() returns true without touching get(level).
+     */
+    public static void loadBackupFileDirect(ServerLevel level) {
+        if (level == null) return;
+        var server = level.getServer();
+        if (server == null) return;
+        if (level.dimension() != Level.OVERWORLD) return;
+        Path file = null;
+        try {
+            Path worldPath = server.getWorldPath(LevelResource.ROOT);
+            file = worldPath.resolve("data").resolve(BACKUP_FILE);
+            if (!Files.isRegularFile(file)) return;
+            Set<String> keys = new HashSet<>();
+            try (java.io.InputStream in = Files.newInputStream(file)) {
+                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
+                ListTag list = nbt.getList("activated_panels", Tag.TAG_COMPOUND);
+                for (int i = 0; i < list.size(); i++) {
+                    CompoundTag entry = list.getCompound(i);
+                    keys.add(entry.getString("dim") + "|" + entry.getInt("x") + "," + entry.getInt("y") + "," + entry.getInt("z"));
+                }
+            }
+            BACKUP_CACHE.put(level.dimension(), keys);
+            if (!keys.isEmpty()) {
+                Dead_air.LOGGER.info("[Dead Air] Panel backup loaded from {} ({} panels) - stations will stay active", file, keys.size());
+            }
+        } catch (IOException e) {
+            Dead_air.LOGGER.warn("[Dead Air] Panel backup read failed: {} - {}", file != null ? file : "?", e.getMessage());
+        }
+    }
+
+    /** Check backup cache only (no get(level)). Used during chunk load so we never touch SavedData. */
+    public static boolean isInBackupCache(ResourceKey<Level> dimension, BlockPos pos) {
+        Set<String> keys = BACKUP_CACHE.get(dimension);
+        if (keys == null) return false;
+        return keys.contains(key(dimension, pos.immutable()));
+    }
+
+    /** Merge BACKUP_CACHE into this storage so save() has full data. Call when first getting storage after load. */
+    public void mergeFromBackupCache(ResourceKey<Level> dimension) {
+        Set<String> keys = BACKUP_CACHE.get(dimension);
+        if (keys == null || keys.isEmpty()) return;
+        for (String k : keys) {
+            if (activatedKeys.add(k)) setDirty();
+        }
+    }
+
+    /**
      * Write current state to a backup file in the world's data folder.
      * Called on overworld save and immediately when a panel is activated.
      */
@@ -98,9 +158,59 @@ public class PanelActivationStorage extends SavedData {
             try (java.io.OutputStream out = Files.newOutputStream(file)) {
                 net.minecraft.nbt.NbtIo.writeCompressed(nbt, out);
             }
-            Dead_air.LOGGER.debug("PanelActivationStorage: wrote backup to {}", file);
+            if (activatedKeys.size() > 0) {
+                Dead_air.LOGGER.info("PanelActivationStorage: wrote backup ({} panels) to {}", activatedKeys.size(), file);
+            }
         } catch (IOException e) {
             Dead_air.LOGGER.warn("PanelActivationStorage: could not write backup: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * When SavedData storage is null, write this single panel activation directly to the backup file
+     * (read existing backup, add position, write back) so activation survives restart.
+     */
+    public static void writeSinglePanelBackup(ServerLevel overworld, ResourceKey<Level> dimension, BlockPos pos) {
+        if (overworld == null) return;
+        try {
+            Path worldPath = overworld.getServer().getWorldPath(LevelResource.ROOT);
+            Path dataPath = worldPath.resolve("data");
+            Files.createDirectories(dataPath);
+            Path file = dataPath.resolve(BACKUP_FILE);
+            Set<String> keys = new HashSet<>();
+            if (Files.isRegularFile(file)) {
+                try (java.io.InputStream in = Files.newInputStream(file)) {
+                    CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
+                    ListTag list = nbt.getList("activated_panels", Tag.TAG_COMPOUND);
+                    for (int i = 0; i < list.size(); i++) {
+                        CompoundTag entry = list.getCompound(i);
+                        keys.add(entry.getString("dim") + "|" + entry.getInt("x") + "," + entry.getInt("y") + "," + entry.getInt("z"));
+                    }
+                }
+            }
+            keys.add(key(dimension, pos.immutable()));
+            CompoundTag nbt = new CompoundTag();
+            ListTag list = new ListTag();
+            for (String key : keys) {
+                int pipe = key.indexOf('|');
+                if (pipe <= 0) continue;
+                String dim = key.substring(0, pipe);
+                String[] xyz = key.substring(pipe + 1).split(",");
+                if (xyz.length != 3) continue;
+                CompoundTag entry = new CompoundTag();
+                entry.putString("dim", dim);
+                entry.putInt("x", Integer.parseInt(xyz[0]));
+                entry.putInt("y", Integer.parseInt(xyz[1]));
+                entry.putInt("z", Integer.parseInt(xyz[2]));
+                list.add(entry);
+            }
+            nbt.put("activated_panels", list);
+            try (java.io.OutputStream out = Files.newOutputStream(file)) {
+                net.minecraft.nbt.NbtIo.writeCompressed(nbt, out);
+            }
+            Dead_air.LOGGER.info("PanelActivationStorage: wrote direct backup ({} panels) to {} for panel at {}", keys.size(), file, pos);
+        } catch (IOException e) {
+            Dead_air.LOGGER.warn("PanelActivationStorage: direct backup write failed: {}", e.getMessage());
         }
     }
 
@@ -137,11 +247,14 @@ public class PanelActivationStorage extends SavedData {
         try {
             Path worldPath = overworld.getServer().getWorldPath(LevelResource.ROOT);
             Path file = worldPath.resolve("data").resolve(BACKUP_FILE);
-            if (!Files.isRegularFile(file)) return;
+            if (!Files.isRegularFile(file)) {
+                Dead_air.LOGGER.debug("PanelActivationStorage: no backup file at {}", file);
+                return;
+            }
             try (java.io.InputStream in = Files.newInputStream(file)) {
                 CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
                 int count = storage.replaceFromNbt(nbt);
-                Dead_air.LOGGER.info("PanelActivationStorage: loaded {} activated panels from backup (source of truth)", count);
+                Dead_air.LOGGER.info("PanelActivationStorage: loaded {} activated panels from backup at {}", count, file);
             }
         } catch (IOException e) {
             Dead_air.LOGGER.debug("PanelActivationStorage: no backup or read failed: {}", e.getMessage());
@@ -198,21 +311,42 @@ public class PanelActivationStorage extends SavedData {
         return getInternal(level, false);
     }
 
+    @SuppressWarnings("DeadCode") // defensive null checks for edge cases (shutdown, etc.)
     private static PanelActivationStorage getInternal(ServerLevel level, boolean skipIfShutdown) {
         try {
-            if (level == null) return null;
-            if (skipIfShutdown && Dead_air.isShutdownRequested()) return null;
+            if (level == null) {
+                Dead_air.LOGGER.debug("PanelActivationStorage.get: level is null");
+                return null;
+            }
+            if (skipIfShutdown && Dead_air.isShutdownRequested()) {
+                Dead_air.LOGGER.debug("PanelActivationStorage.get: shutdown requested");
+                return null;
+            }
             var server = level.getServer();
-            if (server != null && (server.isStopped() || !server.isRunning())) return null;
+            if (server == null) {
+                Dead_air.LOGGER.debug("PanelActivationStorage.get: server is null");
+                return null;
+            }
+            if (skipIfShutdown && (server.isStopped() || !server.isRunning())) {
+                Dead_air.LOGGER.debug("PanelActivationStorage.get: server stopped or not running");
+                return null;
+            }
             ServerLevel overworld = server.overworld();
-            if (overworld == null) return null;
+            if (overworld == null) {
+                Dead_air.LOGGER.debug("PanelActivationStorage.get: overworld is null");
+                return null;
+            }
             var dataStorage = overworld.getDataStorage();
-            if (dataStorage == null) return null;
+            if (dataStorage == null) {
+                Dead_air.LOGGER.debug("PanelActivationStorage.get: dataStorage is null");
+                return null;
+            }
             PanelActivationStorage storage = dataStorage.computeIfAbsent(
                 PanelActivationStorage::load,
                 PanelActivationStorage::new,
                 getDataName()
             );
+            if (storage != null) storage.mergeFromBackupCache(level.dimension());
             return storage;
         } catch (Exception e) {
             Dead_air.LOGGER.warn("Panel activation storage get failed: {}", e.getMessage());

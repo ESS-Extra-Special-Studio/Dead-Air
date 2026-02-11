@@ -91,6 +91,36 @@ public class MusicStationManager {
                 Dead_air.LOGGER.info("Station {} had no tracks - using {} fallback tracks", entry.getKey(), FALLBACK_TRACKS.size());
             }
         }
+
+        // Log track count per station for debugging
+        for (var entry : STATION_TRACKS.entrySet()) {
+            int count = entry.getValue() != null ? entry.getValue().size() : 0;
+            Dead_air.LOGGER.info("[Dead Air MUSIC] Station {} has {} tracks", entry.getKey(), count);
+        }
+    }
+
+    /**
+     * Get the track ID currently at the "current" index (for "now playing" display).
+     * Call after getNextTrack was used to create a sound to get the track that is now playing.
+     */
+    public static ResourceLocation getCurrentTrackId(ResourceLocation stationId) {
+        List<ResourceLocation> tracks = getTracksForStation(stationId);
+        if (tracks.isEmpty()) return null;
+        int idx = CURRENT_TRACK_INDEX.getOrDefault(stationId, 0);
+        return tracks.get(idx % tracks.size());
+    }
+
+    /**
+     * Format a track ID for display (e.g. "music_disc.13" -> "Music Disc 13").
+     */
+    public static String formatTrackDisplayName(ResourceLocation trackId) {
+        if (trackId == null) return "?";
+        String path = trackId.getPath().replace("_", " ");
+        if (path.isEmpty()) return "?";
+        if (path.startsWith("music disc")) return path;
+        if (path.startsWith("music.")) return path.substring(6).replace("_", " ");
+        if (path.contains(".")) path = path.substring(path.lastIndexOf('.') + 1);
+        return path.substring(0, 1).toUpperCase() + path.substring(1);
     }
     
     /**
