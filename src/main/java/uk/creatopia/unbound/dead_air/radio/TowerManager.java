@@ -1,0 +1,395 @@
+package uk.creatopia.unbound.dead_air.radio;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import uk.creatopia.unbound.dead_air.Dead_air;
+import uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Manages all radio towers in the game world.
+ */
+@SuppressWarnings("null")
+public class TowerManager {
+    private static final Map<ResourceKey<Level>, Map<BlockPos, RadioTower>> TOWERS_BY_DIMENSION = new ConcurrentHashMap<>();
+    private static final Map<ResourceKey<Level>, List<RadioTower>> TOWERS_LIST = new ConcurrentHashMap<>();
+    
+    /**
+     * Register a new Apocalypse Structures radio tower.
+     * Power state is determined by tower type:
+     * - STANDARD: Always broadcasting
+     * - FENCED: 20% start broadcasting, 80% need activation
+     * - OVERRUN: Always need activation
+     */
+    public static void registerTower(ServerLevel level, BlockPos pos, RadioStation station, 
+                                    uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType towerType) {
+        ResourceKey<Level> dimension = level.dimension();
+        
+        // Check if tower is already registered - if so, update its power state based on panel activation
+        if (isTowerRegistered(level, pos)) {
+            RadioTower existingTower = TOWERS_BY_DIMENSION.get(dimension).get(pos);
+            if (existingTower != null) {
+                // Update power state based on Radio Panel activation (for world load persistence)
+                // This ensures towers stay activated after world reload
+                BlockPos radioPanelPos = existingTower.getRadioPanelPos();
+                if (radioPanelPos != null) {
+                    boolean panelActivated = uk.creatopia.unbound.dead_air.tower.RadioPanelManager.isPanelActivated(level, radioPanelPos);
+                    
+                    // Update power state based on tower type and panel activation
+                    switch (towerType) {
+                        case STANDARD:
+                            existingTower.setPowered(true); // Always on
+                            break;
+                        case FENCED:
+                            // Fenced: on if panel activated OR if it started powered
+                            if (panelActivated) {
+                                existingTower.setPowered(true);
+                            } else if (existingTower.isPowered()) {
+                                // If currently powered but panel not activated, it must have started powered
+                                existingTower.setPowered(true); // Keep it on
+                            } else {
+                                existingTower.setPowered(false);
+                            }
+                            break;
+                        case OVERRUN:
+                            // Overrun: only on if panel activated
+                            existingTower.setPowered(panelActivated);
+                            break;
+                        default:
+                            // Player-built: only on if panel activated
+                            existingTower.setPowered(panelActivated);
+                            break;
+                    }
+                    
+                    Dead_air.LOGGER.info("Updated existing tower at {} power state to {} (panel activated: {})", 
+                        pos, existingTower.isPowered(), panelActivated);
+                }
+                return; // Tower already registered, just updated power state
+            }
+        }
+        
+        // Check minimum spacing
+        if (!canPlaceTower(level, pos, station)) {
+            Dead_air.LOGGER.warn("Cannot place tower at {} - too close to another tower of the same station type", pos);
+            return;
+        }
+        
+        // Find associated Radio Panel (pos might already be the Radio Panel position)
+        BlockPos radioPanelPos = uk.creatopia.unbound.dead_air.tower.ApocalypseTowerDetector.findRadioPanel(level, pos);
+        if (radioPanelPos == null && uk.creatopia.unbound.dead_air.tower.ApocalypseTowerDetector.isRadioPanel(level, pos)) {
+            // pos is the Radio Panel itself
+            radioPanelPos = pos;
+        }
+        
+        RadioTower tower = new RadioTower(pos, dimension, station, towerType, radioPanelPos, true); // Official tower
+        
+        // Set power state based on tower type
+        // STANDARD towers are ALWAYS on (set in constructor, but ensure it stays true)
+        if (towerType == uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType.STANDARD) {
+            tower.setPowered(true); // Standard towers always broadcast
+        } else {
+            // For OVERRUN and FENCED towers, check if Radio Panel is already activated (for world load persistence)
+            // This ensures towers that were activated stay on after world reload
+            if (radioPanelPos != null) {
+                boolean panelActivated = uk.creatopia.unbound.dead_air.tower.RadioPanelManager.isPanelActivated(level, radioPanelPos);
+                
+                if (panelActivated) {
+                    if (towerType == uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType.OVERRUN) {
+                        // Overrun towers: only on if panel is activated
+                        tower.setPowered(true);
+                    } else if (towerType == uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType.FENCED) {
+                        // Fenced towers: on if panel is activated OR if it started powered
+                        // If panel is activated, definitely on
+                        tower.setPowered(true);
+                    }
+                }
+            }
+        }
+        
+        TOWERS_BY_DIMENSION.computeIfAbsent(dimension, k -> new ConcurrentHashMap<>()).put(pos, tower);
+        TOWERS_LIST.computeIfAbsent(dimension, k -> new ArrayList<>()).add(tower);
+        
+        String powerStatus = tower.isPowered() ? "broadcasting" : "needs activation";
+        Dead_air.LOGGER.info("Registered {} tower at {} for station {} - {} (panel activated: {})", 
+            towerType, pos, station.getName(), powerStatus, 
+            radioPanelPos != null ? uk.creatopia.unbound.dead_air.tower.RadioPanelManager.isPanelActivated(level, radioPanelPos) : "N/A");
+    }
+    
+    /**
+     * Register a player-built tower (Radio Panel placed by player).
+     * Player-built towers can broadcast any station the player chooses.
+     * They always start off and need activation via the Radio Panel.
+     */
+    public static void registerPlayerTower(ServerLevel level, BlockPos panelPos, RadioStation station) {
+        ResourceKey<Level> dimension = level.dimension();
+        
+        // Check if already registered
+        if (isTowerRegistered(level, panelPos)) {
+            return;
+        }
+        
+        // Check minimum spacing
+        if (!canPlaceTower(level, panelPos, station)) {
+            Dead_air.LOGGER.warn("Cannot place player tower at {} - too close to another tower of the same station type", panelPos);
+            return;
+        }
+        
+        // Player-built towers use UNKNOWN type and are not official
+        RadioTower tower = new RadioTower(panelPos, dimension, station, 
+            uk.creatopia.unbound.dead_air.tower.ApocalypseTowerType.UNKNOWN, panelPos, false);
+        
+        // Player-built towers always start off (need activation)
+        tower.setPowered(false);
+        
+        TOWERS_BY_DIMENSION.computeIfAbsent(dimension, k -> new ConcurrentHashMap<>()).put(panelPos, tower);
+        TOWERS_LIST.computeIfAbsent(dimension, k -> new ArrayList<>()).add(tower);
+        
+        Dead_air.LOGGER.info("Registered player-built tower at {} for station {} - needs activation", 
+            panelPos, station.getName());
+    }
+    
+    /**
+     * Remove a radio tower.
+     */
+    public static void removeTower(Level level, BlockPos pos) {
+        ResourceKey<Level> dimension = level.dimension();
+        
+        Map<BlockPos, RadioTower> towers = TOWERS_BY_DIMENSION.get(dimension);
+        if (towers != null) {
+            towers.remove(pos);
+            List<RadioTower> towerList = TOWERS_LIST.get(dimension);
+            if (towerList != null) {
+                towerList.removeIf(t -> t.getPosition().equals(pos));
+            }
+        }
+    }
+    
+    /**
+     * Check if a tower can be placed at the given position (respects minimum spacing).
+     */
+    public static boolean canPlaceTower(Level level, BlockPos pos, RadioStation station) {
+        ResourceKey<Level> dimension = level.dimension();
+        List<RadioTower> existingTowers = TOWERS_LIST.get(dimension);
+        
+        if (existingTowers == null || existingTowers.isEmpty()) {
+            return true;
+        }
+        
+        int minSpacing = station.getMinTowerSpacing();
+        Vec3 newPos = Vec3.atCenterOf(pos);
+        
+        for (RadioTower tower : existingTowers) {
+            if (tower.getStation().getId().equals(station.getId())) {
+                double distance = tower.getDistanceTo(newPos);
+                if (distance < minSpacing) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Get all towers in range of a position.
+     */
+    public static List<RadioTower> getTowersInRange(Level level, Vec3 pos) {
+        ResourceKey<Level> dimension = level.dimension();
+        List<RadioTower> towers = TOWERS_LIST.get(dimension);
+        
+        if (towers == null || towers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // Copy before iterating: client and server share this map in singleplayer;
+        // iterating while server may add causes CME or stale reads.
+        List<RadioTower> snapshot = new ArrayList<>(towers);
+        List<RadioTower> inRange = new ArrayList<>();
+        for (RadioTower tower : snapshot) {
+            if (tower != null && tower.isInRange(pos)) {
+                inRange.add(tower);
+            }
+        }
+        return inRange;
+    }
+    
+    /**
+     * Get the best signal tower for a given position and station.
+     */
+    public static RadioTower getBestTower(Level level, Vec3 pos, RadioStation station) {
+        if (level == null || pos == null || station == null) {
+            return null;
+        }
+        
+        List<RadioTower> towers = getTowersInRange(level, pos);
+        if (towers == null || towers.isEmpty()) {
+            return null;
+        }
+        
+        RadioTower bestTower = null;
+        float bestSignal = 0.0f;
+        
+        for (RadioTower tower : towers) {
+            if (tower != null && tower.getStation() != null && 
+                tower.getStation().getId().equals(station.getId()) && tower.isPowered()) {
+                try {
+                    float signal = SignalStrength.getFinalSignalStrength(level, tower, pos);
+                    if (signal > bestSignal) {
+                        bestSignal = signal;
+                        bestTower = tower;
+                    }
+                } catch (Exception e) {
+                    Dead_air.LOGGER.warn("Error calculating signal strength for tower at {}", tower.getPosition(), e);
+                }
+            }
+        }
+        
+        return bestTower;
+    }
+    
+    /**
+     * Update tower power states (called periodically).
+     * Power is determined by tower type and Radio Panel activation:
+     * - STANDARD: Always on
+     * - FENCED: On if Radio Panel is activated (or started powered)
+     * - OVERRUN: On only if Radio Panel is activated
+     */
+    public static void updateTowerPower(ServerLevel level) {
+        ResourceKey<Level> dimension = level.dimension();
+        List<RadioTower> towers = TOWERS_LIST.get(dimension);
+        
+        if (towers == null) {
+            return;
+        }
+        
+        long currentTick = level.getGameTime();
+        
+        for (RadioTower tower : towers) {
+            if (tower.shouldCheckPower(currentTick)) {
+                boolean powered = false;
+                
+                switch (tower.getTowerType()) {
+                    case STANDARD:
+                        // Standard towers always broadcast
+                        powered = true;
+                        break;
+                        
+                    case FENCED:
+                        // Fenced towers: check if started powered OR Radio Panel is activated
+                        // First check if it started powered (stored in initial state)
+                        // We need to track if it started powered - for now, check if panel is activated
+                        // OR if the tower was initially powered (we'll check the initial state)
+                        if (tower.getRadioPanelPos() != null) {
+                            // Check Radio Panel activation
+                            powered = uk.creatopia.unbound.dead_air.tower.RadioPanelManager.isPanelActivated(
+                                level, tower.getRadioPanelPos());
+                            // Also check if tower started powered (20% chance)
+                            // If tower is currently powered and panel is not activated, it must have started powered
+                            if (!powered && tower.isPowered()) {
+                                // Tower started powered, keep it on
+                                powered = true;
+                            }
+                        } else {
+                            // No panel found, but tower exists - assume it started powered if currently powered
+                            powered = tower.isPowered();
+                        }
+                        break;
+                        
+                    case OVERRUN:
+                        // Overrun towers: only on if Radio Panel is activated
+                        if (tower.getRadioPanelPos() != null) {
+                            powered = uk.creatopia.unbound.dead_air.tower.RadioPanelManager.isPanelActivated(
+                                level, tower.getRadioPanelPos());
+                        }
+                        break;
+                        
+                    default:
+                        powered = false;
+                }
+                
+                tower.setPowered(powered);
+                tower.updatePowerCheck(currentTick);
+            }
+        }
+    }
+    
+    /**
+     * Get all towers for a specific station.
+     */
+    public static List<RadioTower> getTowersForStation(Level level, RadioStation station) {
+        ResourceKey<Level> dimension = level.dimension();
+        List<RadioTower> towers = TOWERS_LIST.get(dimension);
+        
+        if (towers == null || towers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<RadioTower> snapshot = new ArrayList<>(towers);
+        return snapshot.stream()
+            .filter(t -> t != null && t.getStation() != null && t.getStation().getId().equals(station.getId()))
+            .toList();
+    }
+    
+    /**
+     * Check if a tower is already registered at the given position.
+     * Used to prevent duplicate registrations when scanning existing worlds.
+     */
+    public static boolean isTowerRegistered(Level level, BlockPos pos) {
+        ResourceKey<Level> dimension = level.dimension();
+        Map<BlockPos, RadioTower> towers = TOWERS_BY_DIMENSION.get(dimension);
+        
+        if (towers == null) {
+            return false;
+        }
+        
+        return towers.containsKey(pos);
+    }
+    
+    /**
+     * Get all towers in a dimension.
+     */
+    public static List<RadioTower> getAllTowers(Level level) {
+        ResourceKey<Level> dimension = level.dimension();
+        List<RadioTower> towers = TOWERS_LIST.get(dimension);
+        
+        if (towers == null || towers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(towers);
+    }
+    
+    /**
+     * Determine which station a tower should broadcast based on tower type.
+     */
+    public static RadioStation determineStationForTower(ServerLevel level, BlockPos pos, ApocalypseTowerType towerType) {
+        Random random = new Random(pos.asLong()); // Use pos hash for deterministic randomness
+
+        // Emergency Broadcast can be assigned to any tower, no longer restricted to one
+        RadioStation emergencyStation = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
+        if (emergencyStation != null && random.nextDouble() < 0.1) { // 10% chance for emergency broadcast
+            return emergencyStation;
+        }
+
+        List<RadioStation> musicStations = StationRegistry.getStationsByType(RadioStation.StationType.MUSIC);
+        if (musicStations.isEmpty()) {
+            return emergencyStation; // Fallback
+        }
+
+        // Specific chances for certain tower types
+        if (towerType == ApocalypseTowerType.STANDARD) {
+            if (random.nextDouble() < 0.6) { // 60% chance for Bedrock Radio
+                return StationRegistry.getStation(StationRegistry.BEDROCK_RADIO_ID);
+            }
+        } else if (towerType == ApocalypseTowerType.OVERRUN) {
+            if (random.nextDouble() < 0.6) { // 60% chance for Zombiecraft Radio
+                return StationRegistry.getStation(StationRegistry.ZOMBIECRAFT_RADIO_ID);
+            }
+        }
+
+        // Otherwise, pick a random music station
+        return musicStations.get(random.nextInt(musicStations.size()));
+    }
+}
