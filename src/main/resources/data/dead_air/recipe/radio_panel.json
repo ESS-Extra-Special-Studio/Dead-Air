@@ -1,0 +1,29 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "radiotowers"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "category": "misc",
+        "pattern": [
+          "ICI",
+          "ETE",
+          "ICI"
+        ],
+        "key": {
+          "I": { "item": "minecraft:iron_ingot" },
+          "C": { "item": "dead_air:resonant_chord" },
+          "E": { "item": "minecraft:echo_shard" },
+          "T": { "item": "dead_air:walkie_t1" }
+        },
+        "result": { "id": "radiotowers:radio_panel", "count": 1 }
+      }
+    }
+  ]
+}

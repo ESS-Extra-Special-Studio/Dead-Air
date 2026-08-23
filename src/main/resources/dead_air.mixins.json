@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "uk.co.extraspecialstudio.dead_air.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["PlayerMixin"],
+  "client": ["MusicManagerMixin", "SoundManagerMixin", "SoundEngineMixin", "ChannelMixin"],
+  "injectors": { "defaultRequire": 1 },
+  "overwrites": { "requireAnnotations": true }
+}

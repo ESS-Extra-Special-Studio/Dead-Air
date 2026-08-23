@@ -1,0 +1,123 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+tasks.named('jar', Jar).configure {
+    archiveFileName = "${mod_id}-${version}+${minecraft_version}-neoforge.jar"
+    from('CHANGELOG.md') {
+        into '.'
+    }
+    from {
+        zipTree(file('libs/jlayer-relocated-for-dead-air.jar'))
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    maven {
+        name = 'GeckoLib'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
+    maven { url = 'https://maven.minecraftforge.net/' }
+}
+
+neoForge {
+    version = project.neo_version
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+dependencies {
+    implementation "uk.co.extraspecialstudio:extraspeciallib:${esl_version}"
+    implementation "uk.co.extraspecialstudio:extraspecialcore:${esc_version}"
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    compileOnly files('libs/jlayer-relocated-for-dead-air.jar')
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            esc_version_range      : esc_version_range,
+            esl_version_range      : esl_version_range
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    filteringCharset = 'UTF-8'
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.register('copyToNeoForgeTestPack') {
+    dependsOn 'jar'
+    doLast {
+        def jar = tasks.named('jar', Jar).get().archiveFile.get().asFile
+        def dest = file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/NEOFORGE 1.21.1 TESTS/mods")
+        if (dest.exists()) {
+            dest.listFiles({ f -> f.name.startsWith('dead_air-') && f.name.endsWith('.jar') && !f.name.startsWith('dead_air_') } as FileFilter)?.each { it.delete() }
+            copy { from jar; into dest }
+            println "Copied ${jar.name} to ${dest}"
+        } else {
+            println "NeoForge test pack mods folder not found: ${dest}"
+        }
+    }
+}
+
+tasks.named('build').configure { finalizedBy 'copyToNeoForgeTestPack' }
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

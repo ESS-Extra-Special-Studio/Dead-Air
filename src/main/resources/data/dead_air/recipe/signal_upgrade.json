@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GIG",
+    "IRI",
+    "GIG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_ingot" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "R": { "item": "dead_air:dimensional_relay" }
+  },
+  "result": { "id": "dead_air:signal_upgrade", "count": 1 }
+}
