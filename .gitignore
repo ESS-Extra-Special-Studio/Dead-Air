@@ -117,3 +117,23 @@ runs/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Dead Air custom music pack cache (generated at runtime)
+custom_music/.pack_cache/
+
+# Local / agent clutter — do not publish
+.cursor/
+backup-*/
+*_extract/
+walkietalkie_extract/
+zombiecraft_extract/
+berezka_api_jar_inspect/
+decompiled_output/
+_mc_font_inspect/
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE.md
+!LICENSE
+!src/**/*.md

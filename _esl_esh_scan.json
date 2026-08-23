@@ -1,0 +1,327 @@
+﻿[
+    {
+        "Folder":  "Aegis Accord",
+        "ModId":  "aegis_accord",
+        "DisplayName":  "Aegis Accord",
+        "Desc":  {
+                     "value":  "A combat ally protection mod for Minecraft 1.20.1 that prevents friendly fire and provides intelligent target selection.",
+                     "PSPath":  "C:\\Users\\Ksivi\\IdeaProjects\\Aegis Accord\\README.md",
+                     "PSParentPath":  "C:\\Users\\Ksivi\\IdeaProjects\\Aegis Accord",
+                     "PSChildName":  "README.md",
+                     "PSDrive":  {
+                                     "CurrentLocation":  "Users\\Ksivi\\IdeaProjects\\Dead Air",
+                                     "Name":  "C",
+                                     "Provider":  "Microsoft.PowerShell.Core\\FileSystem",
+                                     "Root":  "C:\\",
+                                     "Description":  "",
+                                     "MaximumSize":  null,
+                                     "Credential":  "System.Management.Automation.PSCredential",
+                                     "DisplayRoot":  null
+                                 },
+                     "PSProvider":  {
+                                        "ImplementingType":  "Microsoft.PowerShell.Commands.FileSystemProvider",
+                                        "HelpFile":  "System.Management.Automation.dll-Help.xml",
+                                        "Name":  "FileSystem",
+                                        "PSSnapIn":  "Microsoft.PowerShell.Core",
+                                        "ModuleName":  "Microsoft.PowerShell.Core",
+                                        "Module":  null,
+                                        "Description":  "",
+                                        "Capabilities":  52,
+                                        "Home":  "C:\\Users\\Ksivi",
+                                        "Drives":  "C D"
+                                    },
+                     "ReadCount":  3
+                 },
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "AWE - Apocalyptic World Engine",
+        "ModId":  "apocalyptic_world_engine",
+        "DisplayName":  "Apocalyptic World Engine",
+        "Desc":  "Structure and chunk-gen orchestrator for apocalypse map-making. Coordinates Lost Cities, RoadWeaver, and structure mods so roads and buildings play nicely. One-click world presets, configurable structure limits, and road-first or structure-first placement.",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Calm The Leaks CTL",
+        "ModId":  "calmtheleaks",
+        "DisplayName":  "Calm The Leaks",
+        "Desc":  "Calm The Leaks (CTL) is a Forge server-side helper mod that filters, contextualizes, and rate-limits AllTheLeaks output, distinguishing harmless baseline chunk retention from real memory leaks so admins stop panicking over noise.",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Calm The Leaks CTL - 1.21.1 NeoForge",
+        "ModId":  "calmtheleaks",
+        "DisplayName":  "Calm The Leaks",
+        "Desc":  "Calm The Leaks (CTL) is a NeoForge companion mod for AllTheLeaks that filters, contextualizes, and rate-limits leak output. Press F8 or /ctl panel for the diagnostics GUI; /ctl status, leaks, explain, and narrow support leak triage.",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air",
+        "ModId":  "dead_air",
+        "DisplayName":  "Dead Air",
+        "Desc":  "Extra Special Studio presents Dead Air: radio towers become station nodes you tune with T1/T2 radios \u0026 cross-dim Link. Collect notes, craft upgrades \u0026 panels. Requires RadioTowers, GeckoLib \u0026 ESC.",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air - Beat Blocks",
+        "ModId":  "dead_air_block_beats_fm",
+        "DisplayName":  "Dead Air - Block Beats FM",
+        "Desc":  "A Dead Air radio expansion with hip-hop / block-beats tracks for Block Beats FM. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air - Broken Youth Radio",
+        "ModId":  "dead_air_broken_youth_radio",
+        "DisplayName":  "Dead Air - Broken Youth Radio",
+        "Desc":  "A Dead Air radio expansion with pop-punk tracks for Broken Youth Radio. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air - Frontline FM",
+        "ModId":  "dead_air_frontline_fm",
+        "DisplayName":  "Dead Air - Frontline FM",
+        "Desc":  "A Dead Air radio expansion with high-energy action and battle themes for Frontline FM. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air - Iron Rain FM",
+        "ModId":  "dead_air_iron_rain_fm",
+        "DisplayName":  "Dead Air - Iron Rain FM",
+        "Desc":  "A Dead Air radio expansion with metal tracks for Iron Rain FM. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air - Pip-Boy Radio Conversion",
+        "ModId":  "dead_air_pip_boy_radio_conversion",
+        "DisplayName":  "Dead Air - Pip-Boy Radio Conversion",
+        "Desc":  "Adds T1/T2 Pip-Boy radios. Requires Extra Special Core + GeckoLib. Dead Air is optional â€” RADIO tab asks you to install it when missing. Off-hand wrist equip, live LCD (with Dead Air), ESC-tabbed PipBoyScreen.",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air - Wayfarer Radio",
+        "ModId":  "dead_air_wayfarer_radio",
+        "DisplayName":  "Dead Air - Wayfarer Radio",
+        "Desc":  "A Dead Air radio expansion with RPG / adventure-style music for Wayfarer Radio. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air After Hours FM",
+        "ModId":  "dead_air_after_hours_fm",
+        "DisplayName":  "Dead Air - After Hours FM",
+        "Desc":  "A Dead Air radio expansion with 25 Lo-Fi and chillout tracks for After Hours FM. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Air Zero Gravity",
+        "ModId":  "dead_air_zero_gravity",
+        "DisplayName":  "Dead Air - Zero Gravity",
+        "Desc":  "A Dead Air radio expansion with 33 pop rock / indie pop tracks for Zero Gravity. Works standalone; Dead Air is recommended for in-game radio playback.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Dead Letters",
+        "ModId":  "dead_letters",
+        "DisplayName":  "Dead Letters",
+        "Desc":  null,
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Death-Detangler",
+        "ModId":  "death_detangler",
+        "DisplayName":  "Death Detangler",
+        "Desc":  "Master manager for death handling: fixes Hardcore Revival compatibility with Corpse, Gravestones, Curios. Ensures Curios/Artifacts/Cosmetic Armour work with or without corpse mods. Recognizes installed mods and coordinates accordingly.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "DeepHearth",
+        "ModId":  "deephearth",
+        "DisplayName":  "DeepHearth",
+        "Desc":  null,
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "DeepRealmsLIB",
+        "ModId":  "deeprealmslib",
+        "DisplayName":  "DeepRealmsLIB",
+        "Desc":  "Shared infrastructure library for underground realm dimensions. Provides realm registry, ring-based layout math, travel systems, and debug tools. Used by DeepHearth, DeepGrin, and future realm mods.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Evil Eye EvilCraft Addon",
+        "ModId":  "evil_eye_evilcraft_addon",
+        "DisplayName":  "Evil Eye EvilCraft Addon",
+        "Desc":  "This small addon completely overides the spawn mechanics of the vengeance spirits from evilcraft, so they only spawn in a radius around a player when they are wearing our evil eye item and kill a mob.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Evil Eye EvilCraft Addon - 1.21.1 NeoForge",
+        "ModId":  "evil_eye_evilcraft_addon",
+        "DisplayName":  "Evil Eye EvilCraft Addon",
+        "Desc":  "This small addon completely overides the spawn mechanics of the vengeance spirits from evilcraft, so they only spawn in a radius around a player when they are wearing our evil eye item and kill a mob.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Explainium",
+        "ModId":  "explainium",
+        "DisplayName":  "Explainium",
+        "Desc":  "Replaces Embeddium\u0027s generic taint warning with clear attribution: names each mod that taints Embeddium and which class it touches. Enables compatibility shims like SuppleFix to target specific mods (e.g. Supplementaries) without hiding taints from others.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "ExtraSpecialCore",
+        "ModId":  "extraspecialcore",
+        "DisplayName":  "ExtraSpecialCore",
+        "Desc":  "Shared UI and helper library for Extra Special Studio mods (ESC).",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "ExtraSpecialCore - 1.21.1 NeoForge",
+        "ModId":  "extraspecialcore",
+        "DisplayName":  "ExtraSpecialCore",
+        "Desc":  "Shared UI and helper library for Extra Special Studio mods (ESC).",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "ExtraSpecialHUB",
+        "ModId":  "extraspecialhub",
+        "DisplayName":  "ExtraSpecialHUB",
+        "Desc":  null,
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  true
+    },
+    {
+        "Folder":  "ExtraSpecialLIB",
+        "ModId":  "extraspeciallib",
+        "DisplayName":  "ExtraSpecialLIB",
+        "Desc":  null,
+        "UsesESC":  false,
+        "UsesESL":  true,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "hermes",
+        "ModId":  "hermes",
+        "DisplayName":  "Hermes",
+        "Desc":  "A re-imagination of the control panel",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Lootr Liason",
+        "ModId":  "lootr_liason",
+        "DisplayName":  "Lootr Liason",
+        "Desc":  "Stabilizes structure-generated containers with Lootr: finalization queue, single conversion, and Artifacts mimic gate. Prevents Lootr warnings and mimic timing bugs.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Lootr Liason - 1.20.1 Forge",
+        "ModId":  "lootr_liason",
+        "DisplayName":  "Lootr Liason",
+        "Desc":  "Stabilizes structure-generated containers with Lootr: finalization queue, single conversion, and Artifacts mimic gate. Prevents Lootr warnings and mimic timing bugs.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Not Actually AFK",
+        "ModId":  "not_actually_afk",
+        "DisplayName":  "Not Actually AFK",
+        "Desc":  "Prevents WATUT (What Are They Up To) from showing idle/AFK visuals for the local player while you are actively playing (controller via Controllable, or keyboard/mouse). Client-only, event-driven (no tick loop). Domain: extraspecialstudio.co.uk",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "Not Another Guide Book",
+        "ModId":  "not_another_guide_book",
+        "DisplayName":  "Not Another Guide Book",
+        "Desc":  "A Warfare Mod",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "PantheonAPI-Forge-Backup",
+        "ModId":  "pantheonapi",
+        "DisplayName":  "PantheonAPI",
+        "Desc":  "Not a mod that does one thing. It is a shared platform layer that other future Pantheon mods depend on.",
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "SuppleFix",
+        "ModId":  "supplefix",
+        "DisplayName":  "SuppleFix",
+        "Desc":  "A compatibility shim for Supplementaries with Embeddium. Requires Explainium. Suppresses Supplementaries\u0027 Embeddium taint warning (Renderer Peacekeeper manages FluidRenderer). Also patches Book Pile, dispenser conflicts, quiver safety, and other known crashy interactions.",
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "To-Do List",
+        "ModId":  "to_do_list",
+        "DisplayName":  "To-Do List",
+        "Desc":  null,
+        "UsesESC":  false,
+        "UsesESL":  false,
+        "UsesESH":  false
+    },
+    {
+        "Folder":  "radioos (RadioTowers)",
+        "ModId":  "radiotowers",
+        "DisplayName":  "RadioTowers",
+        "Desc":  null,
+        "UsesESC":  true,
+        "UsesESL":  false,
+        "UsesESH":  false
+    }
+]

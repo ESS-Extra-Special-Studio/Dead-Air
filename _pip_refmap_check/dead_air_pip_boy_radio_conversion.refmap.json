@@ -1,0 +1,20 @@
+{
+  "mappings": {
+    "uk/creatopia/unbound/dead_air_pip_boy_radio_conversion/mixin/PlayerRendererMixin": {
+      "renderLeftHand": "Lnet/minecraft/client/renderer/entity/player/PlayerRenderer;m_117813_(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;)V"
+    },
+    "uk/creatopia/unbound/dead_air_pip_boy_radio_conversion/mixin/ItemInHandLayerMixin": {
+      "renderArmWithItem": "Lnet/minecraft/client/renderer/entity/layers/ItemInHandLayer;m_117184_(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+    }
+  },
+  "data": {
+    "searge": {
+      "uk/creatopia/unbound/dead_air_pip_boy_radio_conversion/mixin/PlayerRendererMixin": {
+        "renderLeftHand": "Lnet/minecraft/client/renderer/entity/player/PlayerRenderer;m_117813_(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;)V"
+      },
+      "uk/creatopia/unbound/dead_air_pip_boy_radio_conversion/mixin/ItemInHandLayerMixin": {
+        "renderArmWithItem": "Lnet/minecraft/client/renderer/entity/layers/ItemInHandLayer;m_117184_(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
+      }
+    }
+  }
+}

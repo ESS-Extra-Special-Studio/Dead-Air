@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GRG",
+    "IWI",
+    "III"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_ingot" },
+    "R": { "item": "dead_air:dimensional_relay" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "W": { "item": "dead_air:walkie_t1" }
+  },
+  "result": { "item": "dead_air:walkie_t2", "count": 1 }
+}

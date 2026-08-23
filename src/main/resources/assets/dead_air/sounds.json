@@ -1,0 +1,31 @@
+{
+  "static": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "dead_air:static",
+        "stream": true
+      }
+    ]
+  },
+  "music.round_1": {
+    "category": "music",
+    "sounds": [{ "name": "dead_air:music/round_1", "stream": true }]
+  },
+  "music.slime_island": {
+    "category": "music",
+    "sounds": [{ "name": "dead_air:music/slime_island", "stream": true }]
+  },
+  "music.mineshaft": {
+    "category": "music",
+    "sounds": [{ "name": "dead_air:music/mineshaft", "stream": true }]
+  },
+  "music.fire_in_the_static": {
+    "category": "music",
+    "sounds": [{ "name": "dead_air:music/fire_in_the_static", "stream": true }]
+  },
+  "music.copper_age": {
+    "category": "music",
+    "sounds": [{ "name": "dead_air:music/copper_age", "stream": true }]
+  }
+}

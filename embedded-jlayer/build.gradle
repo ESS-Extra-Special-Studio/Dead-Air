@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // soundlibs jlayer wrongly pulls junit as runtime; bundling it causes JPMS duplicate exports with other mods (e.g. mts).
+    implementation('com.googlecode.soundlibs:jlayer:1.0.1-1') {
+        exclude group: 'junit', module: 'junit'
+    }
+}
+
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
+    archiveFileName = 'jlayer-relocated-for-dead-air.jar'
+    configurations = [project.configurations.runtimeClasspath]
+    relocate 'javazoom.jl', 'uk.co.extraspecialstudio.dead_air.repack.javazoom.jl'
+    mergeServiceFiles()
+    exclude 'junit/**'
+}
+
+jar {
+    enabled = false
+}
+
+tasks.named('assemble').configure {
+    dependsOn tasks.named('shadowJar')
+}

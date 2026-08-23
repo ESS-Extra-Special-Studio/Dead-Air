@@ -3,6 +3,17 @@
 # The overall format is standard TOML format, v0.5.0.
 # Note that there are a couple of TOML lists in this file.
 # Find more information on toml format here:  https://github.com/toml-lang/toml
+#
+# Dead Air dependencies:
+#   forge                     Forge loader           (required)
+#   minecraft                 Minecraft              (required)
+#   extraspecialcore          Extra Special Core     (required)
+#   geckolib                  GeckoLib (walkie models) (required)
+#   radiotowers               Apocalypse RadioTowers (required)
+#   voicechat                 Simple Voice Chat      (optional; voice UI cosmetic)
+#   berezkas_zombie_waves_api Zombie Waves API       (optional integration)
+#   berezka_api               Berezka Library        (optional integration)
+#   tacz                      Timeless and Classics  (optional airdrop catalog)
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader = "javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
@@ -23,7 +34,7 @@ displayName = "${mod_name}" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.minecraftforge.net/en/latest/misc/updatechecker/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL = "https://unbound.creatopia.uk" #optional
+displayURL = "https://extraspecialstudio.co.uk" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="dead_air.png" #optional
 # A text field displayed in the mod UI
@@ -64,55 +75,56 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-# Required - Apocalypse Structures: Radio Towers and Airdrops (MCreator, no libs)
-# Mod ID: radiotowers. Exactly 3 structures (registry): radiotower, radiotower_2, radiotoweroverrun. Impostors: radiotoweroverrunloot (loot table), radiotowers (creative tab).
+[[dependencies."${mod_id}"]]
+modId = "extraspecialcore"
+mandatory = true
+versionRange = "${esc_version_range}"
+ordering = "AFTER"
+side = "BOTH"
+
+# Optional - Simple Voice Chat (Walkie tab voice UI is cosmetic without it)
+[[dependencies."${mod_id}"]]
+modId = "voicechat"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+# Required - GeckoLib (animated Dead Air walkie models)
+[[dependencies."${mod_id}"]]
+modId = "geckolib"
+mandatory = true
+versionRange = "[4.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+# Required - Apocalypse Structures: Radio Towers and Airdrops (radiotowers). Dead Air loads BEFORE to avoid mod-sort cycle.
 [[dependencies."${mod_id}"]]
 modId = "radiotowers"
 mandatory = true
 versionRange = "[1.0,)"
-ordering = "AFTER"
+ordering = "BEFORE"
 side = "BOTH"
 
-# Hard Dependencies - Walkie-Talkie Mod
-# Note: The mod supports multiple walkie-talkie mod implementations with fallback detection
-# Primary implementation (mandatory per design brief)
-# Compatible with any version of walkietalkie mod for MC 1.20.1
+# Optional: Zombie Waves API – enhances airdrops/zombie behavior when present
 [[dependencies."${mod_id}"]]
-modId = "walkietalkie"
-mandatory = true
-versionRange = "[1.0,)"
-ordering = "AFTER"
-side = "BOTH"
-
-# Alternative walkie-talkie mod IDs (optional fallbacks if primary not available)
-# These are listed as optional since the code has fallback detection mechanisms
-[[dependencies."${mod_id}"]]
-modId = "radio"
+modId = "berezkas_zombie_waves_api"
 mandatory = false
 versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
+# Optional: Berezka Library (dependency of Zombie Waves API when present)
 [[dependencies."${mod_id}"]]
-modId = "walkie_talkie"
+modId = "berezka_api"
 mandatory = false
 versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
-# Optional Dependencies - Immersive Engineering (for power integration)
-# Compatible with any version of Immersive Engineering for MC 1.20.1
+# Optional: TaCZ (Timeless and Classics Zero Guns) – guns/ammo in airdrop catalog when present
 [[dependencies."${mod_id}"]]
-modId = "immersiveengineering"
-mandatory = false
-versionRange = "[1.0,)"
-ordering = "AFTER"
-side = "BOTH"
-
-# Optional Dependencies - Thermal Series (for alternative power sources)
-# Compatible with any version of Thermal mods for MC 1.20.1
-[[dependencies."${mod_id}"]]
-modId = "thermal"
+modId = "tacz"
 mandatory = false
 versionRange = "[1.0,)"
 ordering = "AFTER"

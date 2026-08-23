@@ -2,6 +2,9 @@
 
 This guide explains how to add custom music stations and tracks to the Dead Air mod.
 
+> **Building an official Dead Air soundtrack expansion JAR?**  
+> Use [EXPANSION_MOD_GUIDE.md](EXPANSION_MOD_GUIDE.md) instead (versioning, client-only metadata, walkie naming, Dead Air override checklist).
+
 ## Overview
 
 The Dead Air mod is built with extensibility in mind. You can add custom stations and music tracks through:
@@ -16,7 +19,7 @@ The Dead Air mod is built with extensibility in mind. You can add custom station
 The simplest way to add stations is through the `DeadAirAPI` class:
 
 ```java
-import uk.creatopia.unbound.dead_air.api.DeadAirAPI;
+import uk.co.extraspecialstudio.dead_air.api.DeadAirAPI;
 import net.minecraft.resources.ResourceLocation;
 import java.util.Arrays;
 

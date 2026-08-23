@@ -1,0 +1,7 @@
+{
+  "music.custom.forest_ambiance": {"category":"music","sounds":[{"name":"dead_air:music/custom/forest_ambiance","stream":true}]},
+  "music.custom.ive_got_a_ho-_hold_on_": {"category":"music","sounds":[{"name":"dead_air:music/custom/ive_got_a_ho-_hold_on_","stream":true}]},
+  "music.custom.pear_with_legs": {"category":"music","sounds":[{"name":"dead_air:music/custom/pear_with_legs","stream":true}]},
+  "music.custom.swiping_away_on_my_phone_": {"category":"music","sounds":[{"name":"dead_air:music/custom/swiping_away_on_my_phone_","stream":true}]},
+  "music.custom.we_do_a_little_trolling": {"category":"music","sounds":[{"name":"dead_air:music/custom/we_do_a_little_trolling","stream":true}]}
+}

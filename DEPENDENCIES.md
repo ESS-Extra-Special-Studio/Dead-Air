@@ -1,96 +1,53 @@
-# Dead Air Mod - Required Dependencies for Test Modpack
+# Dead Air – Dependencies
 
-## Minecraft & Forge Version
-- **Minecraft**: 1.20.1
-- **Forge**: 47.4.0 or higher (47.4.x series)
-- **Loader Version Range**: [47,)
+## Minecraft & Forge
 
-## Hard Dependencies (Required)
+- **Minecraft:** 1.20.1  
+- **Forge:** 47.4.0 or higher (47.4.x)  
+- **Loader version range:** [47,)
 
-### 1. Apocalypse Structures: Radio Towers and Airdrops
-- **Mod ID**: Any mod that adds radio tower blocks (dynamically detected)
-- **Version**: Any version for MC 1.20.1
-- **Purpose**: Provides radio tower structures and airdrop events
-- **CurseForge**: Search for "Apocalypse Structures" or "Apocalypse Rebooted" for MC 1.20.1
-- **Required**: NO - The mod will automatically detect radio tower blocks from any installed mod
-- **Note**: The mod dynamically scans for blocks matching radio tower patterns, so it works with any mod that adds radio towers
+---
 
-### 2. Walkie-Talkie Mod
-- **Mod ID**: `walkietalkie` (primary)
-- **Alternative IDs**: `radio`, `walkie_talkie` (fallback support)
-- **Version**: Any version for MC 1.20.1
-- **Purpose**: Provides the walkie-talkie item for tuning stations
-- **CurseForge**: Search for "Walkie Talkie" mod for MC 1.20.1
-- **Required**: YES - Mod will not function without this
-- **Note**: Mod has fallback detection, but primary mod ID `walkietalkie` is recommended
-- **GUI**: Dead Air overrides right-click on the walkie to open its own GUI (Radio + Walkie tabs). Use the **Walkie** tab for channel, voice, and radio on/off. To avoid turning music on/off by accident when pressing the walkie mod's key (e.g. B) to talk, set that key to **voice chat only** in the walkie mod's controls if the option exists; use the Dead Air GUI to toggle **Radio** on/off.
+## Required
 
-## Optional Dependencies (Recommended but not Required)
+### Apocalypse Structures: Radio Towers and Airdrops
 
-### 3. Immersive Engineering
-- **Mod ID**: `immersiveengineering`
-- **Version**: Any version for MC 1.20.1
-- **Purpose**: Provides generators and cables for powering radio towers
-- **CurseForge**: Search for "Immersive Engineering" for MC 1.20.1
-- **Required**: NO - Towers can use any FE-compatible power source
+- **Mod ID / JAR:** e.g. `radiotowers-*.jar`  
+- **Author:** That1LilGuy  
+- **Purpose:** Radio tower structures and Radio Panel blocks.  
+- **Required:** **Yes.**
 
-### 4. Thermal Series
-- **Mod ID**: `thermal`
-- **Version**: Any version for MC 1.20.1
-- **Purpose**: Alternative power sources for radio towers
-- **CurseForge**: Search for "Thermal" mods for MC 1.20.1
-- **Required**: NO - Towers can use any FE-compatible power source
+### ExtraSpecialCore (ESC)
 
-## Power System Compatibility
+- **Mod ID:** `extraspecialcore`  
+- **Purpose:** Shared UI toolkit used by walkie / config screens.  
+- **Required:** **Yes.**
 
-The mod uses **Forge Energy (FE)** API, which is compatible with:
-- Immersive Engineering generators/cables
-- Thermal Series generators
-- Any mod that provides FE-compatible power sources
-- Custom generators that implement Forge Energy capability
+### GeckoLib
 
-## Modpack Installation Order
+- **Mod ID:** `geckolib`  
+- **Purpose:** Animated Dead Air walkie (T1/T2) item models.  
+- **Required:** **Yes** (from 2.0.0).
 
-1. **Minecraft 1.20.1**
-2. **Forge 47.4.0+** (any 47.4.x version)
-3. **Apocalypse Structures: Radio Towers and Airdrops** (optional - any mod with radio towers works)
-4. **Walkie-Talkie Mod** (required - try `walkietalkie` first)
-5. **Dead Air** (this mod)
-6. **Immersive Engineering** (optional, for power)
-7. **Thermal Series** (optional, for power)
+---
 
-## Testing Checklist
+## Built-in (no Flaton Walkie-Talkie)
 
-- [ ] Minecraft 1.20.1 installed
-- [ ] Forge 47.4.0 or higher installed
-- [ ] Apocalypse Structures mod installed
-- [ ] Walkie-Talkie mod installed
-- [ ] Dead Air mod installed
-- [ ] (Optional) Immersive Engineering installed
-- [ ] (Optional) Thermal mods installed
+From **2.0.0**, Dead Air ships its own walkies (`dead_air:walkie_t1`, `dead_air:walkie_t2`). The external **Walkie-Talkie** mod is **no longer required**.
 
-## Known Compatible Mod Lists
+Optional: **Simple Voice Chat** — Walkie tab voice UI is cosmetic without it.
 
-If you're building a modpack, these mods are known to work well together:
-- Apocalypse Structures
-- Walkie-Talkie (any implementation)
-- Immersive Engineering
-- Thermal Series
-- Any other mods that add music tracks (will be auto-discovered)
+---
 
-## Troubleshooting
+## Optional integrations
 
-### Mod Not Loading?
-- Check Forge version is 47.4.0 or higher
-- Verify all hard dependencies are installed
-- Check mod loading order in logs
+- **berezkas_zombie_waves_api** / **berezka_api** — airdrop waves  
+- **tacz** — guns/ammo in airdrop catalog  
 
-### Towers Not Detected?
-- Ensure Apocalypse Structures is loaded
-- Check logs for "Registered tower block" messages
-- Visit areas with towers to trigger chunk loading
+---
 
-### Walkie-Talkie Not Working?
-- Verify walkie-talkie mod is installed
-- Check logs for "Found walkie-talkie item" message
-- Try holding the walkie-talkie item and pressing R key
+## Suggested Modpack Setup
+
+- Dead Air + RadioTowers + ExtraSpecialCore + GeckoLib  
+- Optional soundtrack expansions (client-only)  
+- Optional Simple Voice Chat  

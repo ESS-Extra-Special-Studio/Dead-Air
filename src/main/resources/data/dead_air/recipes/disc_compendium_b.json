@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "minecraft:music_disc_ward" },
+    { "item": "minecraft:music_disc_11" },
+    { "item": "minecraft:music_disc_wait" },
+    { "item": "minecraft:music_disc_otherside" },
+    { "item": "minecraft:music_disc_5" },
+    { "item": "minecraft:music_disc_pigstep" },
+    { "item": "minecraft:music_disc_relic" }
+  ],
+  "result": { "item": "dead_air:disc_compendium_b", "count": 1 }
+}

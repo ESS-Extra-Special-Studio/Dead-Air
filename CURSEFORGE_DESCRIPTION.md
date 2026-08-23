@@ -1,68 +1,103 @@
 # Dead Air - CurseForge Page Description
 
-## Short Summary (for CurseForge short description field)
+## Short Summary (for CurseForge short description field — under 200 characters)
 
-Dead Air is a survival-driven radio network mod for Zombiecraft that transforms radio towers into broadcast nodes and walkie-talkies into exploration tools. It integrates seamlessly with Apocalypse Structures: Radio Towers and Airdrops to create an immersive radio system where players hunt signals, discover stations, and tune into music broadcasts while navigating a dangerous world.
+Extra Special Studio presents Dead Air: radio towers become station nodes you tune with T1/T2 radios & cross-dim Link. Collect notes, craft upgrades & panels. Requires RadioTowers, GeckoLib & ESC.
+
+*(196 characters)*
 
 ---
 
-## Full Description (for CurseForge long description field)
+## Full Description (for CurseForge long description field — paste below the line)
 
-Dead Air
+---
 
-Dead Air is a companion mod for Zombiecraft that transforms the world into a living radio network. It doesn't replace your walkie-talkie mod or tower structures - it works alongside them to create an immersive survival experience where radio signals guide exploration, music stations provide atmosphere, and emergency broadcasts create tension. Players hunt for signals, discover new stations, and tune into broadcasts while navigating a post-apocalyptic world.
+**PLENTY MORE CONTENT COMING SOON!**
 
- 
+- More Radio Panel upgrades beyond Signal and Jukebox
+- More soundtrack expansions (Pop Paradise, Frequency X, Parallel Horizons, and friends)
+- Further materials and crafts as the progression deepens
 
-What It Does:
+---
 
-Dead Air integrates with Apocalypse Structures: Radio Towers and Airdrops to turn radio towers into active broadcast nodes. Each tower can broadcast different music stations - from vanilla Minecraft tracks on Bedrock Radio to Zombiecraft music on Zombiecraft Radio, medieval themes on Medieval FM, jukebox tracks on Jukebox FM, or a mix of everything on Remix Radio. The mod also automatically discovers music from other installed mods and creates dynamic stations for them.
+**Dead Air:**
 
- 
+Turns radio towers into broadcast nodes. Each tower can broadcast a different station. Examples include **Bedrock Radio**, **Creatopia Radio**, **Jukebox FM**, **Remix Radio**, optional **internet** streams, and **dynamic** stations from expansion mods / `autoDiscoverModMusic`.
 
-The Emergency Broadcast frequency (88.5 MHz) provides critical information when towers are activated. All towers can broadcast on this frequency, creating a network of emergency communication across your world. Signal strength is calculated dynamically based on distance, line-of-sight, and weather conditions - get closer to towers for stronger signals, or watch your bars drop as you move away.
+**2.0.0 ships its own radios** — **T1.Radio** and **T2.Radio (Walkie Link)** with animated GeckoLib models. No third-party walkie mod required.
 
- 
+**Progression & materials**
 
-Players discover stations by entering the broadcast range of a tower while holding a powered-on walkie-talkie. Once discovered, stations are permanently unlocked and can be tuned into from anywhere. The mod supports both official towers spawned via commands and player-built towers using Radio Panel blocks, giving players the freedom to create their own radio network.
+- **Static Notes** drop while listening (one active radio: T1 15% / T2 30%); nine Notes on the ground merge into a **Resonant Chord**
+- Craft **Dimensional Relay**, **T1 / T2**, **Signal Upgrade**, **Disc Compendiums → Jukebox Upgrade**, and a **Radio Panel** recipe (when RadioTowers is present)
+- Install **Signal Upgrade** on a panel to unlock **T2 Link**: listen to that tower across dimensions; the link follows if you re-assign the panel’s station
+- In-game **Field Guide** covers Intro, How To Play, Materials (recipes), Current Expansions, and Planned Material
 
- 
+You can still create custom stations and playlists:
 
-How It Works:
+**Custom stations:** put **`.ogg`** files in `config/dead_air/custom stations/<Station Name>/` (one subfolder per station; restart).
 
-Dead Air scans for Radio Panel blocks from the RadioTowers mod and registers them as broadcast towers. Standard towers always start powered and begin broadcasting immediately, while Fenced and Overrun towers require activation via their Radio Panels. Once activated, towers persist their power state across world reloads, so you won't lose your radio network when logging out.
+**Extra tracks for built-in stations:** set **`customMusicPath`** to a folder with `assets/dead_air/sounds/music/custom/*.ogg`.
 
- 
+---
 
-The mod tracks every tower's power state, broadcast range, and assigned station. When you tune your walkie-talkie to a frequency, Dead Air calculates signal strength from all towers broadcasting that station within range. Music plays dynamically based on signal strength - strong signals mean clear audio, while weak signals add static and reduce volume. The system supports mid-song tuning, so you can switch stations at any time and hear tracks from wherever they're currently playing.
+**How it works**
 
- 
+Dead Air uses **Radio Panel** blocks (Apocalypse Structures / RadioTowers) as broadcast towers. You can craft panels for your own bases.
 
-Signal strength is displayed as 0-5 bars in both the tuning GUI and the in-game overlay. The bars use a gradient system (red to green) and update in real-time as you move. Emergency Broadcast always shows signal when near any powered tower, while music stations only show signal when tuned to a tower broadcasting that specific station.
+**Emergency Broadcast** (88.5 MHz) can come from any powered tower.
 
- 
+**Signal** is shown as 0–5 bars (distance, line-of-sight, weather). Bars use **75-block steps**: 5/5 within 75 blocks, 4/5 at 150, 3/5 at 225, 2/5 at 300, 1/5 at 375, none beyond that.
 
-How To Use It:
+**Discovery:** with the radio on, being in range of a tower unlocks its station; unlocked stations stay available.
 
-Just install Dead Air alongside Apocalypse Structures: Radio Towers and Airdrops and your walkie-talkie mod. The mod automatically detects Radio Panel blocks and registers them as broadcast towers. Hold any walkie-talkie (wooden, iron, gold, diamond, or any tier) and press **H** (default keybind) to open the tuning screen.
+**Tower types:** **Standard** towers work immediately. **Fenced** and **Overrun** need one **Radio Panel** right-click to activate; that state saves.
 
- 
+**Audio:** music plays from your **one active** tuned radio (hand, hotbar, or inventory—configurable). Volume follows signal. Weak signal or bad tuning adds **static**. Cross-dimension travel resumes the same track near where it left off when Linked / in range again. Dropped radios do not play.
 
-The tuning screen features a retro radio dial interface inspired by Fallout 4's Pip-Boy radio. Use the frequency slider (88.0-108.0 MHz) to tune through available stations, or click on a station in the list to quick-tune. The dial shows your current frequency with a tuning needle, and signal bars display real-time strength. A volume slider lets you adjust playback volume, and a "Ping Location" button sends your coordinates to chat.
+---
 
- 
+**How to use it**
 
-When you enter the range of a new tower while holding a powered-on walkie-talkie, you'll receive a discovery message. Stations are automatically unlocked and added to your station list. Tune to any unlocked station to hear its music, or tune to Emergency Broadcast (88.5 MHz) for emergency alerts.
+Hold a **T1** or **T2** Dead Air radio and press **N** (default) or **right-click** to open the tuning screen.
 
- 
+The screen has a retro dial (**88.0–108.0 MHz**). Tune with the slider or by picking a station. On **T2**, **Link Selected Station** / **Unlink Station** locks onto a Signal-Upgraded tower in range (no need to stand at the panel). **Ping Location** sends your name and coordinates to chat.
 
-For server admins, there's a command to spawn test towers:
- 
+Further options: **dead_air-common.toml** and the in-game config (ranges, volume, overlay, **`radioAlwaysOn`**, etc.).
 
-/dead_air spawntower <type> [x] [y] [z] - Spawns a tower at the specified location (or your current position). Types: standard, fenced, overrun
+---
 
- 
+**Server commands**
 
-The mod is fully configurable - you can adjust broadcast ranges, power consumption, signal strength calculations, weather effects, and more in the server config file. There's also an option to toggle whether walkie-talkies play music only while held or also when in inventory/placed down.
+`/dead_air spawntower <type> [x] [y] [z]` — spawns a tower at your position or the given coords. Types: **standard**, **fenced**, **overrun**. Spawned towers are active immediately.
 
-Important: This mod requires Apocalypse Structures: Radio Towers and Airdrops (radiotowers) and a walkie-talkie mod (walkietalkie) to function. It does not replace these mods - it extends them with a complete radio broadcasting system. The RadioTowers mod still handles tower structures and airdrops; Dead Air adds the radio network, station discovery, and music playback on top of that foundation.
+---
+
+**Current expansions**
+
+Optional companion soundtrack packs — work standalone or plug into Dead Air as stations:
+
+- **Dead Air - Wayfarer Radio** — adventure / RPG
+- **Dead Air - Frontline FM** — high-energy battle / combat
+- **Dead Air - After Hours FM** — Lo-Fi / chillout
+- **Dead Air - Block Beats FM** — beats
+- **Dead Air - Broken Youth Radio** — pop punk
+- **Dead Air - Iron Rain FM** — metal
+- **Dead Air - Zero Gravity** — pop rock / indie pop
+
+---
+
+**Dependencies**
+
+- **Required:** **Apocalypse Structures: Radio Towers and Airdrops** (RadioTowers), **GeckoLib 4.x**, **ExtraSpecialCore (ESC)**
+- **Optional:** **Simple Voice Chat** (Walkie tab voice UI); **Berezka’s Library** + **Berezka’s Zombie Waves API** (full airdrop / wave flows with RadioTowers)
+
+Dead Air does **not** replace RadioTowers — it adds broadcasts, stations, signal, music, radios, and progression on top.
+
+---
+
+**Music rights**
+
+ALL CUSTOM MUSIC TRACKS ARE OWNED BY ME AND MY TEAM. You may use these in any modpack, and play these tracks in YouTube videos / Twitch streams and similar. **Do not distribute the music files individually.**
+
+---

@@ -24,15 +24,11 @@ When a world loads, the mod automatically:
 
 ## Tower Detection
 
-The mod detects towers by:
-1. **Block ID Matching**: Looks for blocks with IDs containing:
-   - `apocalypse_structures:radio_tower`
-   - `apocalypse_structures:radio_tower_top`
-   - `apocalypse_structures:radio_tower_base`
-   - `apocalypse_structures:tower_block`
-   - Any block with "radio_tower" or "tower" in the path
+The mod detects towers by finding **Radio Panel** blocks from Apocalypse Structures (mod ID: `radiotowers`):
+- `radiotowers:radio_panel` or `radiotowers:radiopanel`
+- Any block in the `radiotowers` namespace with "radio_panel" or "panel" in the path
 
-2. **Fallback Detection**: If exact IDs don't match, uses pattern matching on block paths
+All tower structures from Apocalypse Structures contain Radio Panel blocks. Dead Air requires Apocalypse Structures to be installed.
 
 ## Station Assignment
 
@@ -75,7 +71,7 @@ When towers are detected in existing worlds:
 
 ### Towers Detected But Not Working?
 
-1. **Check Power**: Towers need FE power to broadcast
+1. **Check Activation**: Towers need to be activated (right-click Radio Panel) to broadcast
 2. **Check Range**: Ensure you're within broadcast range (500-2000 blocks)
 3. **Check Walkie-Talkie**: Make sure you're holding a walkie-talkie and it's turned on
 4. **Check Station Unlock**: Interact with tower to unlock its station
