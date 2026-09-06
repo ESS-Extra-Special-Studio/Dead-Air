@@ -2,6 +2,14 @@
 
 All notable changes to Dead Air will be documented in this file.
 
+2.1.3
+
+Update by: Extra_Special_K
+
+Changed:
+
+- Companion release for **RadioTowers 1.2.2** (Forge + NeoForge). Use that build for airdrop descent, tower-density mixin, and ESL wave delivery fixes.
+
 2.1.2
 
 Update by: Extra_Special_K
