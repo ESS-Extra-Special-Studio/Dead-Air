@@ -238,7 +238,7 @@ public class DeadAirFieldGuideScreen extends EscScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        renderWorldDim(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         int left = bodyRect.x();

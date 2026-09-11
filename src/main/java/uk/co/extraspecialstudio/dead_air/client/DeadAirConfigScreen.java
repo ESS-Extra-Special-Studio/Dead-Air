@@ -182,7 +182,7 @@ public class DeadAirConfigScreen extends EscScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        renderWorldDim(guiGraphics);
         EscRect panel = contentRect();
         EscPanel.renderPanel(guiGraphics, panel, style);
         EscRect titleBar = EscPanel.titleBar(panel, style);

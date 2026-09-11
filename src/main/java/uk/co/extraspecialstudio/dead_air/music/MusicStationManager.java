@@ -434,32 +434,15 @@ public class MusicStationManager {
 
     /** Build user stations from Config custom folder: config/dead_air/custom stations/<Station Name>/*.ogg */
     private static void registerCustomStationsFromFolders() {
-        for (SoundEvent soundEvent : net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT) {
-            ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.getKey(soundEvent);
-            if (id == null || !id.getNamespace().equals(Dead_air.MODID)) continue;
-            String path = id.getPath().toLowerCase(Locale.ROOT);
-            if (!path.startsWith("music.custom_stations.")) continue;
-            String remainder = path.substring("music.custom_stations.".length());
-            int sep = remainder.indexOf('.');
-            if (sep <= 0) continue;
-            String stationSlug = remainder.substring(0, sep);
-            ResourceLocation stationId = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "custom_station_" + stationSlug);
-            STATION_TRACKS.computeIfAbsent(stationId, k -> new ArrayList<>()).add(id);
-
-            if (StationRegistry.getStation(stationId) == null) {
-                float frequency = generateFrequencyForStation(stationId);
-                if (!StationRegistry.isFrequencyAvailable(frequency, StationRegistry.getMinFrequencySpacing())) continue;
-                int range = Config.musicStationRange > 0 ? Config.musicStationRange : 375;
-                int spacing = Config.minTowerSpacing > 0 ? Config.minTowerSpacing : 400;
-                StationRegistry.registerStation(new RadioStation(
-                    stationId,
-                    humanizeNamespace(stationSlug) + " Radio",
-                    RadioStation.StationType.MUSIC,
-                    "Custom",
-                    frequency,
-                    range,
-                    spacing
-                ));
+        CustomStationFolders.registerStationsIntoRegistry();
+        for (CustomStationFolders.StationFolder folder : CustomStationFolders.scan()) {
+            ResourceLocation stationId = CustomStationFolders.stationIdForSlug(folder.slug());
+            List<ResourceLocation> tracks = STATION_TRACKS.computeIfAbsent(stationId, k -> new ArrayList<>());
+            for (String trackSlug : folder.trackSlugs()) {
+                ResourceLocation trackId = CustomStationFolders.trackSoundId(folder.slug(), trackSlug);
+                if (!tracks.contains(trackId)) {
+                    tracks.add(trackId);
+                }
             }
         }
     }

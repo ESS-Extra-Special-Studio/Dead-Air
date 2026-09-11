@@ -2,111 +2,195 @@ package uk.co.extraspecialstudio.dead_air;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 
 /**
- * Human-readable common config for Dead Air.
- *
- * Keep keys at the root for compatibility with existing worlds and modpacks.
- * Visual groups are provided by concise section comments instead of changing
- * key paths. Airdrop, wave, and RadioTowers worldgen options intentionally
- * live in config/radiotowers-common.toml.
+ * Common config for Dead Air ({@code config/dead_air-common.toml}).
+ * <p>
+ * Section banners and push/pop match the RadioTowers / Dead Letters style so the
+ * in-game config screen and toml stay easy to scan. Airdrop, wave, and RadioTowers
+ * worldgen options live in {@code config/radiotowers-common.toml}.
  */
 @EventBusSubscriber(modid = Dead_air.MODID, bus = EventBusSubscriber.Bus.MOD)
 @SuppressWarnings("null")
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    // ===== TOWERS AND SIGNAL =====
-    private static final ModConfigSpec.IntValue EMERGENCY_BROADCAST_RANGE = BUILDER
-        .comment(
-            "===== TOWERS AND SIGNAL =====",
-            "Emergency Broadcast range in blocks.",
-            "This affects Dead Air radio reception, not RadioTowers structure spawning."
-        )
-        .defineInRange("emergencyBroadcastRange", 2000, 100, 10000);
-    
-    private static final ModConfigSpec.IntValue MUSIC_STATION_RANGE = BUILDER
-        .comment(
-            "Music station range in blocks.",
-            "Signal bars step down with distance; 0/5 means outside this range."
-        )
-        .defineInRange("musicStationRange", 375, 75, 10000);
+    // --- Towers and signal ---
+    private static final ModConfigSpec.IntValue EMERGENCY_BROADCAST_RANGE;
+    private static final ModConfigSpec.IntValue MUSIC_STATION_RANGE;
+    private static final ModConfigSpec.IntValue MIN_TOWER_SPACING;
+    private static final ModConfigSpec.BooleanValue ENABLE_LINE_OF_SIGHT;
+    private static final ModConfigSpec.BooleanValue ENABLE_WEATHER_EFFECTS;
 
-    private static final ModConfigSpec.IntValue MIN_TOWER_SPACING = BUILDER
-        .comment(
-            "Minimum spacing used by Dead Air station definitions.",
-            "RadioTowers structure density is configured in radiotowers-common.toml."
-        )
-        .defineInRange("minTowerSpacing", 400, 50, 2000);
-    
-    private static final ModConfigSpec.BooleanValue ENABLE_LINE_OF_SIGHT = BUILDER
-        .comment("Walls and terrain weaken radio signals.")
-        .define("enableLineOfSight", true);
-    
-    private static final ModConfigSpec.BooleanValue ENABLE_WEATHER_EFFECTS = BUILDER
-        .comment("Rain and storms weaken radio signals.")
-        .define("enableWeatherEffects", true);
-    
-    // ===== RADIO PLAYBACK =====
-    private static final ModConfigSpec.DoubleValue MAX_VOLUME = BUILDER
-        .comment(
-            "===== RADIO PLAYBACK =====",
-            "Loudest radio volume at full signal."
-        )
-        .defineInRange("maxVolume", 0.7, 0.1, 1.0);
-    
-    private static final ModConfigSpec.DoubleValue MIN_VOLUME = BUILDER
-        .comment("Quietest audible radio volume at weak signal.")
-        .defineInRange("minVolume", 0.1, 0.0, 0.5);
+    // --- Radio playback ---
+    private static final ModConfigSpec.DoubleValue MAX_VOLUME;
+    private static final ModConfigSpec.DoubleValue MIN_VOLUME;
+    private static final ModConfigSpec.BooleanValue RADIO_ALWAYS_ON;
+    private static final ModConfigSpec.BooleanValue MUSIC_PLAYS_WITHOUT_TOWER;
 
-    private static final ModConfigSpec.BooleanValue RADIO_ALWAYS_ON = BUILDER
-        .comment(
-            "true: the active tuned walkie plays anywhere in your inventory.",
-            "false: it only plays while held. Dropped walkies never play."
-        )
-        .define("radioAlwaysOn", true);
+    // --- Stations ---
+    private static final ModConfigSpec.BooleanValue AUTO_DISCOVER_MOD_MUSIC;
 
-    private static final ModConfigSpec.BooleanValue MUSIC_PLAYS_WITHOUT_TOWER = BUILDER
-        .comment(
-            "Allow a tuned station to keep playing when no powered tower is in range.",
-            "Set false for strict tower-only reception."
-        )
-        .define("musicPlaysWithoutTower", true);
+    // --- Walkie HUD ---
+    private static final ModConfigSpec.ConfigValue<String> OVERLAY_CORNER;
+    private static final ModConfigSpec.IntValue OVERLAY_OFFSET_X;
+    private static final ModConfigSpec.IntValue OVERLAY_OFFSET_Y;
 
-    // ===== STATIONS =====
-    private static final ModConfigSpec.BooleanValue AUTO_DISCOVER_MOD_MUSIC = BUILDER
-        .comment(
-            "===== STATIONS =====",
-            "Automatically discover compatible music from installed mods."
-        )
-        .define("autoDiscoverModMusic", true);
+    // --- Custom music ---
+    private static final ModConfigSpec.ConfigValue<String> CUSTOM_MUSIC_PATH;
 
-    // ===== WALKIE HUD =====
-    private static final ModConfigSpec.ConfigValue<String> OVERLAY_CORNER = BUILDER
-        .comment(
-            "===== WALKIE HUD =====",
-            "HUD corner: top_right, top_left, bottom_right, or bottom_left."
-        )
-        .define("overlayCorner", "top_right");
-    private static final ModConfigSpec.IntValue OVERLAY_OFFSET_X = BUILDER
-        .comment("Horizontal pixel offset. Positive moves inward from the chosen corner.")
-        .defineInRange("overlayOffsetX", 0, -200, 200);
-    private static final ModConfigSpec.IntValue OVERLAY_OFFSET_Y = BUILDER
-        .comment("Vertical pixel offset. Positive moves inward from the chosen corner.")
-        .defineInRange("overlayOffsetY", 0, -200, 200);
+    static {
+        // ========== TOWERS AND SIGNAL ==========
+        BUILDER.comment(
+                "============================================================",
+                "TOWERS AND SIGNAL",
+                "How far Dead Air radio signals reach from powered towers,",
+                "and whether walls or weather weaken reception.",
+                "These affect Dead Air only — RadioTowers structure density",
+                "is configured in radiotowers-common.toml.",
+                "============================================================"
+        ).push("towers");
 
-    // ===== CUSTOM MUSIC =====
-    private static final ModConfigSpec.ConfigValue<String> CUSTOM_MUSIC_PATH = BUILDER
-        .comment(
-            "===== CUSTOM MUSIC =====",
-            "Optional resource-pack folder containing:",
-            "assets/dead_air/sounds/music/custom/*.ogg",
-            "Leave empty to disable custom music loading."
-        )
-        .define("customMusicPath", "");
+        EMERGENCY_BROADCAST_RANGE = BUILDER
+                .comment(
+                        "----- START HERE: SIGNAL RANGE -----",
+                        "Emergency Broadcast range in blocks.",
+                        "This affects Dead Air radio reception, not RadioTowers structure spawning.",
+                        "Default: 2000."
+                )
+                .defineInRange("emergencyBroadcastRange", 2000, 100, 10000);
+        MUSIC_STATION_RANGE = BUILDER
+                .comment(
+                        "Music station range in blocks.",
+                        "Signal bars step down with distance; 0/5 means outside this range.",
+                        "Default: 375."
+                )
+                .defineInRange("musicStationRange", 375, 75, 10000);
+        MIN_TOWER_SPACING = BUILDER
+                .comment(
+                        "Minimum spacing used by Dead Air station definitions.",
+                        "RadioTowers structure density is configured in radiotowers-common.toml.",
+                        "Default: 400."
+                )
+                .defineInRange("minTowerSpacing", 400, 50, 2000);
+        ENABLE_LINE_OF_SIGHT = BUILDER
+                .comment(
+                        "Walls and terrain weaken radio signals.",
+                        "Default: true."
+                )
+                .define("enableLineOfSight", true);
+        ENABLE_WEATHER_EFFECTS = BUILDER
+                .comment(
+                        "Rain and storms weaken radio signals.",
+                        "Default: true."
+                )
+                .define("enableWeatherEffects", true);
+        BUILDER.pop();
+
+        // ========== RADIO PLAYBACK ==========
+        BUILDER.comment(
+                "============================================================",
+                "RADIO PLAYBACK",
+                "Volume limits and when a tuned walkie is allowed to play.",
+                "============================================================"
+        ).push("playback");
+
+        MAX_VOLUME = BUILDER
+                .comment(
+                        "----- START HERE: VOLUME -----",
+                        "Loudest radio volume at full signal.",
+                        "Default: 0.7."
+                )
+                .defineInRange("maxVolume", 0.7, 0.1, 1.0);
+        MIN_VOLUME = BUILDER
+                .comment(
+                        "Quietest audible radio volume at weak signal.",
+                        "Default: 0.1."
+                )
+                .defineInRange("minVolume", 0.1, 0.0, 0.5);
+        RADIO_ALWAYS_ON = BUILDER
+                .comment(
+                        "true: the active tuned walkie plays anywhere in your inventory.",
+                        "false: it only plays while held. Dropped walkies never play.",
+                        "Default: true."
+                )
+                .define("radioAlwaysOn", true);
+        MUSIC_PLAYS_WITHOUT_TOWER = BUILDER
+                .comment(
+                        "Allow a tuned station to keep playing when no powered tower is in range.",
+                        "Set false for strict tower-only reception.",
+                        "Default: true."
+                )
+                .define("musicPlaysWithoutTower", true);
+        BUILDER.pop();
+
+        // ========== STATIONS ==========
+        BUILDER.comment(
+                "============================================================",
+                "STATIONS",
+                "How Dead Air finds music stations from other mods.",
+                "============================================================"
+        ).push("stations");
+
+        AUTO_DISCOVER_MOD_MUSIC = BUILDER
+                .comment(
+                        "----- START HERE: MOD MUSIC -----",
+                        "Automatically discover compatible music from installed mods.",
+                        "Default: true."
+                )
+                .define("autoDiscoverModMusic", true);
+        BUILDER.pop();
+
+        // ========== WALKIE HUD ==========
+        BUILDER.comment(
+                "============================================================",
+                "WALKIE HUD",
+                "Where the walkie overlay sits on screen.",
+                "============================================================"
+        ).push("hud");
+
+        OVERLAY_CORNER = BUILDER
+                .comment(
+                        "----- START HERE: OVERLAY POSITION -----",
+                        "HUD corner: top_right, top_left, bottom_right, or bottom_left.",
+                        "Default: top_right."
+                )
+                .define("overlayCorner", "top_right");
+        OVERLAY_OFFSET_X = BUILDER
+                .comment(
+                        "Horizontal pixel offset. Positive moves inward from the chosen corner.",
+                        "Default: 0."
+                )
+                .defineInRange("overlayOffsetX", 0, -200, 200);
+        OVERLAY_OFFSET_Y = BUILDER
+                .comment(
+                        "Vertical pixel offset. Positive moves inward from the chosen corner.",
+                        "Default: 0."
+                )
+                .defineInRange("overlayOffsetY", 0, -200, 200);
+        BUILDER.pop();
+
+        // ========== CUSTOM MUSIC ==========
+        BUILDER.comment(
+                "============================================================",
+                "CUSTOM MUSIC",
+                "Optional resource-pack folder for player-added OGG tracks.",
+                "============================================================"
+        ).push("customMusic");
+
+        CUSTOM_MUSIC_PATH = BUILDER
+                .comment(
+                        "----- START HERE: CUSTOM FOLDER -----",
+                        "Optional resource-pack folder containing:",
+                        "assets/dead_air/sounds/music/custom/*.ogg",
+                        "Leave empty to disable custom music loading.",
+                        "Default: (empty)."
+                )
+                .define("customMusicPath", "");
+        BUILDER.pop();
+    }
 
     static final ModConfigSpec SPEC = BUILDER.build();
 

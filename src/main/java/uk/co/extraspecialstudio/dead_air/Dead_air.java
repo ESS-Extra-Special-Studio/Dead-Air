@@ -113,6 +113,7 @@ public class Dead_air {
     private void commonSetup(final FMLCommonSetupEvent event) {
         StationRegistry.registerDefaultStations();
         ConfigStationLoader.loadAndRegisterStations();
+        uk.co.extraspecialstudio.dead_air.music.CustomStationFolders.registerStationsIntoRegistry();
         WalkieTalkieManager.initialize();
         ApocalypseTowerDetector.initialize();
         ensureTowerClassesLoaded();
@@ -186,10 +187,45 @@ public class Dead_air {
             });
         }
 
-        /** Add custom music folder as a resource pack so .ogg files are loadable. Uses a cache with sanitized file names so "Forest ambiance.ogg" loads as forest_ambiance.ogg. */
+        /** Add custom music / custom stations pack so .ogg files are loadable. */
         @SubscribeEvent
         public static void onAddPackFinders(AddPackFindersEvent event) {
-            // Custom music folder pack uses 1.21 PackLocationInfo APIs; folder scan still registers sounds via CustomMusicLoader.
+            if (event.getPackType() != net.minecraft.server.packs.PackType.CLIENT_RESOURCES) return;
+            try {
+                String pathStr = uk.co.extraspecialstudio.dead_air.client.CustomMusicLoader.getCustomMusicPathForPack();
+                java.nio.file.Path customRoot = (pathStr == null || pathStr.isEmpty())
+                    ? null
+                    : java.nio.file.Path.of(pathStr);
+                java.nio.file.Path packRoot = uk.co.extraspecialstudio.dead_air.client.CustomMusicLoader.preparePackCache(
+                    customRoot != null ? customRoot : java.nio.file.Path.of(""));
+                if (packRoot == null) return;
+                java.nio.file.Path path = packRoot;
+                event.addRepositorySource(consumer -> {
+                    try {
+                        net.minecraft.server.packs.PackLocationInfo location = new net.minecraft.server.packs.PackLocationInfo(
+                            Dead_air.MODID + "/custom_music",
+                            net.minecraft.network.chat.Component.literal("Dead Air Custom Music"),
+                            net.minecraft.server.packs.repository.PackSource.DEFAULT,
+                            java.util.Optional.empty()
+                        );
+                        net.minecraft.server.packs.PackSelectionConfig selectionConfig =
+                            new net.minecraft.server.packs.PackSelectionConfig(true, net.minecraft.server.packs.repository.Pack.Position.TOP, false);
+                        net.minecraft.server.packs.repository.Pack.ResourcesSupplier resources =
+                            new net.minecraft.server.packs.PathPackResources.PathResourcesSupplier(path);
+                        net.minecraft.server.packs.repository.Pack pack = net.minecraft.server.packs.repository.Pack.readMetaAndCreate(
+                            location,
+                            resources,
+                            net.minecraft.server.packs.PackType.CLIENT_RESOURCES,
+                            selectionConfig
+                        );
+                        if (pack != null) consumer.accept(pack);
+                    } catch (Exception e) {
+                        Dead_air.LOGGER.warn("[Dead Air] Could not add custom music pack from {}", pathStr, e);
+                    }
+                });
+            } catch (Exception e) {
+                Dead_air.LOGGER.warn("[Dead Air] Could not add custom music pack", e);
+            }
         }
 
         /** Register walkie HUD overlay so it always renders (not dependent on CROSSHAIR/HOTBAR events). */
