@@ -1,5 +1,5 @@
 @echo off
-set "MODS=C:\Users\Ksivi\curseforge\minecraft\Instances\dead air tests\mods"
+set "MODS=C:\Users\Ksivi\curseforge\minecraft\Instances\C.Ideas\mods"
 echo Copying both mods to: %MODS%
 copy /Y "build\libs\dead_air-1.2.jar" "%MODS%\"
 copy /Y "%USERPROFILE%\MCreatorWorkspaces\radioos\build\libs\radiotowers-1.0.5.jar" "%MODS%\"

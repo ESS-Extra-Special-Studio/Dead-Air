@@ -405,7 +405,7 @@ public class WalkieTalkieOverlay {
             if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST) {
                 return 1.0f;
             }
-            
+
             Vec3 playerPos = mc.player.position();
             float liveSignal = 0.0f;
             

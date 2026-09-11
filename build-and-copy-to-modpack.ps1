@@ -2,7 +2,7 @@
 # Run from repo root (Dead Air) or any folder; uses fixed paths below.
 
 $ErrorActionPreference = "Stop"
-$modpackMods = "$env:USERPROFILE\curseforge\minecraft\Instances\dead air tests\mods"
+$modpackMods = "$env:USERPROFILE\curseforge\minecraft\Instances\C.Ideas\mods"
 $deadAirDir = "c:\Users\Ksivi\IdeaProjects\Dead Air"
 $radiotowersDir = "C:\Users\Ksivi\MCreatorWorkspaces\radioos"
 

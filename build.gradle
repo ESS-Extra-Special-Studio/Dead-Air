@@ -290,7 +290,6 @@ tasks.withType(JavaCompile).configureEach {
 
 // Copy built jar to CurseForge instances (prefer current version: dead_air-2.0.2+1.20.1-forge.jar)
 def curseForgeModsDirs = [
-        file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/dead air tests/mods"),
         file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/C.Ideas/mods")
 ]
 tasks.named('build').configure {

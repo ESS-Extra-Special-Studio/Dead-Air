@@ -114,6 +114,7 @@ public class Dead_air {
     private void commonSetup(final FMLCommonSetupEvent event) {
         StationRegistry.registerDefaultStations();
         ConfigStationLoader.loadAndRegisterStations();
+        uk.co.extraspecialstudio.dead_air.music.CustomStationFolders.registerStationsIntoRegistry();
         WalkieTalkieManager.initialize();
         ApocalypseTowerDetector.initialize();
         ensureTowerClassesLoaded();
@@ -183,15 +184,17 @@ public class Dead_air {
             });
         }
 
-        /** Add custom music folder as a resource pack so .ogg files are loadable. Uses a cache with sanitized file names so "Forest ambiance.ogg" loads as forest_ambiance.ogg. */
+        /** Add custom music / custom stations pack so .ogg files are loadable. */
         @SubscribeEvent
         public static void onAddPackFinders(AddPackFindersEvent event) {
             if (event.getPackType() != net.minecraft.server.packs.PackType.CLIENT_RESOURCES) return;
-            String pathStr = uk.co.extraspecialstudio.dead_air.client.CustomMusicLoader.getCustomMusicPathForPack();
-            if (pathStr == null || pathStr.isEmpty()) return;
-            java.nio.file.Path customRoot = java.nio.file.Path.of(pathStr);
             try {
-                java.nio.file.Path packRoot = uk.co.extraspecialstudio.dead_air.client.CustomMusicLoader.preparePackCache(customRoot);
+                String pathStr = uk.co.extraspecialstudio.dead_air.client.CustomMusicLoader.getCustomMusicPathForPack();
+                java.nio.file.Path customRoot = (pathStr == null || pathStr.isEmpty())
+                    ? null
+                    : java.nio.file.Path.of(pathStr);
+                java.nio.file.Path packRoot = uk.co.extraspecialstudio.dead_air.client.CustomMusicLoader.preparePackCache(
+                    customRoot != null ? customRoot : java.nio.file.Path.of(""));
                 if (packRoot == null) return;
                 java.nio.file.Path path = packRoot;
                 event.addRepositorySource(consumer -> {
