@@ -1,3 +1,8 @@
+## 2.1.5
+
+Fixed:
+Removed an unused ItemStack mixin that stopped Forge from launching (mixin config could not apply).
+
 ## 2.1.4
 
 Fixed:
