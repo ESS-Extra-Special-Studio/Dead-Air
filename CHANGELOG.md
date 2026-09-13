@@ -1,4 +1,9 @@
-﻿## 2.1.4
+﻿## 2.1.5
+
+Changed:
+Version matched to Forge 2.1.5. The unused ItemStack mixin that blocked Forge launch is not in this loader.
+
+## 2.1.4
 
 Fixed:
 Custom stations under config/dead_air/custom stations/<name>/*.ogg register even when legacy customMusicPath is empty or missing.
