@@ -1,14 +1,19 @@
 package uk.co.extraspecialstudio.dead_air.item;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -35,7 +40,7 @@ import java.util.function.Consumer;
  * Right-click opens the Dead Air walkie tuning GUI (T2 Sync/Link controls live on that screen).
  */
 public class WalkieItem extends Item implements GeoItem {
-    public enum Tier { T1, T2 }
+    public enum Tier { T1, T2, T3 }
 
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.dead_air.walkie.idle");
 
@@ -53,12 +58,28 @@ public class WalkieItem extends Item implements GeoItem {
     }
 
     public boolean isLinkCapable() {
-        return tier == Tier.T2;
+        return tier != Tier.T1;
+    }
+
+    @Override
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext context, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flag) {
+        if (tier == Tier.T3) {
+            tooltip.add(Component.translatable("item.dead_air.walkie_t3.tooltip").withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    /** T3 only: can Transmit and receive story broadcasts. */
+    public boolean canTransmit() {
+        return tier == Tier.T3;
     }
 
     /** Asset base name for this tier under Dead Air's own namespace. */
     private String defaultAssetName() {
-        return tier == Tier.T2 ? "walkie_t2" : "walkie_t1";
+        return switch (tier) {
+            case T3 -> "walkie_t3";
+            case T2 -> "walkie_t2";
+            default -> "walkie_t1";
+        };
     }
 
     /**
@@ -66,7 +87,8 @@ public class WalkieItem extends Item implements GeoItem {
      * built-in walkies override this instead of overwriting Dead Air's assets.
      */
     public ResourceLocation getGeoModelResource() {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "geo/item/" + defaultAssetName() + ".geo.json");
+        String mesh = tier == Tier.T3 ? "walkie_t2" : defaultAssetName();
+        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "geo/item/" + mesh + ".geo.json");
     }
 
     /** Skin for this radio. See {@link #getGeoModelResource()}. */
@@ -84,7 +106,7 @@ public class WalkieItem extends Item implements GeoItem {
      * built-in T2 by default; companions override when they have a measured screen UV.
      */
     public boolean supportsLiveLcd() {
-        return tier == Tier.T2;
+        return tier != Tier.T1;
     }
 
     /**
@@ -93,7 +115,8 @@ public class WalkieItem extends Item implements GeoItem {
      */
     @Nullable
     public RadioLiveDisplay.Spec getLiveLcdSpec() {
-        return supportsLiveLcd() ? T2RadioDisplayTexture.SPEC : null;
+        if (!supportsLiveLcd()) return null;
+        return tier == Tier.T3 ? T2RadioDisplayTexture.T3_SPEC : T2RadioDisplayTexture.SPEC;
     }
 
     /** True when the live painter successfully probed the current atlas for {@link #getLiveLcdSpec()}. */

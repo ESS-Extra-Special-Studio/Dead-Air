@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "tacz:modern_kinetic_gun", "required": false },
+    { "id": "tacz:ammo_9mm", "required": false },
+    { "id": "tacz:ammo_45acp", "required": false },
+    { "id": "tacz:ammo_12g", "required": false },
+    { "id": "tacz:ammo_556x45", "required": false },
+    { "id": "pointblank:glock17", "required": false },
+    { "id": "pointblank:m4a1", "required": false },
+    { "id": "pointblank:ammo_9mm", "required": false },
+    { "id": "pointblank:ammo_556", "required": false }
+  ]
+}

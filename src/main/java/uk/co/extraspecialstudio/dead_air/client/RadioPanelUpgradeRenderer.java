@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Draws installed upgrade items as small icons on the flat left plate of radio panels.
  * Uses existing item models (no new geometry) and only walks the synced tower cache.
- * Four equally spaced slots (top → bottom); unused slots stay empty for future upgrades.
+ * Four equally spaced slots (top â†’ bottom); unused slots stay empty for future upgrades.
  */
 @EventBusSubscriber(modid = Dead_air.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public final class RadioPanelUpgradeRenderer {
@@ -46,7 +46,7 @@ public final class RadioPanelUpgradeRenderer {
     /** Panel sits near the back of the cell; front face is ~0.375 from center opposite facing. */
     private static final double FRONT_FROM_CENTER = 0.375;
     /**
-     * Nudge icon centers just past the plate face. Item models are thin cards —
+     * Nudge icon centers just past the plate face. Item models are thin cards â€”
      * keep this small so they sit flush (0.06 floated; -0.02 buried).
      */
     private static final double OUTWARD = 0.018;
@@ -82,7 +82,7 @@ public final class RadioPanelUpgradeRenderer {
             Direction facing = getHorizontalFacing(state);
             if (facing == null) facing = Direction.NORTH;
 
-            // Slot order top→bottom: Signal Upgrade, then Jukebox (room for 2 more later)
+            // Slot order topâ†’bottom: Signal Upgrade, then Jukebox (room for 2 more later)
             ItemStack[] slots = new ItemStack[SLOT_COUNT];
             int next = 0;
             if (entry.signalBoostInstalled && next < SLOT_COUNT) {
@@ -110,7 +110,7 @@ public final class RadioPanelUpgradeRenderer {
         buffers.endBatch();
     }
 
-    /** Equally spaced Y for slot index 0 (top) … SLOT_COUNT-1 (bottom). */
+    /** Equally spaced Y for slot index 0 (top) â€¦ SLOT_COUNT-1 (bottom). */
     private static double slotY(int index) {
         if (SLOT_COUNT <= 1) return SLOT_TOP_Y;
         return SLOT_TOP_Y - index * (SLOT_TOP_Y - SLOT_BOTTOM_Y) / (SLOT_COUNT - 1);
@@ -129,7 +129,7 @@ public final class RadioPanelUpgradeRenderer {
                                    ItemStack stack, Vec3 world, Vec3 cam, Direction facing, int light) {
         pose.pushPose();
         pose.translate(world.x - cam.x, world.y - cam.y, world.z - cam.z);
-        // Face the panel front, then flip 180° so the item front (not PL Corp back) faces the player
+        // Face the panel front, then flip 180Â° so the item front (not PL Corp back) faces the player
         pose.mulPose(Axis.YP.rotationDegrees(-facing.toYRot() + 180f));
         pose.scale(ICON_SCALE, ICON_SCALE, ICON_SCALE);
         items.renderStatic(stack, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY,

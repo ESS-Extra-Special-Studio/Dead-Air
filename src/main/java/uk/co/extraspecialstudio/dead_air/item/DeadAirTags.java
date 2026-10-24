@@ -16,7 +16,7 @@ public final class DeadAirTags {
     public static final TagKey<Item> WALKIE_RADIOS = tag("walkie_radios");
     /** T1-tier companion (or stock) radios. */
     public static final TagKey<Item> WALKIE_T1 = tag("walkie_t1");
-    /** T2-tier companion (or stock) radios — link-capable. */
+    /** T2-tier companion (or stock) radios â€” link-capable. */
     public static final TagKey<Item> WALKIE_T2 = tag("walkie_t2");
 
     private DeadAirTags() {}

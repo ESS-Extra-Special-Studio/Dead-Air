@@ -191,7 +191,12 @@ public class ModEvents {
             uk.co.extraspecialstudio.dead_air.station.StationUnlockManager.restoreFromStorage(serverPlayer);
             // Sync known towers to client so it can compute signal locally (no per-tick packets needed)
             syncKnownTowersToPlayer(serverPlayer);
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToPlayer(serverPlayer,
+                uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig());
             grantFieldGuideIfFirstJoin(serverPlayer);
+            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.catchUpOnLogin(serverPlayer);
+            // Immediate party HUD â€” don't wait up to 1s for the periodic sync tick.
+            uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyEvents.syncPlayerNow(serverPlayer);
         }
     }
 
@@ -284,6 +289,13 @@ public class ModEvents {
         }
     }
     
+    @SubscribeEvent
+    public static void onServerStarted(net.neoforged.neoforge.event.server.ServerStartedEvent event) {
+        uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.onServerStarted(event.getServer());
+        // Re-sync panel-base force-loads from Dead Air SavedData into ESL (survives ESL ticket release on stop).
+        uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.reapplyForceLoads(event.getServer());
+    }
+
     @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
     public static void onServerStopping(net.neoforged.neoforge.event.server.ServerStoppingEvent event) {
         uk.co.extraspecialstudio.dead_air.Dead_air.setShutdownRequested(true);

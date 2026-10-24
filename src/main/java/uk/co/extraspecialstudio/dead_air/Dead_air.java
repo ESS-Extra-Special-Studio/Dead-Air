@@ -57,6 +57,9 @@ public class Dead_air {
         uk.co.extraspecialstudio.dead_air.client.DeadAirSounds.REGISTER.register(modEventBus);
         DeadAirBlocks.REGISTER.register(modEventBus);
         DeadAirItems.REGISTER.register(modEventBus);
+        uk.co.extraspecialstudio.dead_air.entity.DeadAirEntities.REGISTER.register(modEventBus);
+        uk.co.extraspecialstudio.dead_air.menu.DeadAirMenus.REGISTER.register(modEventBus);
+        modEventBus.addListener(uk.co.extraspecialstudio.dead_air.entity.DeadAirEntities::onAttributes);
         DeadAirCreativeTabs.REGISTER.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
@@ -73,21 +76,56 @@ public class Dead_air {
         }
     }
 
-    /** Force server-side load of tower classes so right-click on panel doesn't get NoClassDefFoundError (ModuleClassLoader). */
+    /** Force server-side load of tower classes so panel place/click doesn't get NoClassDefFoundError (ModuleClassLoader). */
     private static void ensureTowerClassesLoaded() {
+        ClassLoader cl = Dead_air.class.getClassLoader();
         try {
-            Class.forName("uk.co.extraspecialstudio.dead_air.tower.ApocalypseTowerType");
-            Class.forName("uk.co.extraspecialstudio.dead_air.tower.ApocalypseTowerDetector");
-            Class.forName("uk.co.extraspecialstudio.dead_air.tower.RadioPanelManager");
-            Class.forName("uk.co.extraspecialstudio.dead_air.tower.PanelActivationStorage");
-            Class.forName("uk.co.extraspecialstudio.dead_air.tower.KnownTowerStorage");
-            Class.forName("uk.co.extraspecialstudio.dead_air.radio.TowerManager");
-            Class.forName("uk.co.extraspecialstudio.dead_air.radio.RadioTower");
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.ApocalypseTowerType", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.ApocalypseTowerDetector", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.RadioPanelManager", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.PanelActivationStorage", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.KnownTowerStorage", true, cl);
+            // Nested package â€” Class.forName(RadioTower) alone does not resolve this until first new RadioTower()
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.modules.TowerCapabilities", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.tower.modules.TowerModuleStorage", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.radio.TowerManager", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.radio.RadioTower", true, cl);
             // Touch enum constants so the class is fully initialized before RadioTowers reflects into DeadAirAPI
             uk.co.extraspecialstudio.dead_air.tower.ApocalypseTowerType.values();
+            // Force resolution of field initializer dependency (same ClassNotFound that crashed panel place)
+            new uk.co.extraspecialstudio.dead_air.tower.modules.TowerCapabilities();
             LOGGER.info("Dead Air: tower classes ready");
         } catch (Throwable e) {
-            LOGGER.error("Dead Air: tower classes not loadable — panel activation will fail", e);
+            LOGGER.error("Dead Air: tower classes not loadable â€” panel activation will fail", e);
+        }
+    }
+
+    /** Force-load survivor party helpers (ModuleClassLoader otherwise CNFs SurvivorPartyOrders on logout / orders). */
+    private static void ensureSurvivorClassesLoaded() {
+        ClassLoader cl = Dead_air.class.getClassLoader();
+        try {
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.SurvivorParty", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyOrders", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyEvents", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.SurvivorIdentity", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.SurvivorProgress", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyRoleEvents", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.net.SurvivorScreenPacket", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.SurvivorGunCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.SurvivorTaczCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.SurvivorApocalypseGearCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.ApocalypseLootCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.CompatLoot", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.PointBlankCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.RadioTowersPlaneCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.VehicleCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.compat.AircraftCompat", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.broadcast.CrashSitePlacer", true, cl);
+            Class.forName("uk.co.extraspecialstudio.dead_air.survivor.AuctionBrokerEntity", true, cl);
+            uk.co.extraspecialstudio.dead_air.survivor.SurvivorProgress.SkillBias.values();
+            LOGGER.info("Dead Air: survivor classes ready");
+        } catch (Throwable e) {
+            LOGGER.error("Dead Air: survivor classes not loadable â€” party/dialogue may fail", e);
         }
     }
 
@@ -106,7 +144,7 @@ public class Dead_air {
             Class.forName("uk.co.extraspecialstudio.dead_air.client.DeadAirSounds", true, cl);
             LOGGER.info("Dead Air: music/audio classes ready");
         } catch (Throwable e) {
-            LOGGER.error("Dead Air: music/audio classes not loadable — some tune features may degrade", e);
+            LOGGER.error("Dead Air: music/audio classes not loadable â€” some tune features may degrade", e);
         }
     }
 
@@ -117,6 +155,13 @@ public class Dead_air {
         WalkieTalkieManager.initialize();
         ApocalypseTowerDetector.initialize();
         ensureTowerClassesLoaded();
+        ensureSurvivorClassesLoaded();
+        uk.co.extraspecialstudio.dead_air.broadcast.StoryBroadcasts.registerDefaults();
+        uk.co.extraspecialstudio.dead_air.survivor.SurvivorBroadcasts.registerDefaults();
+        uk.co.extraspecialstudio.dead_air.broadcast.ExtraBroadcasts.registerDefaults();
+        uk.co.extraspecialstudio.dead_air.compat.DeadAirCompat.register();
+        // Dedicated servers never run client setup, so expansion-pack stations must be registered here too.
+        event.enqueueWork(MusicStationManager::initialize);
         event.enqueueWork(() -> {
             try {
                 if (ModList.get().isLoaded("radiotowers")) {
@@ -168,12 +213,21 @@ public class Dead_air {
             });
             // ClientEvents registered via @EventBusSubscriber on FORGE bus
             event.enqueueWork(MusicStationManager::initialize);
+            event.enqueueWork(uk.co.extraspecialstudio.dead_air.music.ExpansionPacks::registerMissingPackStations);
+            event.enqueueWork(uk.co.extraspecialstudio.dead_air.client.SurvivorPartyWheelBootstrap::register);
             ensureMusicClassesLoaded();
+        }
+
+        @SubscribeEvent
+        public static void onRegisterMenus(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+            event.register(uk.co.extraspecialstudio.dead_air.menu.DeadAirMenus.SURVIVOR_EQUIPMENT.get(),
+                uk.co.extraspecialstudio.dead_air.client.SurvivorEquipmentScreen::new);
         }
 
         @SubscribeEvent
         public static void onRegisterKeys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
             event.register(uk.co.extraspecialstudio.dead_air.client.KeyBindings.TUNE_WALKIE);
+            event.register(uk.co.extraspecialstudio.dead_air.client.KeyBindings.PARTY_ORDERS);
         }
 
         /** Reset T2 LCD probe after resource packs change (e.g. Pip-Boy conversion enabled). */
@@ -235,6 +289,13 @@ public class Dead_air {
                 uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.renderRadioPanelTooltip(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
                 uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
             });
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "listener_effects"), (guiGraphics, deltaTracker) ->
+                uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.renderOverlay(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(),
+                    deltaTracker.getGameTimeDeltaPartialTick(false)));
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "broadcast_hud"), (guiGraphics, deltaTracker) ->
+                uk.co.extraspecialstudio.dead_air.client.BroadcastHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "survivor_party_hud"), (guiGraphics, deltaTracker) ->
+                uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
         }
     }
 }

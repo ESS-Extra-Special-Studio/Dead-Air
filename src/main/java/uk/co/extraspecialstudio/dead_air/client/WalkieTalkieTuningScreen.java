@@ -40,7 +40,7 @@ public class WalkieTalkieTuningScreen extends EscScreen {
     // Pip-Boy color scheme (ZombieCraft reference - crisp greens, slight transparency)
     private static final int PIPBOY_HIGHLIGHT = 0xFFFF00; // Yellow highlight
     private static final int PIPBOY_TEXT = 0x00FF41; // Bright green text
-    private static final int PIPBOY_LINKED = 0xFF8800; // Orange — T2 linked station
+    private static final int PIPBOY_LINKED = 0xFF8800; // Orange â€” T2 linked station
     private static final int BORDER_COLOR = 0xFF00E050; // Crisp neon green border
     private static final int PANEL_BG = 0x70001808; // Semi-transparent dark green (~44% opacity)
     /** Very subtle glow - minimal to keep UI crisp */
@@ -50,7 +50,7 @@ public class WalkieTalkieTuningScreen extends EscScreen {
     protected List<RadioStation> availableStations;
     protected float currentFrequency = 88.0f;
     protected RadioStation nearestStation = null;
-    /** Which hand opened this GUI — tune/power/link only write that walkie's NBT. */
+    /** Which hand opened this GUI â€” tune/power/link only write that walkie's NBT. */
     protected final net.minecraft.world.InteractionHand boundHand;
     /** Slider type that can be synced from a frequency (e.g. when clicking a station in the list). */
     protected FrequencySliderWidget frequencySlider;
@@ -60,6 +60,9 @@ public class WalkieTalkieTuningScreen extends EscScreen {
     protected Button pingLocationButton;
     protected Button syncButton;
     protected Button configCogButton;
+    /** T3 only: answer on the current frequency. */
+    protected Button transmitButton;
+    private long transmitCooldownUntil;
     
     // Waveform animation
     private float waveformTime = 0.0f;
@@ -227,7 +230,7 @@ public class WalkieTalkieTuningScreen extends EscScreen {
         );
 
         ItemStack primaryWalkie = getBoundWalkie(mc);
-        // Link/Unlink is T2-only — T1 GUI has Power + Ping only.
+        // Link/Unlink is T2-only â€” T1 GUI has Power + Ping only.
         if (WalkieTalkieManager.canLinkCrossDim(primaryWalkie)) {
             syncButton = addButton(
                 Component.translatable(WalkieTalkieManager.isUsingLinkedMode(primaryWalkie)
@@ -270,6 +273,18 @@ public class WalkieTalkieTuningScreen extends EscScreen {
                     refreshLinkButtonLabel();
                 }
             );
+        }
+
+        transmitButton = null;
+        if (WalkieTalkieManager.isT3(primaryWalkie)) {
+            transmitButton = addButton(Component.translatable("screen.dead_air.walkie.transmit"),
+                new EscRect(0, 0, 120, 20),
+                button -> {
+                    uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
+                        new uk.co.extraspecialstudio.dead_air.net.TransmitPacket(Math.round(currentFrequency * 10f) / 10f));
+                    button.active = false;
+                    transmitCooldownUntil = System.currentTimeMillis() + 3000L;
+                });
         }
 
         configCogButton = addAnchoredButton(Component.literal("\u2699"), rightPanelRect,
@@ -371,7 +386,13 @@ public class WalkieTalkieTuningScreen extends EscScreen {
             if (syncButton != null && syncRow != null) {
                 layoutWidget(syncButton, syncRow.inset(EscInsets.of(5, 0, 5, 0)));
             }
-            if (pingLocationButton != null) {
+            if (pingLocationButton != null && transmitButton != null) {
+                int half = (pingRow.width() - 10 - gap) / 2;
+                EscRect pingHalf = new EscRect(pingRow.x() + 5, pingRow.y(), half, Math.min(20, pingRow.height()));
+                EscRect txHalf = new EscRect(pingHalf.right() + gap, pingRow.y(), half, Math.min(20, pingRow.height()));
+                layoutWidget(pingLocationButton, pingHalf);
+                layoutWidget(transmitButton, txHalf);
+            } else if (pingLocationButton != null) {
                 layoutWidget(pingLocationButton, pingRow.inset(EscInsets.of(5, 0, 5, 0)));
             }
         }
@@ -400,8 +421,8 @@ public class WalkieTalkieTuningScreen extends EscScreen {
 
     /**
      * Refresh available stations list.
-     * In-range towers only, plus Emergency. A T2's linked station is always kept on the list
-     * while a link exists — even out of range or in another dimension.
+     * In-range towers only; Emergency Broadcast is T3-only. A T2's linked station is always
+     * kept on the list while a link exists â€” even out of range or in another dimension.
      */
     private void refreshAvailableStations() {
         Minecraft mc = Minecraft.getInstance();
@@ -414,10 +435,13 @@ public class WalkieTalkieTuningScreen extends EscScreen {
             var level = mc.level;
             List<ResourceLocation> inRange = KnownTowersClientCache.getStationsInRange(pos, level);
             availableStations = new ArrayList<>();
-            // Emergency Broadcast is always available and first (full signal regardless of towers).
-            RadioStation emergency = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-            if (emergency != null) {
-                availableStations.add(emergency);
+            ItemStack walkie = getBoundWalkie(mc);
+            // EB channel is T3-only â€” T1/T2 must not list or select it.
+            if (WalkieTalkieManager.isT3(walkie)) {
+                RadioStation emergency = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
+                if (emergency != null) {
+                    availableStations.add(emergency);
+                }
             }
             if (inRange != null) {
                 for (ResourceLocation id : inRange) {
@@ -427,7 +451,6 @@ public class WalkieTalkieTuningScreen extends EscScreen {
                 }
             }
             // T2 linked station stays visible permanently while linked (cross-dim / out of range).
-            ItemStack walkie = getBoundWalkie(mc);
             if (WalkieTalkieManager.hasLinkedTower(walkie)) {
                 ResourceLocation linkedId = WalkieTalkieManager.getLinkedStationId(walkie);
                 if (linkedId != null && !linkedId.equals(StationRegistry.EMERGENCY_BROADCAST_ID)) {
@@ -658,7 +681,7 @@ public class WalkieTalkieTuningScreen extends EscScreen {
         // This creates a horizontal 180-degree arc ABOVE the center (like a clock face)
         // Going counter-clockwise from 9 o'clock to 3 o'clock through 12 o'clock
         float startAngle = 180.0f; // 9 o'clock (left)
-        float endAngle = 360.0f;   // 3 o'clock (right, same as 0°)
+        float endAngle = 360.0f;   // 3 o'clock (right, same as 0Â°)
         float totalAngle = 180.0f;  // 180 degrees (half circle)
         
         // Draw circular border - crisp green (ZombieCraft reference)
@@ -684,15 +707,15 @@ public class WalkieTalkieTuningScreen extends EscScreen {
         drawArcWithGlow(guiGraphics, dialCenterX, dialCenterY, dialRadius, startAngle, endAngle, BORDER_COLOR, 3);
         
         // Draw major frequency markers (every 4 MHz) - evenly distributed across the arc
-        // 88 MHz at 9 o'clock (180°), 108 MHz at 3 o'clock (0°)
+        // 88 MHz at 9 o'clock (180Â°), 108 MHz at 3 o'clock (0Â°)
         int[] majorFrequencies = {88, 92, 96, 100, 104, 108};
         
         for (int i = 0; i < majorFrequencies.length; i++) {
             int freq = majorFrequencies[i];
             // Calculate angle based on frequency position in range (88-108 MHz)
-            // 88 MHz = 180° (9 o'clock), 108 MHz = 360° (3 o'clock)
+            // 88 MHz = 180Â° (9 o'clock), 108 MHz = 360Â° (3 o'clock)
             float normalizedFreq = (freq - MIN_FREQUENCY) / (MAX_FREQUENCY - MIN_FREQUENCY);
-            float angle = startAngle + (normalizedFreq * totalAngle); // Go from 180° up to 360° (counter-clockwise, above)
+            float angle = startAngle + (normalizedFreq * totalAngle); // Go from 180Â° up to 360Â° (counter-clockwise, above)
             float rad = (float)Math.toRadians(angle);
             
             // Draw major notch line (small tick, not a square)
@@ -718,7 +741,7 @@ public class WalkieTalkieTuningScreen extends EscScreen {
             if (isMajor) continue;
             
             float normalizedFreq = (freq - MIN_FREQUENCY) / (MAX_FREQUENCY - MIN_FREQUENCY);
-            float angle = startAngle + (normalizedFreq * totalAngle); // Go from 180° up to 360° (counter-clockwise, above)
+            float angle = startAngle + (normalizedFreq * totalAngle); // Go from 180Â° up to 360Â° (counter-clockwise, above)
             float rad = (float)Math.toRadians(angle);
             
             int x1 = dialCenterX + (int)(Math.cos(rad) * (dialRadius - 7));
@@ -729,9 +752,9 @@ public class WalkieTalkieTuningScreen extends EscScreen {
         }
         
         // Draw current frequency indicator (red line/needle)
-        // 88 MHz = 180° (9 o'clock), 108 MHz = 360° (3 o'clock)
+        // 88 MHz = 180Â° (9 o'clock), 108 MHz = 360Â° (3 o'clock)
         float normalizedFreq = (currentFrequency - MIN_FREQUENCY) / (MAX_FREQUENCY - MIN_FREQUENCY);
-        float angle = startAngle + (normalizedFreq * totalAngle); // Go from 180° up to 360° (counter-clockwise, above)
+        float angle = startAngle + (normalizedFreq * totalAngle); // Go from 180Â° up to 360Â° (counter-clockwise, above)
         float rad = (float)Math.toRadians(angle);
         
         // Limit indicator length to stay on screen - ensure it doesn't go beyond screen bounds
@@ -1193,6 +1216,10 @@ public class WalkieTalkieTuningScreen extends EscScreen {
         if (configCogButton != null) {
             configCogButton.visible = visible;
             configCogButton.active = visible;
+        }
+        if (transmitButton != null) {
+            transmitButton.visible = visible;
+            transmitButton.active = visible && System.currentTimeMillis() >= transmitCooldownUntil;
         }
     }
 

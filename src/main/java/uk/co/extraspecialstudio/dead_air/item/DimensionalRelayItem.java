@@ -15,7 +15,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.function.Consumer;
 
-/** Dimensional Relay — craft ingredient for T2.Radio (and future panel recipes). */
+/** Dimensional Relay â€” craft ingredient for T2.Radio (and future panel recipes). */
 public class DimensionalRelayItem extends Item implements GeoItem {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.dead_air.dimensional_relay.idle");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

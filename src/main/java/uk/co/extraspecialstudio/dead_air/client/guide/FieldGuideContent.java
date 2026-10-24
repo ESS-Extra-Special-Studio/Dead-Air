@@ -119,7 +119,7 @@ public final class FieldGuideContent {
                     "Welcome to Dead Air.",
                     "",
                     "Dead Air turns radio towers into broadcast nodes. Each tower can",
-                    "broadcast a different station with its own music or audio—Bedrock",
+                    "broadcast a different station with its own music or audioâ€”Bedrock",
                     "Radio, Creatopia Radio, Jukebox FM, Remix Radio, optional internet",
                     "streams, and dynamic stations from expansion mods."
                 ),
@@ -136,11 +136,11 @@ public final class FieldGuideContent {
                     "need one Radio Panel right-click to activate; that state saves.",
                     "",
                     "Audio plays when a Dead Air radio is on you (hand, hotbar, or",
-                    "inventory—configurable). Volume follows signal. Weak signal or bad",
+                    "inventoryâ€”configurable). Volume follows signal. Weak signal or bad",
                     "tuning adds static.",
                     "",
                     "Use the Index for How To Play, Materials, Current Expansions, and",
-                    "Planned Material—or press Forward to read in order."
+                    "Planned Materialâ€”or press Forward to read in order."
                 )
             )
         ));
@@ -157,14 +157,14 @@ public final class FieldGuideContent {
                     "T2.Radio (Walkie Link) with a Dimensional Relay.",
                     "",
                     "Hold a Dead Air radio and press N (default) or right-click to open",
-                    "the tuning screen. Use the frequency dial (88.0–108.0 MHz), the",
+                    "the tuning screen. Use the frequency dial (88.0â€“108.0 MHz), the",
                     "slider, or click a station in the list."
                 ),
                 List.of(
                     "Tuning and signal",
                     "",
                     "You lock onto a station when within about 0.2 MHz of its frequency.",
-                    "Signal shows as 0–5 bars (distance, line-of-sight, weather).",
+                    "Signal shows as 0â€“5 bars (distance, line-of-sight, weather).",
                     "Bars use ~75-block steps from the tuned tower: 5/5 within 75,",
                     "4/5 at 150, 3/5 at 225, 2/5 at 300, 1/5 at 375, none beyond.",
                     "",
@@ -189,16 +189,16 @@ public final class FieldGuideContent {
                 ),
                 List.of(
                     "Default stations (MHz)",
-                    "- Emergency Broadcast — 88.5",
-                    "- Bedrock Radio — 95.5",
-                    "- Creatopia Radio — 97.5",
-                    "- Remix Radio — 99.1",
-                    "- Jukebox FM — 105.9 (unlock with Jukebox Upgrade on a panel;",
-                    "  recipes under Materials → Disc Compendiums)",
+                    "- Emergency Broadcast â€” 88.5",
+                    "- Bedrock Radio â€” 95.5",
+                    "- Creatopia Radio â€” 97.5",
+                    "- Remix Radio â€” 99.1",
+                    "- Jukebox FM â€” 105.9 (unlock with Jukebox Upgrade on a panel;",
+                    "  recipes under Materials â†’ Disc Compendiums)",
                     "",
                     "Internet streams when available: Creatopia Radio 1 (108.1),",
                     "Ambiance FM (108.5). Expansion stations appear when those mods",
-                    "are installed—see Current Expansions."
+                    "are installedâ€”see Current Expansions."
                 ),
                 List.of(
                     "Airdrops (with RadioTowers)",
@@ -208,8 +208,8 @@ public final class FieldGuideContent {
                     "(walkie_t1) to the catalog when both mods load.",
                     "",
                     "Configure catalog loot, standard loot tables, cooldowns, waves,",
-                    "and tower density in config/radiotowers-common.toml — not in",
-                    "Dead Air’s music config."
+                    "and tower density in config/radiotowers-common.toml â€” not in",
+                    "Dead Airâ€™s music config."
                 )
             )
         ));
@@ -219,7 +219,7 @@ public final class FieldGuideContent {
             "Materials",
             List.of(
                 List.of(
-                    "Dead Air’s unique crafting materials",
+                    "Dead Airâ€™s unique crafting materials",
                     "",
                     "This section covers every Dead Air-made resource and how you get",
                     "or craft it. Each material has its own pages below:",
@@ -236,28 +236,28 @@ public final class FieldGuideContent {
                 List.of(
                     "Static Note",
                     "",
-                    "A glowing scrap of broadcast residue. It does not craft—you earn",
+                    "A glowing scrap of broadcast residue. It does not craftâ€”you earn",
                     "it by listening.",
                     "",
                     "While a Dead Air radio in your inventory is powered on and tuned",
                     "to a station, mobs you kill have a chance to drop a Static Note",
                     "based only on your one active radio (extra radios do not help):",
-                    "- T1.Radio — 15% chance",
-                    "- T2.Radio — 30% chance",
+                    "- T1.Radio â€” 15% chance",
+                    "- T2.Radio â€” 30% chance",
                     "",
                     "Notes can be placed as decorations (right-click a block face)."
                 ),
                 List.of(
-                    "Static Note — uses",
+                    "Static Note â€” uses",
                     "",
                     "Recipe: none (enemy drops while listening only).",
                     "",
-                    "T1.Radio — shaped crafting (3×3):",
+                    "T1.Radio â€” shaped crafting (3Ã—3):",
                     "  I R I",
                     "  R N R",
                     "  I R I",
                     "I = Iron Ingot, R = Redstone, N = Static Note.",
-                    "Result: 1× T1.Radio.",
+                    "Result: 1Ã— T1.Radio.",
                     "",
                     "Also default guaranteed loot in RadioTowers radio tower chests",
                     "(structure crates). Airdrop crates are separate and only contain",
@@ -272,27 +272,27 @@ public final class FieldGuideContent {
                     "",
                     "A fused bundle of Static Notes. Crafted in the world, not at a",
                     "crafting table: throw Static Notes onto the ground until nine",
-                    "are piled together—they merge into one Resonant Chord.",
+                    "are piled togetherâ€”they merge into one Resonant Chord.",
                     "",
                     "Chords can be placed as decorations (right-click a block face).",
                     "They feed higher-tier crafts: Dimensional Relay, Radio Panel."
                 ),
                 List.of(
-                    "Resonant Chord — recipes that use it",
+                    "Resonant Chord â€” recipes that use it",
                     "",
-                    "Dimensional Relay — shaped (3×3):",
+                    "Dimensional Relay â€” shaped (3Ã—3):",
                     "  G C G",
                     "  C E C",
                     "  G C G",
                     "G = Gold Ingot, C = Resonant Chord, E = Eye of Ender.",
-                    "Result: 1× Dimensional Relay.",
+                    "Result: 1Ã— Dimensional Relay.",
                     "",
-                    "Radio Panel (when RadioTowers is installed) — shaped (3×3):",
+                    "Radio Panel (when RadioTowers is installed) â€” shaped (3Ã—3):",
                     "  I C I",
                     "  E T E",
                     "  I C I",
                     "I = Iron Ingot, C = Resonant Chord, E = Echo Shard,",
-                    "T = T1.Radio. Result: 1× Radio Panel (radiotowers)."
+                    "T = T1.Radio. Result: 1Ã— Radio Panel (radiotowers)."
                 ),
                 // ---- Disc Compendium I ----
                 List.of(
@@ -301,11 +301,11 @@ public final class FieldGuideContent {
                     "A bound set of early vanilla music discs. Placeable as a block",
                     "(breaks back into a pickupable item).",
                     "",
-                    "Recipe — shapeless (crafting table), nine discs:",
+                    "Recipe â€” shapeless (crafting table), nine discs:",
                     "13, Cat, Blocks, Chirp, Far, Mall, Mellohi, Stal, Strad.",
-                    "(Item ids: minecraft:music_disc_13 … music_disc_strad.)",
+                    "(Item ids: minecraft:music_disc_13 â€¦ music_disc_strad.)",
                     "",
-                    "Result: 1× Disc Compendium (I)."
+                    "Result: 1Ã— Disc Compendium (I)."
                 ),
                 // ---- Disc Compendium II ----
                 List.of(
@@ -314,22 +314,22 @@ public final class FieldGuideContent {
                     "The remaining vanilla discs for Minecraft 1.20.1. Also placeable",
                     "as a block.",
                     "",
-                    "Recipe — shapeless (crafting table), seven discs:",
+                    "Recipe â€” shapeless (crafting table), seven discs:",
                     "Ward, 11, Wait, Otherside, 5, Pigstep, Relic.",
-                    "(minecraft:music_disc_ward … music_disc_relic.)",
+                    "(minecraft:music_disc_ward â€¦ music_disc_relic.)",
                     "",
-                    "Result: 1× Disc Compendium (II).",
+                    "Result: 1Ã— Disc Compendium (II).",
                     "",
-                    "Compendium (I) + (II) cover every vanilla disc in 1.20.1—nothing",
-                    "is skipped. A 3×3 grid cannot hold all sixteen at once, so Dead",
+                    "Compendium (I) + (II) cover every vanilla disc in 1.20.1â€”nothing",
+                    "is skipped. A 3Ã—3 grid cannot hold all sixteen at once, so Dead",
                     "Air splits them into two crafts."
                 ),
                 List.of(
-                    "Disc Compendiums → Jukebox Upgrade",
+                    "Disc Compendiums â†’ Jukebox Upgrade",
                     "",
-                    "Jukebox Upgrade — shapeless, three ingredients:",
+                    "Jukebox Upgrade â€” shapeless, three ingredients:",
                     "Disc Compendium (I), Disc Compendium (II), and one Echo Shard",
-                    "(minecraft:echo_shard). Result: 1× Jukebox Upgrade.",
+                    "(minecraft:echo_shard). Result: 1Ã— Jukebox Upgrade.",
                     "",
                     "Install: hold the upgrade and right-click a Radio Panel (once per",
                     "panel). Listeners in range unlock Jukebox FM. Until then,",
@@ -343,29 +343,29 @@ public final class FieldGuideContent {
                     "A cross-dimensional relay core. Required for T2.Radio and the",
                     "Signal Upgrade (tower boost for T2 Link).",
                     "",
-                    "Recipe — shaped (3×3):",
+                    "Recipe â€” shaped (3Ã—3):",
                     "  G C G",
                     "  C E C",
                     "  G C G",
                     "G = Gold Ingot, C = Resonant Chord, E = Eye of Ender.",
-                    "Result: 1× Dimensional Relay."
+                    "Result: 1Ã— Dimensional Relay."
                 ),
                 List.of(
-                    "Dimensional Relay — crafts that use it",
+                    "Dimensional Relay â€” crafts that use it",
                     "",
-                    "T2.Radio (Walkie Link) — shaped (3×3):",
+                    "T2.Radio (Walkie Link) â€” shaped (3Ã—3):",
                     "  G R G",
                     "  I W I",
                     "  I I I",
                     "G = Gold Ingot, R = Dimensional Relay, I = Iron Ingot,",
-                    "W = T1.Radio. Result: 1× T2.Radio.",
+                    "W = T1.Radio. Result: 1Ã— T2.Radio.",
                     "",
-                    "Signal Upgrade — shaped (3×3):",
+                    "Signal Upgrade â€” shaped (3Ã—3):",
                     "  G I G",
                     "  I R I",
                     "  G I G",
                     "G = Gold Ingot, I = Iron Ingot, R = Dimensional Relay.",
-                    "Result: 1× Signal Upgrade. Install on a Radio Panel to enable",
+                    "Result: 1Ã— Signal Upgrade. Install on a Radio Panel to enable",
                     "T2 Link / cross-dim listening."
                 )
             )
@@ -412,8 +412,8 @@ public final class FieldGuideContent {
                 List.of(
                     "Planned gameplay / items (timing and balance may change):",
                     "",
-                    "More panel upgrades beyond Signal and Jukebox—for example airdrop",
-                    "tier boosts or safe-zone style effects around a panel’s footprint.",
+                    "More panel upgrades beyond Signal and Jukeboxâ€”for example airdrop",
+                    "tier boosts or safe-zone style effects around a panelâ€™s footprint.",
                     "",
                     "Further materials and crafts will be documented here as they ship.",
                     "This section is forward-looking; details land in future updates."
@@ -423,7 +423,7 @@ public final class FieldGuideContent {
                     "- Extra tower upgrades (airdrop tier, safezone, longer range)",
                     "- More dimensional relay / structure play outside the Overworld",
                     "",
-                    "Nothing here is a promise—only a direction of travel."
+                    "Nothing here is a promiseâ€”only a direction of travel."
                 )
             )
         ));
@@ -433,11 +433,11 @@ public final class FieldGuideContent {
 
     public record GuideSection(String id, String title, List<List<String>> pages) {}
 
-    /** Index screen intro lines (no inline buttons here—sections are buttons only). */
+    /** Index screen intro lines (no inline buttons hereâ€”sections are buttons only). */
     public static List<String> getIndexIntroLines() {
         return List.of(
             "Welcome to Dead Air.",
-            "Topics: Intro · How To Play · Materials · Current Expansions ·",
+            "Topics: Intro Â· How To Play Â· Materials Â· Current Expansions Â·",
             "Planned Material.",
             "",
             "Pick a topic below, or press Forward to read from the start.",

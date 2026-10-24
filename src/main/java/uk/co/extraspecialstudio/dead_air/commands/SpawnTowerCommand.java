@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * You got 5 different towers bc there are two impostors: a loot table and a creative tab with similar names.
  * The creative tab is radiotowers and the loot table is radiotoweroverrunloot."
  *
- * For placement we use the structure TEMPLATE IDs (from template_pool "location") — these worked with the
+ * For placement we use the structure TEMPLATE IDs (from template_pool "location") â€” these worked with the
  * original RadioTowers mod. In radiotowers JAR: data/radiotowers/structures/*.nbt and template_pool "location":
  *   tower.nbt -> radiotowers:tower,  tower_2.nbt -> radiotowers:tower_2,  tower_overrun.nbt -> radiotowers:tower_overrun.
  * We also try worldgen-style fallbacks (radiotower, radiotower_2, radiotoweroverrun) in case a different
@@ -257,7 +257,7 @@ public class SpawnTowerCommand {
     /**
      * Finds the Y of the solid ground at (x, z) by scanning down from the heightmap.
      * Avoids placing towers on tree tops, leaves, or logs; returns the first "ground" block Y.
-     * Only dirt, grass, stone, sand, etc. count as ground — logs and leaves are skipped.
+     * Only dirt, grass, stone, sand, etc. count as ground â€” logs and leaves are skipped.
      */
     private static int findGroundY(ServerLevel level, int x, int z) {
         BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z));
@@ -270,7 +270,7 @@ public class SpawnTowerCommand {
             BlockState state = level.getBlockState(new BlockPos(x, y, z));
             if (isSolidGround(state)) return y;
         }
-        // Fallback if no solid ground found in range (e.g. all air) — use heightmap Y
+        // Fallback if no solid ground found in range (e.g. all air) â€” use heightmap Y
         return startY;
     }
 
@@ -389,7 +389,7 @@ public class SpawnTowerCommand {
             if (player.position().distanceTo(towerVec) > station.getBroadcastRange()) continue;
             if (StationUnlockManager.hasUnlocked(player, station)) continue;
             StationUnlockManager.unlockStation(player, station);
-            player.sendSystemMessage(Component.literal("§6[Radio] §rNew station discovered!"));
+            player.sendSystemMessage(Component.literal("Â§6[Radio] Â§rNew station discovered!"));
         }
     }
 }

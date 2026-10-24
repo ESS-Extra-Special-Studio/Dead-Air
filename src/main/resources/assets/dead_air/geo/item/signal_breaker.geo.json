@@ -1,0 +1,203 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.signal_breaker",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 6,
+        "visible_bounds_height": 8,
+        "visible_bounds_offset": [0, 3, 0]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [0, 0, 0],
+          "rotation": [0, 0, 0]
+        },
+        {
+          "name": "grip",
+          "parent": "root",
+          "pivot": [0, 4, 0],
+          "cubes": [
+            { "origin": [-1.8, 0, -1.8], "size": [3.6, 10, 3.6], "uv": [0, 0] },
+            { "origin": [-2.5, 0.4, -2.5], "size": [5, 1.4, 5], "uv": [0, 14] },
+            { "origin": [-2.5, 8.2, -2.5], "size": [5, 1.6, 5], "uv": [0, 20] },
+            { "origin": [-1.4, -1.6, -1.4], "size": [2.8, 1.8, 2.8], "uv": [16, 0] }
+          ]
+        },
+        {
+          "name": "guard",
+          "parent": "root",
+          "pivot": [0, 10.5, 0],
+          "cubes": [
+            { "origin": [-6.5, 9.6, -1.4], "size": [13, 2.2, 2.8], "uv": [16, 12] },
+            { "origin": [-1.4, 9.6, -5], "size": [2.8, 2.2, 10], "uv": [16, 18] },
+            { "origin": [-7.6, 9.8, -0.7], "size": [1.4, 4, 1.4], "uv": [32, 0] },
+            { "origin": [6.2, 9.8, -0.7], "size": [1.4, 4, 1.4], "uv": [32, 0] }
+          ]
+        },
+        {
+          "name": "core_glow",
+          "parent": "root",
+          "pivot": [0, 24, 0],
+          "cubes": [
+            { "origin": [-0.4, 11.5, -0.4], "size": [0.8, 30, 0.8], "uv": [48, 0] }
+          ]
+        },
+        {
+          "name": "frag_base",
+          "parent": "root",
+          "pivot": [0, 13, 0],
+          "cubes": [
+            { "origin": [-2.6, 11.5, -1.1], "size": [5.2, 4, 2.2], "uv": [0, 28] },
+            { "origin": [-1.8, 12, -1.6], "size": [1.4, 2.8, 0.6], "uv": [40, 8] }
+          ]
+        },
+        {
+          "name": "frag_a",
+          "parent": "root",
+          "pivot": [-1.5, 17, 0],
+          "cubes": [
+            { "origin": [-3.4, 15.2, -1], "size": [3.8, 4.2, 2], "uv": [0, 36] },
+            { "origin": [-3.9, 16, -0.5], "size": [0.7, 2.2, 1], "uv": [48, 24] }
+          ]
+        },
+        {
+          "name": "frag_b",
+          "parent": "root",
+          "pivot": [1.6, 17.5, 0],
+          "cubes": [
+            { "origin": [0.2, 15.5, -0.9], "size": [3.4, 4.6, 1.8], "uv": [12, 36] },
+            { "origin": [3.2, 16.4, -0.4], "size": [1, 2.6, 0.8], "uv": [48, 24] }
+          ]
+        },
+        {
+          "name": "frag_c",
+          "parent": "root",
+          "pivot": [-1, 22, 0],
+          "cubes": [
+            { "origin": [-2.9, 20, -1], "size": [4, 4, 2], "uv": [0, 44] }
+          ]
+        },
+        {
+          "name": "frag_d",
+          "parent": "root",
+          "pivot": [1.3, 22.5, 0],
+          "cubes": [
+            { "origin": [0, 20.4, -0.9], "size": [3.2, 4.4, 1.8], "uv": [12, 44] },
+            { "origin": [2.8, 21.4, 0.5], "size": [1.4, 2, 0.6], "uv": [40, 8] }
+          ]
+        },
+        {
+          "name": "frag_e",
+          "parent": "root",
+          "pivot": [-0.6, 27, 0],
+          "cubes": [
+            { "origin": [-2.4, 25, -0.85], "size": [3.6, 4.2, 1.7], "uv": [24, 36] }
+          ]
+        },
+        {
+          "name": "frag_f",
+          "parent": "root",
+          "pivot": [1.1, 27.5, 0],
+          "cubes": [
+            { "origin": [-0.3, 25.3, -0.8], "size": [2.9, 4.4, 1.6], "uv": [24, 44] }
+          ]
+        },
+        {
+          "name": "frag_g",
+          "parent": "root",
+          "pivot": [0, 32, 0],
+          "cubes": [
+            { "origin": [-2, 30, -0.7], "size": [4, 4, 1.4], "uv": [36, 36] }
+          ]
+        },
+        {
+          "name": "frag_h",
+          "parent": "root",
+          "pivot": [0.4, 35.5, 0],
+          "cubes": [
+            { "origin": [-1.4, 33.8, -0.55], "size": [2.8, 3.6, 1.1], "uv": [36, 44] }
+          ]
+        },
+        {
+          "name": "frag_tip",
+          "parent": "root",
+          "pivot": [0, 39, 0],
+          "cubes": [
+            { "origin": [-0.9, 37, -0.45], "size": [1.8, 3.4, 0.9], "uv": [48, 32] },
+            { "origin": [-0.45, 40, -0.25], "size": [0.9, 2.4, 0.5], "uv": [52, 32] }
+          ]
+        },
+        {
+          "name": "shard_orbit_l",
+          "parent": "root",
+          "pivot": [-4.5, 24, 0],
+          "cubes": [
+            { "origin": [-5.4, 23, -0.5], "size": [1.8, 2, 1], "uv": [48, 40] }
+          ]
+        },
+        {
+          "name": "shard_orbit_r",
+          "parent": "root",
+          "pivot": [4.5, 26, 0],
+          "cubes": [
+            { "origin": [3.8, 25, -0.5], "size": [1.7, 1.9, 1], "uv": [48, 40] }
+          ]
+        },
+        {
+          "name": "shard_orbit_l2",
+          "parent": "root",
+          "pivot": [-3.2, 31, 0],
+          "cubes": [
+            { "origin": [-4, 30.2, -0.4], "size": [1.4, 1.5, 0.8], "uv": [48, 44] }
+          ]
+        },
+        {
+          "name": "shard_orbit_r2",
+          "parent": "root",
+          "pivot": [3.5, 18, 0],
+          "cubes": [
+            { "origin": [2.8, 17.3, -0.4], "size": [1.3, 1.4, 0.8], "uv": [48, 44] }
+          ]
+        },
+        {
+          "name": "energy_ring",
+          "parent": "root",
+          "pivot": [0, 20, 0],
+          "cubes": [
+            { "origin": [-4, 19.5, -0.3], "size": [8, 0.6, 0.6], "uv": [48, 48] },
+            { "origin": [-0.3, 16.5, -4], "size": [0.6, 0.6, 8], "uv": [48, 48] }
+          ]
+        },
+        {
+          "name": "energy_ring2",
+          "parent": "root",
+          "pivot": [0, 28, 0],
+          "cubes": [
+            { "origin": [-3.2, 27.6, -0.25], "size": [6.4, 0.5, 0.5], "uv": [48, 52] },
+            { "origin": [-0.25, 25.2, -3.2], "size": [0.5, 0.5, 6.4], "uv": [48, 52] }
+          ]
+        },
+        {
+          "name": "static_spark_a",
+          "parent": "root",
+          "pivot": [-2.5, 25, 1.5],
+          "cubes": [
+            { "origin": [-2.8, 24.5, 1.2], "size": [0.6, 1.2, 0.6], "uv": [56, 40] }
+          ]
+        },
+        {
+          "name": "static_spark_b",
+          "parent": "root",
+          "pivot": [2.2, 30, -1.5],
+          "cubes": [
+            { "origin": [1.9, 29.4, -1.8], "size": [0.6, 1.3, 0.6], "uv": [56, 40] }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -57,6 +57,14 @@ public class RadioPanelInteractionHandler {
             if (!(event.getLevel() instanceof ServerLevel level)) return;
 
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                if (serverPlayer.isShiftKeyDown()
+                    && serverPlayer.getMainHandItem().isEmpty()
+                    && serverPlayer.getOffhandItem().isEmpty()) {
+                    uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.setBase(serverPlayer, pos);
+                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    event.setCanceled(true);
+                    return;
+                }
                 HeldUpgrade held = getHeldUpgrade(serverPlayer);
                 if (held != null) {
                     ItemStack upgradeStack = serverPlayer.getItemInHand(held.hand);

@@ -1,6 +1,7 @@
 package uk.co.extraspecialstudio.dead_air.radio;
 
 import net.minecraft.resources.ResourceLocation;
+import uk.co.extraspecialstudio.dead_air.Config;
 
 /**
  * Represents a radio station that can be broadcast from towers.
@@ -16,6 +17,11 @@ public class RadioStation {
     private final int minTowerSpacing;
     /** When non-null/non-empty, this station plays an HTTP MP3 stream on the client instead of Minecraft SoundEvents. */
     private final String internetStreamUrl;
+    /**
+     * Music and Emergency stations follow {@code dead_air-common.toml} on every check.
+     * Lore stations and JSON stations with an explicit range keep {@link #broadcastRange}.
+     */
+    private final boolean followGlobalRange;
     
     public RadioStation(ResourceLocation id, String name, StationType type, String genre,
                        float frequency, int broadcastRange, int minTowerSpacing) {
@@ -24,6 +30,13 @@ public class RadioStation {
 
     public RadioStation(ResourceLocation id, String name, StationType type, String genre,
                        float frequency, int broadcastRange, int minTowerSpacing, String internetStreamUrl) {
+        this(id, name, type, genre, frequency, broadcastRange, minTowerSpacing, internetStreamUrl,
+            type == StationType.MUSIC || type == StationType.EMERGENCY_BROADCAST);
+    }
+
+    public RadioStation(ResourceLocation id, String name, StationType type, String genre,
+                       float frequency, int broadcastRange, int minTowerSpacing, String internetStreamUrl,
+                       boolean followGlobalRange) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -32,6 +45,7 @@ public class RadioStation {
         this.broadcastRange = broadcastRange;
         this.minTowerSpacing = minTowerSpacing;
         this.internetStreamUrl = (internetStreamUrl == null || internetStreamUrl.isEmpty()) ? null : internetStreamUrl;
+        this.followGlobalRange = followGlobalRange;
     }
     
     public ResourceLocation getId() {
@@ -55,6 +69,14 @@ public class RadioStation {
     }
     
     public int getBroadcastRange() {
+        if (followGlobalRange) {
+            if (type == StationType.EMERGENCY_BROADCAST && Config.emergencyBroadcastRange > 0) {
+                return Config.emergencyBroadcastRange;
+            }
+            if (type == StationType.MUSIC && Config.musicStationRange > 0) {
+                return Config.musicStationRange;
+            }
+        }
         return broadcastRange;
     }
     

@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "vehicle:panel", "required": false },
+    { "id": "vehicle:wheel", "required": false },
+    { "id": "vehicle:engine", "required": false },
+    { "id": "vehicle:small_engine", "required": false },
+    { "id": "vehicle:large_engine", "required": false },
+    { "id": "vehicle:fuel_drum", "required": false },
+    { "id": "vehicle:jerry_can", "required": false },
+    { "id": "vehicle:wrench", "required": false },
+    { "id": "minecraft:iron_ingot", "required": false },
+    { "id": "minecraft:iron_nugget", "required": false }
+  ]
+}

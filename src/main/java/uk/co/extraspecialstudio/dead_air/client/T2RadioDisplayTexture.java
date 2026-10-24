@@ -13,11 +13,30 @@ public final class T2RadioDisplayTexture {
     private static final ResourceLocation LIVE_ID =
         ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "dynamic/walkie_t2_live");
 
+    /**
+     * Live LCD paint rect on walkie_t2 / walkie_t3 atlas (1024).
+     * Walkie geo maps the screen face to UV 0,0 size 4x3 on a 32 atlas → pixels 0–128 × 0–96.
+     */
+    private static final RadioLiveDisplay.LcdRect LCD =
+        new RadioLiveDisplay.LcdRect(4, 4, 124, 92);
+
     public static final RadioLiveDisplay.Spec SPEC = new RadioLiveDisplay.Spec(
         BASE_TEXTURE,
         LIVE_ID,
-        new RadioLiveDisplay.LcdRect(18, 18, 110, 74),
-        1024
+        LCD,
+        1024,
+        true,
+        0
+    );
+
+    /** T3 shares the T2 mesh and LCD rect. */
+    public static final RadioLiveDisplay.Spec T3_SPEC = new RadioLiveDisplay.Spec(
+        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/walkie_t3.png"),
+        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "dynamic/walkie_t3_live"),
+        LCD,
+        1024,
+        true,
+        0
     );
 
     private T2RadioDisplayTexture() {}
@@ -26,11 +45,7 @@ public final class T2RadioDisplayTexture {
         return RadioLiveDisplay.get(SPEC).isSupported();
     }
 
-    public static void reset() {
-        RadioLiveDisplay.get(SPEC).reset();
-    }
-
-    public static ResourceLocation getTexture(ItemStack stack) {
-        return RadioLiveDisplay.get(SPEC).getTexture(stack);
+    public static ResourceLocation resolveTexture(ItemStack stack, boolean listening) {
+        return listening ? LIVE_ID : BASE_TEXTURE;
     }
 }

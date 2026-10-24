@@ -28,7 +28,7 @@ import java.util.UUID;
 
 /**
  * Right-click places notes / chords as single non-merging world decorations.
- * One decoration per block face. Never auto-picked up — punch / right-click to retrieve.
+ * One decoration per block face. Never auto-picked up â€” punch / right-click to retrieve.
  */
 public final class PlaceableDecorations {
     public static final String NBT_DECOR = "DeadAirDecor";

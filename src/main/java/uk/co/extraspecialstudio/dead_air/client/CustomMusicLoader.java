@@ -30,7 +30,7 @@ public final class CustomMusicLoader {
 
     /**
      * Call from RegisterEvent for SOUND_EVENTS.
-     * Legacy flat custom tracks and folder custom stations are independent — station folders
+     * Legacy flat custom tracks and folder custom stations are independent â€” station folders
      * still register even when {@code customMusicPath} is empty / missing.
      */
     public static void registerCustomSounds(RegisterEvent event) {

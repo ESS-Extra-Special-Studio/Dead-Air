@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " EC",
+    "DMS",
+    "N  "
+  ],
+  "key": {
+    "E": {
+      "item": "dead_air:component_echo_crystal"
+    },
+    "C": {
+      "item": "dead_air:component_broadcaster_coil"
+    },
+    "D": {
+      "item": "dead_air:component_distortion_core"
+    },
+    "M": {
+      "item": "dead_air:component_maw_fang"
+    },
+    "S": {
+      "item": "dead_air:component_scrambler_chip"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "id": "dead_air:signal_breaker",
+    "count": 1
+  }
+}

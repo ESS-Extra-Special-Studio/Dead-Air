@@ -50,6 +50,11 @@ public class StaticSoundManager {
             // Static volume halved overall; halved again for 1/5 (1 bar) overlay
             float staticScale = 0.5f;
 
+            if (uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.isJammed()) {
+                playOrUpdateStatic(mc, maxVol * 0.8f);
+                return;
+            }
+
             // Emergency Broadcast: static at half volume
             if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST) {
                 playOrUpdateStatic(mc, maxVol * staticScale);
@@ -96,8 +101,17 @@ public class StaticSoundManager {
 
     private static void playOrUpdateStatic(Minecraft mc, float volume) {
         if (activeStatic != null) {
-            activeStatic.setVolume(volume);
-            return;
+            boolean stillGoing = false;
+            try {
+                stillGoing = mc.getSoundManager().isActive(activeStatic);
+            } catch (Throwable ignored) {
+            }
+            if (stillGoing) {
+                activeStatic.setVolume(volume);
+                return;
+            }
+            // Stale ref after stopAll/engine wipe â€” would leave EB "on" with no audible static.
+            activeStatic = null;
         }
         LoopingStaticSound sound = new LoopingStaticSound(volume);
         activeStatic = sound;

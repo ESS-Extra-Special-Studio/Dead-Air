@@ -36,6 +36,12 @@ public final class DeadAirConfigCommand {
         line(src, "=== Dead Air live config ===");
         line(src, "emergencyBroadcastRange=" + Config.emergencyBroadcastRange);
         line(src, "musicStationRange=" + Config.musicStationRange);
+        var bedrock = uk.co.extraspecialstudio.dead_air.radio.StationRegistry.getStation(
+            uk.co.extraspecialstudio.dead_air.radio.StationRegistry.BEDROCK_RADIO_ID);
+        var emergency = uk.co.extraspecialstudio.dead_air.radio.StationRegistry.getStation(
+            uk.co.extraspecialstudio.dead_air.radio.StationRegistry.EMERGENCY_BROADCAST_ID);
+        line(src, "effective bedrockStation=" + (bedrock == null ? "n/a" : bedrock.getBroadcastRange())
+            + " emergencyStation=" + (emergency == null ? "n/a" : emergency.getBroadcastRange()));
         line(src, "minTowerSpacing=" + Config.minTowerSpacing);
         line(src, "enableLineOfSight=" + Config.enableLineOfSight);
         line(src, "enableWeatherEffects=" + Config.enableWeatherEffects);
@@ -64,19 +70,19 @@ public final class DeadAirConfigCommand {
     private static int checklist(CommandSourceStack src) {
         line(src, "=== Dead Air checks (current values) ===");
         line(src, "1. HUD is " + Config.overlayCorner + " inset "
-            + Config.overlayOffsetX + "," + Config.overlayOffsetY + " — look at walkie overlay.");
+            + Config.overlayOffsetX + "," + Config.overlayOffsetY + " â€” look at walkie overlay.");
         line(src, "2. radioAlwaysOn=" + Config.radioAlwaysOn
-            + " — " + (Config.radioAlwaysOn ? "music should play from inventory." : "music ONLY while walkie is held."));
+            + " â€” " + (Config.radioAlwaysOn ? "music should play from inventory." : "music ONLY while walkie is held."));
         line(src, "3. musicStationRange=" + Config.musicStationRange
-            + " — walk away; bars should drop by ~75-block steps. At 75, you lose signal almost immediately.");
+            + " â€” walk away; bars should drop by ~75-block steps. At 75, you lose signal almost immediately.");
         line(src, "4. emergencyBroadcastRange=" + Config.emergencyBroadcastRange
-            + " — Emergency station dies much sooner if this is 250.");
+            + " â€” Emergency station dies much sooner if this is 250.");
         line(src, "5. musicPlaysWithoutTower=" + Config.musicPlaysWithoutTower
-            + " — " + (Config.musicPlaysWithoutTower ? "can keep playing with no powered tower." : "must have a powered tower in range."));
+            + " â€” " + (Config.musicPlaysWithoutTower ? "can keep playing with no powered tower." : "must have a powered tower in range."));
         line(src, "6. Volume max=" + Config.maxVolume + " min=" + Config.minVolume
-            + " — 5/5 loud, 1/5 very quiet (0 min = almost silent).");
+            + " â€” 5/5 loud, 1/5 very quiet (0 min = almost silent).");
         line(src, "7. Weather/LOS " + Config.enableWeatherEffects + "/" + Config.enableLineOfSight
-            + " — rain or a wall should weaken bars when true.");
+            + " â€” rain or a wall should weaken bars when true.");
         return 1;
     }
 

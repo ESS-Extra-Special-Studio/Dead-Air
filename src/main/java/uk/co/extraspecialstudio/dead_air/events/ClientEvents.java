@@ -172,6 +172,18 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
+    public static void onClientLoggingIn(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingIn event) {
+        java.util.List<String> packs = uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.installedKnownPacks();
+        if (packs.isEmpty()) return;
+        try {
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
+                new uk.co.extraspecialstudio.dead_air.net.ExpansionPacksAnnouncePacket(packs));
+        } catch (Exception e) {
+            Dead_air.LOGGER.debug("[Dead Air] Could not announce expansion packs: {}", e.toString());
+        }
+    }
+
+    @SubscribeEvent
     public static void onClientDisconnecting(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
         DISCONNECTING = true;
         try {
@@ -181,6 +193,7 @@ public class ClientEvents {
             // Audio classes may be missing in some classloader contexts
         }
         uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache.clear();
+        uk.co.extraspecialstudio.dead_air.Config.clearServerValues();
         if (net.minecraft.client.Minecraft.getInstance().player != null) {
             uk.co.extraspecialstudio.dead_air.station.StationUnlockManager.clearForPlayer(net.minecraft.client.Minecraft.getInstance().player.getUUID());
         }
@@ -192,7 +205,7 @@ public class ClientEvents {
         while (KeyBindings.TUNE_WALKIE.consumeClick()) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && WalkieTalkieManager.isHoldingWalkieTalkie(mc.player)) {
-                // Prefer off-hand when it holds a walkie and main does not — Pip-Boys equip there.
+                // Prefer off-hand when it holds a walkie and main does not â€” Pip-Boys equip there.
                 net.minecraft.world.InteractionHand hand;
                 boolean mainWalkie = WalkieTalkieManager.isWalkieTalkieItem(mc.player.getMainHandItem());
                 boolean offWalkie = WalkieTalkieManager.isWalkieTalkieItem(mc.player.getOffhandItem());
@@ -215,5 +228,5 @@ public class ClientEvents {
         }
     }
 
-    // Walkie right-click GUI: handled by WalkieItem.use() (no longer cancel — that blocked our own use()).
+    // Walkie right-click GUI: handled by WalkieItem.use() (no longer cancel â€” that blocked our own use()).
 }

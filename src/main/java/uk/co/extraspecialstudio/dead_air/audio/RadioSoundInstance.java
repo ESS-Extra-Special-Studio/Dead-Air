@@ -154,7 +154,9 @@ public class RadioSoundInstance extends AbstractSoundInstance {
 
     /** Constructor for createForTrack: same track, new volume (does not advance playlist). */
     private RadioSoundInstance(RadioStation station, float signalStrength, SoundEvent soundEvent, Vec3 playerPos) {
-        super(soundEvent, SoundSource.AMBIENT, SoundInstance.createUnseededRandom());
+        // RECORDS (not AMBIENT): static uses AMBIENT; sharing the category after stop/retune
+        // left music "playing" in our state with no OpenAL channel (silent GUI).
+        super(soundEvent, SoundSource.RECORDS, SoundInstance.createUnseededRandom());
         this.station = station;
         this.signalStrength = signalStrength;
         // Non-looping: stream plays once, then the engine stops us so the next track can start.

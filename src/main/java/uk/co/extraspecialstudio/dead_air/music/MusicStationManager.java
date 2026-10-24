@@ -372,16 +372,8 @@ public class MusicStationManager {
     private static String getDynamicStationDisplayNameOverride(String modNamespace, List<ResourceLocation> tracks) {
         String ns = modNamespace == null ? "" : modNamespace.toLowerCase(Locale.ROOT);
 
-        if (ns.equals("dead_air_wayfarer_radio")) return "Wayfarer Radio";
-        if (ns.equals("dead_air_frontline_fm")) return "Frontline FM";
-        if (ns.equals("dead_air_after_hours_fm")) return "After Hours FM";
-        if (ns.equals("dead_air_block_beats_fm")) return "Block Beats FM";
-        if (ns.equals("dead_air_broken_youth_radio")) return "Broken Youth Radio";
-        if (ns.equals("dead_air_iron_rain_fm")) return "Iron Rain FM";
-        if (ns.equals("dead_air_zero_gravity")) return "Zero Gravity";
-        if (ns.equals("dead_air_pop_paradise_radio")) return "Pop Paradise Radio";
-        if (ns.equals("dead_air_frequency_x")) return "Frequency X";
-        if (ns.equals("dead_air_parallel_horizons_fm")) return "Parallel Horizons FM";
+        String known = ExpansionPacks.KNOWN.get(ns);
+        if (known != null) return known;
 
         boolean hasEerie = ns.contains("eerie");
         boolean hasMedieval = ns.contains("medieval");
@@ -404,7 +396,7 @@ public class MusicStationManager {
     }
 
     /** Fallback display name for expansion mods without an explicit override. */
-    private static String formatExpansionModNamespaceAsStationName(String namespace) {
+    static String formatExpansionModNamespaceAsStationName(String namespace) {
         if (namespace == null || namespace.isEmpty()) return "Custom Radio";
         String slug = namespace.toLowerCase(Locale.ROOT);
         if (slug.startsWith("dead_air_")) {
@@ -541,7 +533,7 @@ public class MusicStationManager {
     /**
      * Determine genre from track ID.
      */
-    private static String determineGenre(ResourceLocation trackId) {
+    static String determineGenre(ResourceLocation trackId) {
         String path = trackId.getPath().toLowerCase();
         String ns = trackId.getNamespace().toLowerCase(Locale.ROOT);
         if (ns.equals("dead_air_after_hours_fm")) return "Lo-Fi";
@@ -565,7 +557,7 @@ public class MusicStationManager {
      * Generate a unique frequency for a station.
      * Ensures minimum spacing between stations to prevent interference.
      */
-    private static float generateFrequencyForStation(ResourceLocation stationId) {
+    static float generateFrequencyForStation(ResourceLocation stationId) {
         // Generate frequency between 88.0 and 108.0 MHz
         float minFreq = 88.0f;
         float maxFreq = 108.0f;

@@ -18,7 +18,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-/** Resonant Chord — crafted by piling 9 Static Notes on the ground. Right-click to place as decor. */
+/** Resonant Chord â€” crafted by piling 9 Static Notes on the ground. Right-click to place as decor. */
 public class ResonantChordItem extends Item implements GeoItem {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.dead_air.resonant_chord.idle");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

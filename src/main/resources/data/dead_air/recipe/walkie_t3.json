@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "CUC",
+    "RWR",
+    "NSN"
+  ],
+  "key": {
+    "C": {
+      "item": "dead_air:resonant_chord"
+    },
+    "U": {
+      "item": "dead_air:signal_upgrade"
+    },
+    "R": {
+      "item": "dead_air:dimensional_relay"
+    },
+    "W": {
+      "item": "dead_air:walkie_t2"
+    },
+    "N": {
+      "item": "dead_air:static_note"
+    },
+    "S": {
+      "item": "dead_air:signal_decoder"
+    }
+  },
+  "result": {
+    "id": "dead_air:walkie_t3",
+    "count": 1
+  }
+}

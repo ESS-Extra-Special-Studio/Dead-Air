@@ -33,5 +33,15 @@ public final class DeadAirEvents {
         NeoForge.EVENT_BUS.post(event);
         return false;
     }
+
+    public static boolean post(uk.co.extraspecialstudio.dead_air.api.events.types.ListenerFirstEncounterSurvivedEvent event) {
+        NeoForge.EVENT_BUS.post(event);
+        return false;
+    }
+
+    public static boolean post(uk.co.extraspecialstudio.dead_air.api.events.types.ListenerDefeatedEvent event) {
+        NeoForge.EVENT_BUS.post(event);
+        return false;
+    }
 }
 

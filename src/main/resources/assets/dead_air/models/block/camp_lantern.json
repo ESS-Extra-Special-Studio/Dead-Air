@@ -1,0 +1,1598 @@
+{
+    "credit":  "Made with Blockbench",
+    "textures":  {
+                     "particle":  "dead_air:block/camp_lantern_metal",
+                     "metal":  "dead_air:block/camp_lantern_metal",
+                     "glass":  "dead_air:block/camp_lantern_glass",
+                     "flame":  "dead_air:block/camp_lantern_flame"
+                 },
+    "elements":  [
+                     {
+                         "name":  "base",
+                         "from":  [
+                                      5.5,
+                                      0,
+                                      5.5
+                                  ],
+                         "to":  [
+                                    10.5,
+                                    1.1,
+                                    10.5
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                5,
+                                                                1.2
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               5,
+                                                               1.2
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                5,
+                                                                1.2
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               5,
+                                                               1.2
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             5,
+                                                             5
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               5,
+                                                               5
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "base_ring",
+                         "from":  [
+                                      6,
+                                      1.1,
+                                      6
+                                  ],
+                         "to":  [
+                                    10,
+                                    1.45,
+                                    10
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                4,
+                                                                0.4
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               4,
+                                                               0.4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                4,
+                                                                0.4
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               4,
+                                                               0.4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             4,
+                                                             4
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               4,
+                                                               4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "post_fl",
+                         "from":  [
+                                      6,
+                                      1.45,
+                                      6
+                                  ],
+                         "to":  [
+                                    6.7,
+                                    7.4,
+                                    6.7
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.7,
+                                                             0.7
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               0.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "post_fr",
+                         "from":  [
+                                      9.3,
+                                      1.45,
+                                      6
+                                  ],
+                         "to":  [
+                                    10,
+                                    7.4,
+                                    6.7
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.7,
+                                                             0.7
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               0.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "post_bl",
+                         "from":  [
+                                      6,
+                                      1.45,
+                                      9.3
+                                  ],
+                         "to":  [
+                                    6.7,
+                                    7.4,
+                                    10
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.7,
+                                                             0.7
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               0.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "post_br",
+                         "from":  [
+                                      9.3,
+                                      1.45,
+                                      9.3
+                                  ],
+                         "to":  [
+                                    10,
+                                    7.4,
+                                    10
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.7,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.7,
+                                                             0.7
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.7,
+                                                               0.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "cap",
+                         "from":  [
+                                      5.8,
+                                      7.4,
+                                      5.8
+                                  ],
+                         "to":  [
+                                    10.2,
+                                    8.25,
+                                    10.2
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                4.4,
+                                                                1
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               4.4,
+                                                               1
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                4.4,
+                                                                1
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               4.4,
+                                                               1
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             4.4,
+                                                             4.4
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               4.4,
+                                                               4.4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "dome",
+                         "from":  [
+                                      6.3,
+                                      8.25,
+                                      6.3
+                                  ],
+                         "to":  [
+                                    9.7,
+                                    8.95,
+                                    9.7
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                3.4,
+                                                                0.8
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               3.4,
+                                                               0.8
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                3.4,
+                                                                0.8
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               3.4,
+                                                               0.8
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             3.4,
+                                                             3.4
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               3.4,
+                                                               3.4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "vent",
+                         "from":  [
+                                      7.1,
+                                      8.95,
+                                      7.1
+                                  ],
+                         "to":  [
+                                    8.9,
+                                    9.7,
+                                    8.9
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1.8,
+                                                                0.75
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0.1,
+                                                               0,
+                                                               1.9,
+                                                               0.75
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1.8,
+                                                                0.75
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.8,
+                                                               0.75
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             1.8,
+                                                             1.8
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0.1,
+                                                               1.8,
+                                                               1.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "bail_l",
+                         "from":  [
+                                      6.5,
+                                      9.4,
+                                      7.6
+                                  ],
+                         "to":  [
+                                    7.1,
+                                    11.6,
+                                    8.4
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.6,
+                                                                2.7
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.8,
+                                                               2.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.6,
+                                                                2.7
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.8,
+                                                               2.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.6,
+                                                             0.8
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.6,
+                                                               0.8
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "bail_r",
+                         "from":  [
+                                      8.9,
+                                      9.4,
+                                      7.6
+                                  ],
+                         "to":  [
+                                    9.5,
+                                    11.6,
+                                    8.4
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0.5,
+                                                                0.6,
+                                                                2.7
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0.5,
+                                                               0.8,
+                                                               2.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0.5,
+                                                                0.6,
+                                                                2.7
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0.5,
+                                                               0.8,
+                                                               2.7
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.6,
+                                                             0.8
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.6,
+                                                               0.8
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "bail_top",
+                         "from":  [
+                                      6.5,
+                                      11.55,
+                                      7.6
+                                  ],
+                         "to":  [
+                                    9.5,
+                                    12.15,
+                                    8.4
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                3,
+                                                                0.6
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.8,
+                                                               0.6
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                3,
+                                                                0.6
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.8,
+                                                               0.6
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             3,
+                                                             0.8
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               3,
+                                                               0.8
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "wick_base",
+                         "from":  [
+                                      7.4,
+                                      1.45,
+                                      7.4
+                                  ],
+                         "to":  [
+                                    8.6,
+                                    2.7,
+                                    8.6
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1.2,
+                                                                1.6
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.2,
+                                                               1.6
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1.2,
+                                                                1.6
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.2,
+                                                               1.6
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             1.2,
+                                                             1.2
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.2,
+                                                               1.2
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_n",
+                         "from":  [
+                                      6.7,
+                                      1.45,
+                                      6.15
+                                  ],
+                         "to":  [
+                                    9.3,
+                                    7.4,
+                                    6.35
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                2.6,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.2,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                2.6,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.2,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             2.6,
+                                                             0.2
+                                                         ],
+                                                  "texture":  "#glass"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               2.6,
+                                                               0.2
+                                                           ],
+                                                    "texture":  "#glass"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_s",
+                         "from":  [
+                                      6.7,
+                                      1.45,
+                                      9.65
+                                  ],
+                         "to":  [
+                                    9.3,
+                                    7.4,
+                                    9.85
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                2.6,
+                                                                7
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.2,
+                                                               7
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                2.6,
+                                                                7
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.2,
+                                                               7
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             2.6,
+                                                             0.2
+                                                         ],
+                                                  "texture":  "#glass"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               2.6,
+                                                               0.2
+                                                           ],
+                                                    "texture":  "#glass"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_w",
+                         "from":  [
+                                      6.15,
+                                      1.45,
+                                      6.7
+                                  ],
+                         "to":  [
+                                    6.35,
+                                    7.4,
+                                    9.3
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.2,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               2.6,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.2,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               2.6,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.2,
+                                                             2.6
+                                                         ],
+                                                  "texture":  "#glass"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.2,
+                                                               2.6
+                                                           ],
+                                                    "texture":  "#glass"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_e",
+                         "from":  [
+                                      9.65,
+                                      1.45,
+                                      6.7
+                                  ],
+                         "to":  [
+                                    9.85,
+                                    7.4,
+                                    9.3
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.2,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               2.6,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.2,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#glass"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               2.6,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#glass"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.2,
+                                                             2.6
+                                                         ],
+                                                  "texture":  "#glass"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.2,
+                                                               2.6
+                                                           ],
+                                                    "texture":  "#glass"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_bar_n",
+                         "from":  [
+                                      7.8,
+                                      1.45,
+                                      6.1
+                                  ],
+                         "to":  [
+                                    8.2,
+                                    7.4,
+                                    6.4
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.4,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.3,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.4,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.3,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.4,
+                                                             0.3
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.4,
+                                                               0.3
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_bar_s",
+                         "from":  [
+                                      7.8,
+                                      1.45,
+                                      9.6
+                                  ],
+                         "to":  [
+                                    8.2,
+                                    7.4,
+                                    9.9
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.4,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.3,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.4,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.3,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.4,
+                                                             0.3
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.4,
+                                                               0.3
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "flame_core",
+                         "from":  [
+                                      7.3,
+                                      2.7,
+                                      7.3
+                                  ],
+                         "to":  [
+                                    8.7,
+                                    5.3,
+                                    8.7
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1.4,
+                                                                3
+                                                            ],
+                                                     "texture":  "#flame"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.4,
+                                                               3
+                                                           ],
+                                                    "texture":  "#flame"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1.4,
+                                                                3
+                                                            ],
+                                                     "texture":  "#flame"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.4,
+                                                               3
+                                                           ],
+                                                    "texture":  "#flame"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             1.4,
+                                                             1.4
+                                                         ],
+                                                  "texture":  "#flame"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1.4,
+                                                               1.4
+                                                           ],
+                                                    "texture":  "#flame"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "flame_tip",
+                         "from":  [
+                                      7.5,
+                                      5.3,
+                                      7.5
+                                  ],
+                         "to":  [
+                                    8.5,
+                                    6.4,
+                                    8.5
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1,
+                                                                1.2
+                                                            ],
+                                                     "texture":  "#flame"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1,
+                                                               1.2
+                                                           ],
+                                                    "texture":  "#flame"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                1,
+                                                                1.2
+                                                            ],
+                                                     "texture":  "#flame"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1,
+                                                               1.2
+                                                           ],
+                                                    "texture":  "#flame"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             1,
+                                                             1
+                                                         ],
+                                                  "texture":  "#flame"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               1,
+                                                               1
+                                                           ],
+                                                    "texture":  "#flame"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_bar_w",
+                         "from":  [
+                                      6.1,
+                                      1.45,
+                                      7.8
+                                  ],
+                         "to":  [
+                                    6.4,
+                                    7.4,
+                                    8.2
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.3,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.4,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.3,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.4,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.3,
+                                                             0.4
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.3,
+                                                               0.4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     },
+                     {
+                         "name":  "glass_bar_e",
+                         "from":  [
+                                      9.6,
+                                      1.45,
+                                      7.8
+                                  ],
+                         "to":  [
+                                    9.9,
+                                    7.4,
+                                    8.2
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.3,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.4,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                0,
+                                                                0,
+                                                                0.3,
+                                                                6.9
+                                                            ],
+                                                     "texture":  "#metal"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.4,
+                                                               6.9
+                                                           ],
+                                                    "texture":  "#metal"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             0,
+                                                             0,
+                                                             0.3,
+                                                             0.4
+                                                         ],
+                                                  "texture":  "#metal"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0,
+                                                               0.3,
+                                                               0.4
+                                                           ],
+                                                    "texture":  "#metal"
+                                                }
+                                   }
+                     }
+                 ]
+}

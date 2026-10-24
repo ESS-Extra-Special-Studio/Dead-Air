@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Persisted list of towers: (dimension, towerPos, panelPos, stationId, activated).
  * <ul>
- *   <li><b>Detected</b> ({@code activated=false}): written on chunk scan — walkie direction only.</li>
- *   <li><b>Activated</b> ({@code activated=true}): panel turned on — music / unlock / full signal.</li>
+ *   <li><b>Detected</b> ({@code activated=false}): written on chunk scan â€” walkie direction only.</li>
+ *   <li><b>Activated</b> ({@code activated=true}): panel turned on â€” music / unlock / full signal.</li>
  * </ul>
- * Signal for music resolves from activated entries only — no chunk scanning.
+ * Signal for music resolves from activated entries only â€” no chunk scanning.
  */
 public final class KnownTowerStorage {
     private static final String BACKUP_FILE = "dead_air_known_towers.dat";
@@ -182,7 +182,7 @@ public final class KnownTowerStorage {
             KnownTowerEntry e = list.get(i);
             if (e.panelPos.equals(p) || e.towerPos.equals(t)) {
                 if (e.activated) {
-                    // Already broadcasting — leave alone
+                    // Already broadcasting â€” leave alone
                     return false;
                 }
                 ResourceLocation station = provisionalStationId != null ? provisionalStationId : e.stationId;

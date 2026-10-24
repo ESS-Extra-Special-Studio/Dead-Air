@@ -477,7 +477,7 @@ public class TowerManager {
 
     /**
      * Determine which station a tower should broadcast. Avoids stations that already have a tower
-     * within minTowerSpacing (so two towers in signal range never share a station — each gets its own discovery).
+     * within minTowerSpacing (so two towers in signal range never share a station â€” each gets its own discovery).
      */
     public static RadioStation determineStationForTower(ServerLevel level, BlockPos pos, ApocalypseTowerType towerType) {
         java.util.Set<ResourceLocation> excluded = getStationsAlreadyInRangeOf(level, pos);
@@ -499,10 +499,13 @@ public class TowerManager {
 
         List<RadioStation> musicAll = StationRegistry.getStationsByType(RadioStation.StationType.MUSIC);
         List<RadioStation> musicStations = musicAll.stream()
-            .filter(s -> s != null && !StationRegistry.JUKEBOX_FM_ID.equals(s.getId()))
+            .filter(s -> s != null && !StationRegistry.JUKEBOX_FM_ID.equals(s.getId())
+                && !uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.isMissingPack(s.getId()))
             .toList();
         if (musicStations.isEmpty()) {
-            musicStations = musicAll;
+            musicStations = musicAll.stream()
+                .filter(s -> s != null && !uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.isMissingPack(s.getId()))
+                .toList();
         }
         if (musicStations.isEmpty()) {
             return emergencyStation != null ? emergencyStation : null;

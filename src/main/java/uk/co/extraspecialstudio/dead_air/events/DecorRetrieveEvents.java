@@ -2,34 +2,34 @@ package uk.co.extraspecialstudio.dead_air.events;
 
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.item.PlaceableDecorations;
 
 /**
  * Decorations never auto-vacuum into the inventory. Punch, right-click, or swing-look to retrieve.
+ * All PlaceableDecorations calls are guarded â€” a linkage/classloader glitch must not kill the server tick.
  */
 @EventBusSubscriber(modid = Dead_air.MODID)
 public final class DecorRetrieveEvents {
+    private static boolean decorLinkageWarned;
+
     private DecorRetrieveEvents() {}
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
-        if (PlaceableDecorations.isDecorStack(event.getItemEntity().getItem())) {
+        if (isDecorStackSafe(event.getItemEntity().getItem())) {
             event.setCanPickup(net.neoforged.neoforge.common.util.TriState.FALSE);
         }
     }
@@ -39,7 +39,7 @@ public final class DecorRetrieveEvents {
         if (!(event.getTarget() instanceof ItemEntity item)) return;
         Player player = event.getEntity();
         if (player.level().isClientSide()) return;
-        if (PlaceableDecorations.tryRetrieve(player, item)) {
+        if (tryRetrieveSafe(player, item)) {
             event.setCanceled(true);
         }
     }
@@ -48,7 +48,7 @@ public final class DecorRetrieveEvents {
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getTarget() instanceof ItemEntity item)) return;
         if (event.getLevel().isClientSide()) return;
-        if (PlaceableDecorations.tryRetrieve(event.getEntity(), item)) {
+        if (tryRetrieveSafe(event.getEntity(), item)) {
             event.setCanceled(true);
             event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
         }
@@ -62,7 +62,6 @@ public final class DecorRetrieveEvents {
         }
     }
 
-    /** When the player starts a swing, pick up a looked-at decor item (covers punching in open air). */
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
@@ -72,20 +71,51 @@ public final class DecorRetrieveEvents {
     }
 
     private static boolean tryRaycastRetrieve(Player player) {
-        double reach = player.blockInteractionRange();
-        Vec3 eye = player.getEyePosition(1f);
-        Vec3 look = player.getViewVector(1f);
-        Vec3 end = eye.add(look.scale(reach));
-        AABB box = player.getBoundingBox().expandTowards(look.scale(reach)).inflate(1.0);
+        try {
+            double reach = player.blockInteractionRange();
+            Vec3 eye = player.getEyePosition(1f);
+            Vec3 look = player.getViewVector(1f);
+            Vec3 end = eye.add(look.scale(reach));
+            AABB box = player.getBoundingBox().expandTowards(look.scale(reach)).inflate(1.0);
 
-        EntityHitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
-            player.level(), player, eye, end, box,
-            e -> e instanceof ItemEntity ie
-                && PlaceableDecorations.isDecorStack(ie.getItem())
-                && !ie.isRemoved());
+            EntityHitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
+                player.level(), player, eye, end, box,
+                e -> e instanceof ItemEntity ie
+                    && isDecorStackSafe(ie.getItem())
+                    && !ie.isRemoved());
 
-        if (hit == null || hit.getType() != HitResult.Type.ENTITY) return false;
-        if (!(hit.getEntity() instanceof ItemEntity item)) return false;
-        return PlaceableDecorations.tryRetrieve(player, item);
+            if (hit == null || hit.getType() != HitResult.Type.ENTITY) return false;
+            if (!(hit.getEntity() instanceof ItemEntity item)) return false;
+            return tryRetrieveSafe(player, item);
+        } catch (Throwable t) {
+            warnDecorLinkage(t);
+            return false;
+        }
+    }
+
+    private static boolean isDecorStackSafe(ItemStack stack) {
+        try {
+            return PlaceableDecorations.isDecorStack(stack);
+        } catch (Throwable t) {
+            warnDecorLinkage(t);
+            return false;
+        }
+    }
+
+    private static boolean tryRetrieveSafe(Player player, ItemEntity item) {
+        try {
+            return PlaceableDecorations.tryRetrieve(player, item);
+        } catch (Throwable t) {
+            warnDecorLinkage(t);
+            return false;
+        }
+    }
+
+    private static void warnDecorLinkage(Throwable t) {
+        if (decorLinkageWarned) return;
+        decorLinkageWarned = true;
+        Dead_air.LOGGER.error(
+            "[Dead Air] PlaceableDecorations unavailable â€” decor retrieve disabled for this session. Fully restart the game if you hot-swapped the jar.",
+            t);
     }
 }

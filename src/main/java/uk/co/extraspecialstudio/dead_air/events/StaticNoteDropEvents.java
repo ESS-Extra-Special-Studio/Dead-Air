@@ -14,7 +14,7 @@ import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
 
 /**
  * Drops Static Notes when a player kills a mob while their single active walkie is on and tuned.
- * Chance comes only from that active radio (T1 15% / T2 30%) — extra radios in inventory do not help.
+ * Chance comes only from that active radio (T1 15% / T2 30%) â€” extra radios in inventory do not help.
  * Does not require holding the walkie.
  */
 @EventBusSubscriber(modid = Dead_air.MODID)

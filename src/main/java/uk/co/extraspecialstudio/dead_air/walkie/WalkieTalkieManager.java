@@ -80,7 +80,7 @@ public class WalkieTalkieManager {
     }
 
     public static void initialize() {
-        // Dead Air walkies are registered via DeadAirItems — no external scan needed.
+        // Dead Air walkies are registered via DeadAirItems â€” no external scan needed.
     }
 
     public static boolean isWalkieTalkieItem(ItemStack stack) {
@@ -99,12 +99,17 @@ public class WalkieTalkieManager {
         return stack.is(DeadAirTags.WALKIE_T1) || stack.is(DeadAirItems.WALKIE_T1.get());
     }
 
+    /** T2 or better: T3 keeps every T2 feature. */
     public static boolean isT2(ItemStack stack) {
         if (stack.isEmpty()) return false;
         if (stack.getItem() instanceof WalkieItem walkie) {
-            return walkie.getTier() == WalkieItem.Tier.T2;
+            return walkie.getTier() != WalkieItem.Tier.T1;
         }
         return stack.is(DeadAirTags.WALKIE_T2) || stack.is(DeadAirItems.WALKIE_T2.get());
+    }
+
+    public static boolean isT3(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() instanceof WalkieItem walkie && walkie.getTier() == WalkieItem.Tier.T3;
     }
 
     public static boolean canLinkCrossDim(ItemStack stack) {
@@ -114,18 +119,18 @@ public class WalkieTalkieManager {
         return isT2(stack);
     }
 
-    /** Note-drop chance while listening (on + tuned): from the single active radio only — T1 15%, T2 30%. */
+    /** Note-drop chance while listening (on + tuned): from the single active radio only â€” T1 15%, T2 30%. */
     public static float getStaticNoteDropChance(Player player) {
         ensureSingleActiveListening(player);
         ItemStack active = findListeningWalkie(player);
         if (active.isEmpty()) return 0f;
-        // Explicitly the active listening walkie only — extra radios in inventory do not stack chance.
+        // Explicitly the active listening walkie only â€” extra radios in inventory do not stack chance.
         return isT2(active) ? 0.30f : 0.15f;
     }
 
     /**
      * True when any walkie on the player (hand, hotbar, or bag) is powered on and tuned to a station.
-     * Independent of {@link #shouldPlayRadio} — drops must not require holding the radio.
+     * Independent of {@link #shouldPlayRadio} â€” drops must not require holding the radio.
      */
     public static boolean isListeningToRadio(Player player) {
         return !findListeningWalkie(player).isEmpty();
@@ -158,7 +163,7 @@ public class WalkieTalkieManager {
     }
 
     /**
-     * If multiple walkies are somehow on+tuned, keep hand preference (main → off → first inventory)
+     * If multiple walkies are somehow on+tuned, keep hand preference (main â†’ off â†’ first inventory)
      * and untune the rest. Safe to call every tick.
      */
     public static void ensureSingleActiveListening(Player player) {
@@ -297,7 +302,7 @@ public class WalkieTalkieManager {
             } catch (Exception ignored) {
             }
         }
-        // This walkie has no station NBT — clear player runtime so we don't leak the other walkie's tune.
+        // This walkie has no station NBT â€” clear player runtime so we don't leak the other walkie's tune.
         state.setCurrentStation(null);
         state.setOn(tag == null || !tag.contains(NBT_ON) || tag.getBoolean(NBT_ON));
     }

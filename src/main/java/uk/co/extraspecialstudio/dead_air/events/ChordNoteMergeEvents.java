@@ -7,13 +7,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.item.DeadAirItems;
 import uk.co.extraspecialstudio.dead_air.item.PlaceableDecorations;
@@ -40,16 +36,32 @@ public final class ChordNoteMergeEvents {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         if (level.getGameTime() % CHECK_INTERVAL_TICKS != 0) return;
 
+        try {
+            tickMerge(level);
+        } catch (Throwable t) {
+            Dead_air.LOGGER.error("[Dead Air] Chord note merge tick failed", t);
+        }
+    }
+
+    private static boolean isMergableNote(ItemEntity e) {
+        if (e.isRemoved() || !e.onGround()) return false;
+        ItemStack stack = e.getItem();
+        if (stack.isEmpty() || !stack.is(DeadAirItems.STATIC_NOTE.get())) return false;
+        try {
+            if (PlaceableDecorations.isDecorStack(stack)) return false;
+        } catch (Throwable t) {
+            return false;
+        }
+        return stack.getCount() > 0;
+    }
+
+    private static void tickMerge(ServerLevel level) {
         List<ItemEntity> notes = new ArrayList<>();
         Set<Integer> seen = new HashSet<>();
         for (var player : level.players()) {
             List<ItemEntity> nearby = level.getEntitiesOfClass(ItemEntity.class,
                 player.getBoundingBox().inflate(48.0),
-                e -> !e.isRemoved()
-                    && e.getItem().is(DeadAirItems.STATIC_NOTE.get())
-                    && e.getItem().getCount() > 0
-                    && e.onGround()
-                    && !PlaceableDecorations.isDecorStack(e.getItem()));
+                ChordNoteMergeEvents::isMergableNote);
             for (ItemEntity item : nearby) {
                 if (seen.add(item.getId())) {
                     notes.add(item);
@@ -67,7 +79,7 @@ public final class ChordNoteMergeEvents {
             Vec3 center = seed.position();
             for (ItemEntity other : notes) {
                 if (consumed.contains(other) || other.isRemoved()) continue;
-                if (PlaceableDecorations.isDecorStack(other.getItem())) continue;
+                if (!isMergableNote(other)) continue;
                 if (other.distanceToSqr(center) > CLUSTER_RADIUS * CLUSTER_RADIUS) continue;
                 cluster.add(other);
                 total += other.getItem().getCount();

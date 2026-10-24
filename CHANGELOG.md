@@ -1,20 +1,65 @@
-﻿## 2.1.5
+## 3.0.0
+
+Added:
+
+- T3.Radio and Signal Decoder — decode Emergency Broadcasts; Transmit answers The Listener.
+- Signal Breaker (Acoustic weapon) and its five components: Distortion Core, Broadcaster Coil, Maw Fang, Scrambler Chip, Echo Crystal.
+- Broken Relay block, Relay Log, Survivor Tent, Signal Firepit, and Listener / Signal Anchor / Survivor spawn eggs.
+- Emergency Broadcast camp décor — folding chairs (sittable), clothesline, camp table / lantern, jerrycan, cooking pot, medical case, survivor backpack, and traffic cones used at distress / convoy / auction sites.
+- Soundtrack expansion packs on dedicated servers — studio packs stay client-only; joining players announce installed packs, the server registers those stations and saves them per world (`expansionStations` config for third-party / force-add). Clients without a pack see “Requires the … pack” instead of silence with a fake playlist.
+- Acoustic damage type (`dead_air:acoustic`) — Signal Breaker hits convert to Acoustic; The Listener only takes Acoustic.
+- The Listener boss — FIRST encounter (timer / Signal Anchors, Listening Silence fog and jam, crouch stealth) and FINAL kill fight; dissolve / assemble / agro / fade-pulse SFX; admin cleanup commands.
+- Signal Anchors during FIRST fights — break them to cut the connection early.
+- Emergency Broadcast system on T3: night scheduler, map markers, proximity “Tune now?” prompts, and procedural sites.
+- Story EBs — Broken Relay transmissions, It Hears You, and Signal Breaker hint.
+- Side EBs — Distress Call camps, Refugee Convoy, Dead Channel Auction, Missing Recruit, Base Under Attack (defenders + siren), Downed Plane crash (Mayday loot), and Pirate FM takeover (expansion soundtrack packs).
+- Procedural structures for camps, convoys, auctions, crash sites, and broken relays.
+- Survivors — recruit stranded people, roster vs FOLLOWING party caps, settle at home or a radio panel base, supplies, XP / skills, ESC-themed dialogue, Equipment satchel, Defend / Patrol duties.
+- Survivor professions — Scavenger, Medic, Radio Operator, Pilot, Military, Civilian (kits, supplies, themed skins); Medic Heal; Scavenger loot path + kill loot bump; Radio Op music damage buff; Military damage bonus; Pilot stays at base; Civilian Train when settled; TaCZ / Point Blank starter guns (Military always, Scavenger ~60%, others melee/bow).
+- ESC hold-key action wheel for party orders (Follow / Defend / Attack / Retreat / Regroup), ESC party HUD (HP, downed, distance, profession, XP), lost-from-party return to base with reunion lines, and downed / revive instead of instant death in normal combat.
+- Player radio base — set a panel as base (force-load), send survivors home, Base Under Attack waves.
+- Advancement tab — radio discovery, Emergency Broadcasts, survivors, and Listener story spine (The Listener naming; login catch-up for existing saves).
+- Field Guide pages for survivor party and related config (HUD corner/offset, follow leash, lost distance, formation spacing).
+- Field Guide pages for T3.Radio, Signal Decoder, Signal Breaker, Emergency Broadcasts, The Listener, side sites, and radio bases.
+- Breaker / Acoustic / Resonant Chord SFX and quieter Base Under Attack radio siren.
+- Soft compat (optional, soft-fail if the mod is missing) — TaCZ / Point Blank: survivor starter guns, NPC shoot AI, and gun loot in auctions / crash chests / scavenger supplies (`#dead_air:compat/guns`); survivorGunFullModels for full 3D held guns vs cheap LOD.
+- Soft compat — JourneyMap and Xaero’s Minimap / World Map: temporary waypoints at Emergency Broadcast / proximity sites and player radio bases.
+- Soft compat — FTB Chunks: best-effort claim / force-load around a set radio-panel base.
+- Soft compat — Cold Sweat: temp gear in medic supplies and Dead Channel Auction; Signal Firepit heat via datapack block_temp.
+- Soft compat — Tough As Nails: water / purification loot in medic and scavenger supplies and auction offers.
+- Soft compat — MrCrayfish Vehicle / Vehicle Reborn: parts chest near Downed Plane crash sites.
+- Soft compat — Immersive Aircraft: alternate crash-wreck loot when a RadioTowers plane wreck is not used.
+- Soft compat — Zombie Awareness / Enhanced AI: bump Base Under Attack wave count (and trigger a horde hook when available).
+- Config `[broadcasts]` — broadcastsEnabled, broadcastMinDays / broadcastMaxDays, forceTuneOnStoryBroadcast, storyRelaysRequired, relayMinDistance / relayMaxDistance, encounterDurationSeconds, proximityDetectRadius, proximityPromptCooldownSeconds.
+- Config `[survivors]` — survivorsEnabled, maxSurvivorsPerPlayer, maxPartySize, partyHudEnabled / partyHudCorner / partyHudOffsetX / partyHudOffsetY, partyFollowLeash, partyLostDistance, partyFormationSpacing, survivorSupplyDays, baseAttackMobCount / baseAttackCooldownDays, auctionDespawnDays / auctionDespawnDistance, sideEventCooldownDays.
+- Config `[compat]` toggles — tacz, pointBlank, survivorGunFullModels, journeymap, xaero, ftbChunks, coldSweat, toughAsNails, vehicle, immersiveAircraft, horde.
+- Soft compat — Apocalypse Now, Survival Instinct, Zombie Survival Kit, and Chovy's Apocalypse: mid-tier survivor apparel, plus food, medical, and scrap gear in Emergency Broadcast chests and supplies. Exo, juggernaut, and bombsquad kits are skipped.
+- `DeadAirAPI.isBossModeUnlocked` / `isListenerDefeated` so RadioTowers can lock Boss Mode and Endless Mode airdrop tabs.
+- Radio-panel bases force-load their chunk through ESL. The site is saved and reapplied on server start. FTB Chunks claim stays optional.
 
 Changed:
-Version matched to Forge 2.1.5. The unused ItemStack mixin that blocked Forge launch is not in this loader.
+
+- Requires ES Library 1.2.0 or newer (`[1.2.0,2.0)`), Extra Special Core 2.1.0 or newer (`[2.1.0,3.0)`), and RadioTowers 1.3.0 or newer (`[1.3.0,2.0)`).
+- Planned (unreleased) soundtrack packs are no longer listed as selectable stations until their jar exists.
+
+Fixed:
+
+- One map pin per Emergency Broadcast site.
+- Dead Channel Auction uses a broker who stays at the site.
+- Config sync / reload so common toml and in-game config values apply correctly on clients joining a server.
+- Expansion soundtrack stations no longer invent stand-ins for every known pack (including unreleased names) when the jar is missing.
 
 ## 2.1.4
 
 Fixed:
 Custom stations under config/dead_air/custom stations/<name>/*.ogg register even when legacy customMusicPath is empty or missing.
 Custom station registration no longer silently skips when its first FM frequency slot is taken.
-Config / Field Guide screens use ESC renderWorldDim once so panels stay crisp over the world.
 
 # Changelog
 
 All notable changes to Dead Air will be documented in this file.
 
-2.1.3
+## 2.1.3
 
 Update by: Extra_Special_K
 
@@ -28,7 +73,6 @@ Update by: Extra_Special_K
 
 Added:
 
-- NeoForge 1.21.1 port of the 2.1.2 feature set.
 - Field Guide now notes that T1.Radio is default guaranteed loot in RadioTowers radio tower chests (separate from airdrop crates).
 
 Changed:

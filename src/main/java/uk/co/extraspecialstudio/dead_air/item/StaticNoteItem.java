@@ -7,7 +7,7 @@ import net.minecraft.world.item.context.UseOnContext;
 
 import javax.annotation.Nonnull;
 
-/** Static Note resource — drops while listening to radio music. Right-click to place as decor. */
+/** Static Note resource â€” drops while listening to radio music. Right-click to place as decor. */
 public class StaticNoteItem extends Item {
     public StaticNoteItem(Properties properties) {
         super(properties);

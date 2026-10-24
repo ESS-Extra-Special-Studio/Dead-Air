@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "dead_air:block/clothesline" },
+    "facing=east": { "model": "dead_air:block/clothesline", "y": 90 },
+    "facing=south": { "model": "dead_air:block/clothesline", "y": 180 },
+    "facing=west": { "model": "dead_air:block/clothesline", "y": 270 }
+  }
+}

@@ -35,26 +35,31 @@ public class BlockEvents {
         
         BlockPos pos = event.getPos();
         
-        // Check if placed block is a Radio Panel (towers are identified by their Radio Panels)
-        if (ApocalypseTowerDetector.isRadioPanel(level, pos)) {
-            // Found a Radio Panel - check if it's an official tower or player-built
-            ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
-            
-            if (towerType != ApocalypseTowerType.UNKNOWN) {
-                // Official tower - register it (TowerManager avoids same station within range)
-                RadioStation station = TowerManager.determineStationForTower(level, pos, towerType);
-                if (station != null) {
-                    // Register tower at the Radio Panel position
-                    TowerManager.registerTower(level, pos, station, towerType);
-                }
-            } else {
-                // Player-built tower - register with default station (Emergency Broadcast)
-                // Player can change station later if we add that feature
-                RadioStation defaultStation = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-                if (defaultStation != null) {
-                    TowerManager.registerPlayerTower(level, pos, defaultStation);
+        try {
+            // Check if placed block is a Radio Panel (towers are identified by their Radio Panels)
+            if (ApocalypseTowerDetector.isRadioPanel(level, pos)) {
+                // Found a Radio Panel - check if it's an official tower or player-built
+                ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
+                
+                if (towerType != ApocalypseTowerType.UNKNOWN) {
+                    // Official tower - register it (TowerManager avoids same station within range)
+                    RadioStation station = TowerManager.determineStationForTower(level, pos, towerType);
+                    if (station != null) {
+                        // Register tower at the Radio Panel position
+                        TowerManager.registerTower(level, pos, station, towerType);
+                    }
+                } else {
+                    // Player-built tower - register with default station (Emergency Broadcast)
+                    // Player can change station later if we add that feature
+                    RadioStation defaultStation = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
+                    if (defaultStation != null) {
+                        TowerManager.registerPlayerTower(level, pos, defaultStation);
+                    }
                 }
             }
+        } catch (LinkageError | Exception e) {
+            // Never let panel place kill the integrated server (ModuleClassLoader NoClassDefFoundError)
+            Dead_air.LOGGER.error("Dead Air: failed to register tower on panel place at {}", pos, e);
         }
     }
     

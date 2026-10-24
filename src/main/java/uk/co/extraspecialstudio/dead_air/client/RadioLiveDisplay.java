@@ -52,7 +52,7 @@ public final class RadioLiveDisplay {
         LcdRect rect,
         /** If non-null, atlas must match this square size (built-in T2 = 1024). Null = any size that fits rect. */
         Integer expectedAtlasSize,
-        /** When false, skip LINK/LOC badge (small Pip screens — overlaps compass). */
+        /** When false, skip LINK/LOC badge (small Pip screens â€” overlaps compass). */
         boolean showModeBadge,
         /**
          * Paint rotation applied when copying the logical HUD into the atlas rect.
@@ -123,7 +123,7 @@ public final class RadioLiveDisplay {
             BY_LIVE_ID.put(spec.liveId(), created);
             return created;
         }
-        // Spec is fixed at construction — replace if paint/atlas knobs changed (Pip iterate).
+        // Spec is fixed at construction â€” replace if paint/atlas knobs changed (Pip iterate).
         if (existing.spec.paintRotateDegrees() != spec.paintRotateDegrees()
             || existing.spec.showModeBadge() != spec.showModeBadge()
             || !java.util.Objects.equals(existing.spec.expectedAtlasSize(), spec.expectedAtlasSize())
@@ -154,7 +154,7 @@ public final class RadioLiveDisplay {
             d.reset();
         }
         BY_LIVE_ID.clear();
-        // Keep IDLE_PAINTERS — Pip (and other companions) register once at client setup.
+        // Keep IDLE_PAINTERS â€” Pip (and other companions) register once at client setup.
     }
 
     public void reset() {
@@ -260,7 +260,7 @@ public final class RadioLiveDisplay {
 
         boolean rot90 = spec.paintRotateDegrees() == 90 || spec.paintRotateDegrees() == -90
             || Math.abs(spec.paintRotateDegrees()) == 270;
-        // Logical canvas: swap axes when we will rotate ±90° (or ±90 then 180) into the atlas rect.
+        // Logical canvas: swap axes when we will rotate Â±90Â° (or Â±90 then 180) into the atlas rect.
         int lw = rot90 ? atlas.height() : atlas.width();
         int lh = rot90 ? atlas.width() : atlas.height();
 
@@ -282,7 +282,7 @@ public final class RadioLiveDisplay {
             } else if (deg == -90) {
                 blitCw90(buf, image, atlas);
             } else if (deg == 270) {
-                // CW 90 then 180 — one more quarter-turn past plain 180 for Pip wrist.
+                // CW 90 then 180 â€” one more quarter-turn past plain 180 for Pip wrist.
                 blitCw90(buf, image, atlas);
                 flipRect180(image, atlas);
             } else if (deg == -270) {
@@ -353,7 +353,7 @@ public final class RadioLiveDisplay {
         }
     }
 
-    /** 180° flip into atlas: {@code (lx, ly) → (w-1-lx, h-1-ly)}. */
+    /** 180Â° flip into atlas: {@code (lx, ly) â†’ (w-1-lx, h-1-ly)}. */
     private static void blitFlip180(NativeImage src, NativeImage dest, LcdRect atlas) {
         int w = Math.min(src.getWidth(), atlas.width());
         int h = Math.min(src.getHeight(), atlas.height());
@@ -364,7 +364,7 @@ public final class RadioLiveDisplay {
         }
     }
 
-    /** In-place 180° flip of pixels already inside the atlas rect. */
+    /** In-place 180Â° flip of pixels already inside the atlas rect. */
     private static void flipRect180(NativeImage image, LcdRect atlas) {
         int w = atlas.width();
         int h = atlas.height();
@@ -386,8 +386,8 @@ public final class RadioLiveDisplay {
     }
 
     /**
-     * Map logical (lx, ly) → atlas with 90° counter-clockwise:
-     * {@code (lx, ly) → (ly, lw - 1 - lx)}.
+     * Map logical (lx, ly) â†’ atlas with 90Â° counter-clockwise:
+     * {@code (lx, ly) â†’ (ly, lw - 1 - lx)}.
      */
     private static void blitCcw90(NativeImage src, NativeImage dest, LcdRect atlas) {
         int lw = src.getWidth();
@@ -404,8 +404,8 @@ public final class RadioLiveDisplay {
     }
 
     /**
-     * Map logical (lx, ly) → atlas with 90° clockwise:
-     * {@code (lx, ly) → (lh - 1 - ly, lx)}.
+     * Map logical (lx, ly) â†’ atlas with 90Â° clockwise:
+     * {@code (lx, ly) â†’ (lh - 1 - ly, lx)}.
      */
     private static void blitCw90(NativeImage src, NativeImage dest, LcdRect atlas) {
         int lw = src.getWidth();

@@ -373,6 +373,63 @@ public class DeadAirAPI {
         return station.getType() == RadioStation.StationType.MUSIC;
     }
     
+    // ---------- Dead Air 3.0: broadcasts and The Listener ----------
+
+    /**
+     * Register a story, survivor, trader, or defense broadcast. Call during common setup.
+     * <p>
+     * Expansion / soundtrack pack authors: implement {@link uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent}
+     * (pick a {@link uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent.Category}, gate with
+     * {@code canTrigger}, return transmission lines from {@code start}) and register here.
+     * Use a low {@code priority()} (negative) so Listener story progression is not blocked.
+     * Soft-detect your pack with {@code ModList.get().isLoaded("your_mod_id")} â€” no hard dep required.
+     * Built-in example: {@code dead_air:pirate_fm_interruption} when a known FM pack is installed.
+     * Debug: {@code /deadair listener broadcast <id>} or {@code /deadair listener piratefm}.
+     */
+    public static void registerBroadcastEvent(uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent event) {
+        uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry.register(event);
+    }
+
+    /**
+     * Deliver a registered broadcast to this player now (same path as night scheduler / debug force).
+     * Returns false if the event cancelled itself (empty lines).
+     */
+    public static boolean sendBroadcast(ServerPlayer player, ResourceLocation eventId) {
+        var event = uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry.get(eventId);
+        return player != null && event != null
+            && uk.co.extraspecialstudio.dead_air.broadcast.BroadcastScheduler.deliver(player, event);
+    }
+
+    /** All registered broadcast event ids (for pack tooling / debug UIs). */
+    public static java.util.Collection<ResourceLocation> listBroadcastEvents() {
+        java.util.List<ResourceLocation> ids = new java.util.ArrayList<>();
+        for (var e : uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry.all()) {
+            ids.add(e.id());
+        }
+        return ids;
+    }
+
+    /** True once this player has survived the first encounter (Zombie Waves Boss Mode gate). */
+    public static boolean isBossModeUnlocked(ServerPlayer player) {
+        var data = uk.co.extraspecialstudio.dead_air.broadcast.BroadcastProgress.get(player.server);
+        return data != null && data.get(player.getUUID()).bossModeUnlocked;
+    }
+
+    /** True once this player has killed The Listener (Endless Waves gate). */
+    public static boolean isListenerDefeated(ServerPlayer player) {
+        var data = uk.co.extraspecialstudio.dead_air.broadcast.BroadcastProgress.get(player.server);
+        return data != null && data.get(player.getUUID()).finalDefeated;
+    }
+
+    /**
+     * Start the final, killable encounter next to this player (e.g. as the last Boss Mode boss).
+     * Only Signal Breaker hits hurt him. Returns false if one is already running for the player.
+     */
+    public static boolean startListenerFinalEncounter(ServerPlayer player) {
+        return player != null && uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter.start(
+            player, uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter.Mode.FINAL) != null;
+    }
+
     /**
      * Generate a unique frequency for a station ID.
      */

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "toughasnails:empty_canteen", "required": false },
+    { "id": "toughasnails:water_canteen", "required": false },
+    { "id": "toughasnails:purified_water_canteen", "required": false },
+    { "id": "toughasnails:empty_thermos", "required": false },
+    { "id": "toughasnails:purified_water_thermos", "required": false },
+    { "id": "toughasnails:purified_water_bottle", "required": false },
+    { "id": "toughasnails:charcoal_filter", "required": false }
+  ]
+}

@@ -75,7 +75,7 @@ public class WalkieTalkieOverlay {
         }
         
         RadioStation station = state.getCurrentStation();
-        // Radios with a working live LCD (built-in T2, Pip-Boy, …) skip the corner panel.
+        // Radios with a working live LCD (built-in T2, Pip-Boy, â€¦) skip the corner panel.
         boolean useT2ScreenHud = stateWalkie.getItem() instanceof uk.co.extraspecialstudio.dead_air.item.WalkieItem walkieItem
             && walkieItem.supportsLiveLcd()
             && walkieItem.isLiveLcdSupported();
@@ -152,7 +152,7 @@ public class WalkieTalkieOverlay {
         guiGraphics.fill(stationBoxX, stationBoxY, stationBoxX + stationBoxW, stationBoxY + stationBoxH, 0x80000000);
         drawScrollingTextScaled(guiGraphics, mc, station.getName() + "      ", stationBoxX + 2, stationBoxY + 1, stationBoxW - 4, stationBoxH - 2, 0.75f, COLOR_STATION);
         
-        // Side-scrolling info line: station • song • day • time (debounced to reduce jitter)
+        // Side-scrolling info line: station â€¢ song â€¢ day â€¢ time (debounced to reduce jitter)
         String newScrollText = buildScrollText(mc, station, signalStrength);
         long now = System.currentTimeMillis();
         if (!newScrollText.equals(lastScrollText) && (now - lastScrollTextMs >= SCROLL_TEXT_DEBOUNCE_MS || lastScrollText.isEmpty())) {
@@ -188,7 +188,9 @@ public class WalkieTalkieOverlay {
         // Use hasActiveSoundForStation so we show "Now Playing" when we actually have sound (avoids jitter from signal flicker around 0.1)
         boolean musicPlaying = uk.co.extraspecialstudio.dead_air.audio.AudioManager.hasActiveSoundForStation(station.getId())
             && signalStrength >= 0.05f;
-        if (musicPlaying) {
+        if (uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.isMissingPack(station.getId())) {
+            songPart = uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.missingPackMessage(station);
+        } else if (musicPlaying) {
             ResourceLocation trackId = MusicStationManager.getCurrentTrackId(station.getId(), mc.player);
             String trackName = trackId != null ? MusicStationManager.formatTrackDisplayName(trackId) : "?";
             songPart = "Now Playing: " + trackName;
@@ -209,7 +211,7 @@ public class WalkieTalkieOverlay {
             dayPart = "Day " + day;
             timePart = String.format("%02d:%02d", hour, minute);
         }
-        return stationName + "  •  " + songPart + "  •  " + dayPart + "  •  " + timePart + "      ";
+        return stationName + "  â€¢  " + songPart + "  â€¢  " + dayPart + "  â€¢  " + timePart + "      ";
     }
     
     /** Text colors for overlay elements. */
@@ -252,7 +254,7 @@ public class WalkieTalkieOverlay {
         long t = System.currentTimeMillis() % SCROLL_PERIOD_MS;
         int offset = (int) (t * scrollLen / SCROLL_PERIOD_MS);
         guiGraphics.enableScissor(x, y, x + width, y + height);
-        String scrolling = text + "  •  " + text;
+        String scrolling = text + "  â€¢  " + text;
         if (glow) {
             int glowColor = (color & 0x00FFFFFF) | 0x30000000;
             for (int dx = -1; dx <= 1; dx++) {
@@ -289,7 +291,7 @@ public class WalkieTalkieOverlay {
             long t = System.currentTimeMillis() % SCROLL_PERIOD_MS;
             int offset = (int) (t * scrollLen / SCROLL_PERIOD_MS);
             guiGraphics.enableScissor(x, y, x + width, y + height);
-            String scrolling = text + "  •  " + text;
+            String scrolling = text + "  â€¢  " + text;
             int glowColor = (color & 0x00FFFFFF) | 0x30000000;
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
@@ -392,7 +394,7 @@ public class WalkieTalkieOverlay {
                     if (panel != null && KnownTowersClientCache.isSignalBoostInstalledForPanel(panel)) {
                         return 1.0f;
                     }
-                    // Linked tower may be in another dimension — still allow full signal if boost was synced when linked
+                    // Linked tower may be in another dimension â€” still allow full signal if boost was synced when linked
                     if (WalkieTalkieManager.hasLinkedTower(walkie)) {
                         return 1.0f;
                     }
@@ -470,8 +472,8 @@ public class WalkieTalkieOverlay {
         while (yaw >= 360) yaw -= 360;
         
         // Convert to compass direction
-        // 0° = South, 45° = Southwest, 90° = West, 135° = Northwest, 
-        // 180° = North, 225° = Northeast, 270° = East, 315° = Southeast
+        // 0Â° = South, 45Â° = Southwest, 90Â° = West, 135Â° = Northwest, 
+        // 180Â° = North, 225Â° = Northeast, 270Â° = East, 315Â° = Southeast
         if (yaw >= 337.5 || yaw < 22.5) return "South";
         if (yaw >= 22.5 && yaw < 67.5) return "Southeast";
         if (yaw >= 67.5 && yaw < 112.5) return "East";
