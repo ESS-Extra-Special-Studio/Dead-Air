@@ -42,12 +42,7 @@ public class ResonantChordItem extends Item implements GeoItem {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 if (renderer == null) {
-                    try {
-                        Class<?> c = Class.forName("uk.co.extraspecialstudio.dead_air.client.ClientItemRenderers");
-                        renderer = (BlockEntityWithoutLevelRenderer) c.getMethod("getResonantChordRenderer").invoke(null);
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException("Failed to create resonant chord renderer", e);
-                    }
+                    renderer = ClientGeoRenderers.load("getResonantChordRenderer");
                 }
                 return renderer;
             }

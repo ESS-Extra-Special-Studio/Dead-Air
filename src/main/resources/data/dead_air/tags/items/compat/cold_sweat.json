@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "cold_sweat:fur_helmet", "required": false },
+    { "id": "cold_sweat:fur_parka", "required": false },
+    { "id": "cold_sweat:fur_pants", "required": false },
+    { "id": "cold_sweat:fur_boots", "required": false },
+    { "id": "cold_sweat:chameleon_molt", "required": false },
+    { "id": "cold_sweat:soul_sprout", "required": false },
+    { "id": "cold_sweat:filled_waterskin", "required": false },
+    { "id": "cold_sweat:waterskin", "required": false }
+  ]
+}

@@ -67,7 +67,9 @@ public final class ConfigStationLoader {
                 return;
             }
 
-            StationRegistry.registerStation(new RadioStation(id, name, type, genre, frequency, range, spacing));
+            boolean followGlobal = def.range == null
+                && (type == RadioStation.StationType.MUSIC || type == RadioStation.StationType.EMERGENCY_BROADCAST);
+            StationRegistry.registerStation(new RadioStation(id, name, type, genre, frequency, range, spacing, null, followGlobal));
 
             // Register tracks for client playback. MusicStationManager.initialize() runs later on client;
             // addTrack is safe (it will create the playlist if absent).

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "dead_air:block/medical_case" },
+    "facing=east": { "model": "dead_air:block/medical_case", "y": 90 },
+    "facing=south": { "model": "dead_air:block/medical_case", "y": 180 },
+    "facing=west": { "model": "dead_air:block/medical_case", "y": 270 }
+  }
+}

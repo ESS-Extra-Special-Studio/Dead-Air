@@ -2,7 +2,6 @@ package uk.co.extraspecialstudio.dead_air.events;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.item.DeadAirItems;
 import uk.co.extraspecialstudio.dead_air.item.PlaceableDecorations;
+import uk.co.extraspecialstudio.dead_air.sound.DeadAirSounds;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,16 +37,33 @@ public final class ChordNoteMergeEvents {
         if (!(event.level instanceof ServerLevel level)) return;
         if (level.getGameTime() % CHECK_INTERVAL_TICKS != 0) return;
 
+        try {
+            tickMerge(level);
+        } catch (Throwable t) {
+            Dead_air.LOGGER.error("[Dead Air] Chord note merge tick failed", t);
+        }
+    }
+
+    private static boolean isMergableNote(ItemEntity e) {
+        if (e.isRemoved() || !e.onGround()) return false;
+        ItemStack stack = e.getItem();
+        if (stack.isEmpty() || !stack.is(DeadAirItems.STATIC_NOTE.get())) return false;
+        try {
+            if (PlaceableDecorations.isDecorStack(stack)) return false;
+        } catch (Throwable t) {
+            // Same classloader hazard as DecorRetrieveEvents — skip decor check rather than crash.
+            return false;
+        }
+        return stack.getCount() > 0;
+    }
+
+    private static void tickMerge(ServerLevel level) {
         List<ItemEntity> notes = new ArrayList<>();
         Set<Integer> seen = new HashSet<>();
         for (var player : level.players()) {
             List<ItemEntity> nearby = level.getEntitiesOfClass(ItemEntity.class,
                 player.getBoundingBox().inflate(48.0),
-                e -> !e.isRemoved()
-                    && e.getItem().is(DeadAirItems.STATIC_NOTE.get())
-                    && e.getItem().getCount() > 0
-                    && e.onGround()
-                    && !PlaceableDecorations.isDecorStack(e.getItem()));
+                ChordNoteMergeEvents::isMergableNote);
             for (ItemEntity item : nearby) {
                 if (seen.add(item.getId())) {
                     notes.add(item);
@@ -64,7 +81,7 @@ public final class ChordNoteMergeEvents {
             Vec3 center = seed.position();
             for (ItemEntity other : notes) {
                 if (consumed.contains(other) || other.isRemoved()) continue;
-                if (PlaceableDecorations.isDecorStack(other.getItem())) continue;
+                if (!isMergableNote(other)) continue;
                 if (other.distanceToSqr(center) > CLUSTER_RADIUS * CLUSTER_RADIUS) continue;
                 cluster.add(other);
                 total += other.getItem().getCount();
@@ -101,7 +118,7 @@ public final class ChordNoteMergeEvents {
             chord.setDefaultPickUpDelay();
             chord.setGlowingTag(true);
             level.addFreshEntity(chord);
-            level.playSound(null, x, y, z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.9f, 1.2f);
+            level.playSound(null, x, y, z, DeadAirSounds.CHORD_MERGE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             level.sendParticles(ParticleTypes.END_ROD, x, y + 0.3, z, 16, 0.25, 0.2, 0.25, 0.02);
             level.sendParticles(ParticleTypes.ENCHANT, x, y + 0.2, z, 24, 0.35, 0.25, 0.35, 0.5);
         }

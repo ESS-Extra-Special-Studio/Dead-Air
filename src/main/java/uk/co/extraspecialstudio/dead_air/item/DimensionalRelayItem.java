@@ -33,12 +33,7 @@ public class DimensionalRelayItem extends Item implements GeoItem {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 if (renderer == null) {
-                    try {
-                        Class<?> c = Class.forName("uk.co.extraspecialstudio.dead_air.client.ClientItemRenderers");
-                        renderer = (BlockEntityWithoutLevelRenderer) c.getMethod("getDimensionalRelayRenderer").invoke(null);
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException("Failed to create dimensional relay renderer", e);
-                    }
+                    renderer = ClientGeoRenderers.load("getDimensionalRelayRenderer");
                 }
                 return renderer;
             }

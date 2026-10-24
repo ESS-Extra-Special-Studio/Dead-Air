@@ -1,0 +1,123 @@
+{
+  "at": "2026-08-30T15:41:41.127Z",
+  "dryRun": false,
+  "results": [
+    {
+      "slug": "apocalypse-structures-radio-towers-and-airdrops",
+      "title": "Radio Towers",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:35.867655Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air",
+      "title": "Dead Air",
+      "statusBefore": "processing",
+      "requestedBefore": "approved",
+      "queued": "2026-08-30T15:41:27.084935Z",
+      "versionCount": 2,
+      "action": "already in review"
+    },
+    {
+      "slug": "dead-air-pip-boy-radio-conversion",
+      "title": "Dead Air: Pip-Boy Radio Conversion",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:36.753631Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-after-hours-fm",
+      "title": "Dead Air: After Hours FM",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:37.400908Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-block-beats",
+      "title": "Dead Air: Block Beats FM",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 2,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:38.000588Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-broken-youth-radio",
+      "title": "Dead Air: Broken Youth Radio",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:38.599561Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-frontline-fm",
+      "title": "Dead Air: Frontline FM",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:39.199608Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-iron-rain-fm",
+      "title": "Dead Air: Iron Rain FM",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:39.840863Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-wayfarer-radio",
+      "title": "Dead Air: Wayfarer Radio",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:40.454205Z",
+      "action": "submitted"
+    },
+    {
+      "slug": "dead-air-zero-gravity",
+      "title": "Dead Air: Zero Gravity",
+      "statusBefore": "draft",
+      "requestedBefore": "approved",
+      "queued": null,
+      "versionCount": 1,
+      "statusAfter": "processing",
+      "requestedAfter": "approved",
+      "queuedAfter": "2026-08-30T15:41:41.003215Z",
+      "action": "submitted"
+    }
+  ]
+}

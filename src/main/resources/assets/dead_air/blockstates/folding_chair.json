@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "dead_air:block/folding_chair" },
+    "facing=east": { "model": "dead_air:block/folding_chair", "y": 90 },
+    "facing=south": { "model": "dead_air:block/folding_chair", "y": 180 },
+    "facing=west": { "model": "dead_air:block/folding_chair", "y": 270 }
+  }
+}

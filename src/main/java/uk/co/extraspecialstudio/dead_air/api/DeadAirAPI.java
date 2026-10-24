@@ -14,7 +14,7 @@ import uk.co.extraspecialstudio.dead_air.radio.TowerManager;
 import uk.co.extraspecialstudio.dead_air.tower.KnownTowerStorage;
 import uk.co.extraspecialstudio.dead_air.tower.RadioPanelManager;
 import uk.co.extraspecialstudio.dead_air.tower.modules.TowerModuleStorage;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -30,30 +30,38 @@ import java.util.function.Predicate;
 @SuppressWarnings("null")
 public class DeadAirAPI {
 
-    private static final CopyOnWriteArrayList<RegisteredWalkieGuiOpener> WALKIE_GUI_OPENERS =
+    private static final CopyOnWriteArrayList<RegisteredRadioGuiOpener> RADIO_GUI_OPENERS =
         new CopyOnWriteArrayList<>();
 
     /**
-     * Register a client-side walkie GUI opener for companion radios that are not
-     * {@link uk.co.extraspecialstudio.dead_air.item.WalkieItem} subclasses.
+     * Register a client-side radio GUI opener for companion radios that are not
+     * {@link uk.co.extraspecialstudio.dead_air.item.RadioItem} subclasses.
      * Call from the companion's client setup when Dead Air is present.
      */
-    public static void registerWalkieGuiOpener(Predicate<ItemStack> match, WalkieGuiOpener opener) {
+    public static void registerRadioGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {
         if (match == null || opener == null) {
             return;
         }
-        WALKIE_GUI_OPENERS.add(new RegisteredWalkieGuiOpener(match, opener));
+        RADIO_GUI_OPENERS.add(new RegisteredRadioGuiOpener(match, opener));
     }
 
     /**
-     * Try companion openers for the held walkie. Used by Dead Air's tune keybind.
+     * @deprecated Use {@link #registerRadioGuiOpener(Predicate, RadioGuiOpener)}.
+     */
+    @Deprecated
+    public static void registerWalkieGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {
+        registerRadioGuiOpener(match, opener);
+    }
+
+    /**
+     * Try companion openers for the held radio. Used by Dead Air's tune keybind.
      * @return true if a companion handled the open
      */
-    public static boolean tryOpenCompanionWalkieGui(InteractionHand hand, ItemStack stack) {
+    public static boolean tryOpenCompanionRadioGui(InteractionHand hand, ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
             return false;
         }
-        for (RegisteredWalkieGuiOpener entry : WALKIE_GUI_OPENERS) {
+        for (RegisteredRadioGuiOpener entry : RADIO_GUI_OPENERS) {
             if (entry.match.test(stack) && entry.opener.tryOpen(hand, stack)) {
                 return true;
             }
@@ -61,7 +69,15 @@ public class DeadAirAPI {
         return false;
     }
 
-    private record RegisteredWalkieGuiOpener(Predicate<ItemStack> match, WalkieGuiOpener opener) {}
+    /**
+     * @deprecated Use {@link #tryOpenCompanionRadioGui(InteractionHand, ItemStack)}.
+     */
+    @Deprecated
+    public static boolean tryOpenCompanionWalkieGui(InteractionHand hand, ItemStack stack) {
+        return tryOpenCompanionRadioGui(hand, stack);
+    }
+
+    private record RegisteredRadioGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {}
     
     /**
      * Register a custom radio station.
@@ -277,10 +293,10 @@ public class DeadAirAPI {
     /**
      * Same as {@link #activatePanelAt(ServerLevel, BlockPos, ResourceLocation)} but also:
      * - If the player is in broadcast range and has not yet unlocked the new station, they get "New station discovered!".
-     * - <strong>Optional walkie follow:</strong> if the player is actively set up to hear radio ({@link WalkieTalkieManager#shouldPlayRadio},
-     * walkie radio on) and their tuned station matches what <em>this panel was already broadcasting</em> before the change,
+     * - <strong>Optional radio follow:</strong> if the player is actively set up to hear radio ({@link RadioManager#shouldPlayRadio},
+     * radio on) and their tuned station matches what <em>this panel was already broadcasting</em> before the change,
      * they are retuned to the new station so the same tower does not leave them on a dead frequency. No retune if they have
-     * no walkie, radio off, or were listening to a different station (panel change does not hijack unrelated tuning).
+     * no radio, radio off, or were listening to a different station (panel change does not hijack unrelated tuning).
      */
     public static void activatePanelAt(ServerLevel level, BlockPos pos, ResourceLocation stationId, ServerPlayer triggerPlayer) {
         if (level != null && !level.isClientSide() && StationRegistry.JUKEBOX_FM_ID.equals(stationId)
@@ -293,11 +309,11 @@ public class DeadAirAPI {
         RadioStation station = StationRegistry.getStation(stationId);
         if (station == null) return;
 
-        if (WalkieTalkieManager.shouldPlayRadio(triggerPlayer)) {
-            WalkieTalkieManager.WalkieTalkieState st = WalkieTalkieManager.getState(triggerPlayer);
+        if (RadioManager.shouldPlayRadio(triggerPlayer)) {
+            RadioManager.RadioState st = RadioManager.getState(triggerPlayer);
             RadioStation tuned = st.getCurrentStation();
             if (st.isOn() && tuned != null && oldStationId != null && oldStationId.equals(tuned.getId())) {
-                WalkieTalkieManager.tuneToStation(triggerPlayer, station);
+                RadioManager.tuneToStation(triggerPlayer, station);
             }
         }
 
@@ -340,14 +356,14 @@ public class DeadAirAPI {
     }
 
     /**
-     * Tune the player's walkie-talkie to the Emergency Broadcast station (e.g. when calling an airdrop).
+     * Tune the player's radio to the Emergency Broadcast station (e.g. when calling an airdrop).
      * Call from other mods on the server after the player triggers an airdrop so they are on the tower's emergency frequency.
      */
     public static void tunePlayerToEmergencyBroadcast(ServerPlayer player) {
         if (player == null) return;
         RadioStation emergency = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
         if (emergency != null) {
-            uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager.tuneToStation(player, emergency);
+            uk.co.extraspecialstudio.dead_air.radio.RadioManager.tuneToStation(player, emergency);
         }
     }
 
@@ -362,17 +378,114 @@ public class DeadAirAPI {
     }
 
     /**
-     * Returns true if the player has their walkie on and tuned to a music station (not Emergency Broadcast).
+     * Returns true if the player has their radio on and tuned to a music station (not Emergency Broadcast).
      * Used by other mods for zombie attraction to players playing music.
      */
     public static boolean isPlayerPlayingMusic(net.minecraft.world.entity.player.Player player) {
         if (player == null) return false;
-        var state = WalkieTalkieManager.getState(player);
+        var state = RadioManager.getState(player);
         if (!state.isOn() || state.getCurrentStation() == null) return false;
         RadioStation station = state.getCurrentStation();
         return station.getType() == RadioStation.StationType.MUSIC;
     }
     
+    // ---------- Dead Air 3.0: broadcasts and The Listener ----------
+
+    /**
+     * Register a story, survivor, trader, or defense broadcast. Call during common setup.
+     * <p>
+     * Expansion / soundtrack pack authors: implement {@link uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent}
+     * (pick a {@link uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent.Category}, gate with
+     * {@code canTrigger}, return transmission lines from {@code start}) and register here.
+     * Use a low {@code priority()} (negative) so Listener story progression is not blocked.
+     * Soft-detect your pack with {@code ModList.get().isLoaded("your_mod_id")} — no hard dep required.
+     * Built-in example: {@code dead_air:pirate_fm_interruption} when a known FM pack is installed.
+     * Debug: {@code /deadair listener broadcast <id>} or {@code /deadair listener piratefm}.
+     */
+    public static void registerBroadcastEvent(uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent event) {
+        uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry.register(event);
+    }
+
+    /**
+     * Deliver a registered broadcast to this player now (same path as night scheduler / debug force).
+     * Returns false if the event cancelled itself (empty lines).
+     */
+    public static boolean sendBroadcast(ServerPlayer player, ResourceLocation eventId) {
+        var event = uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry.get(eventId);
+        return player != null && event != null
+            && uk.co.extraspecialstudio.dead_air.broadcast.BroadcastScheduler.deliver(player, event);
+    }
+
+    /** All registered broadcast event ids (for pack tooling / debug UIs). */
+    public static java.util.Collection<ResourceLocation> listBroadcastEvents() {
+        java.util.List<ResourceLocation> ids = new java.util.ArrayList<>();
+        for (var e : uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry.all()) {
+            ids.add(e.id());
+        }
+        return ids;
+    }
+
+    /**
+     * Claim the radio panel at {@code panelPos} as this player's base.
+     * Used by RadioTowers Base tab (soft-compat).
+     */
+    public static boolean setPlayerBase(ServerPlayer player, BlockPos panelPos) {
+        return player != null && panelPos != null
+            && uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.setBase(player, panelPos);
+    }
+
+    /** Clear the player's radio-panel base. */
+    public static boolean unsetPlayerBase(ServerPlayer player) {
+        return player != null
+            && uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.unsetBase(player);
+    }
+
+    /**
+     * GUI info for the RadioTowers Base tab.
+     * @return {@code Object[]{ statusLine (String), isThisPanel (Boolean) }}
+     */
+    public static Object[] getPlayerBaseGuiInfo(ServerPlayer player, BlockPos panelPos) {
+        if (player == null) {
+            return new Object[]{"No player", false};
+        }
+        var base = uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.getBase(player.server, player.getUUID());
+        if (base == null) {
+            return new Object[]{"No base set. Claim this panel to make it your home.", false};
+        }
+        var level = player.server.getLevel(base.dimension);
+        int range = level != null
+            ? uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.signalRange(level, base.panelPos)
+            : -1;
+        boolean isThis = panelPos != null
+            && base.dimension.equals(player.level().dimension())
+            && base.panelPos.equals(panelPos);
+        String line = "Base @ " + base.panelPos.toShortString()
+            + " (" + base.dimension.location() + "), range " + range
+            + (isThis ? " — this panel" : " — different panel");
+        return new Object[]{line, isThis};
+    }
+
+    /** True once this player has survived the first encounter (Zombie Waves Boss Mode gate). */
+    public static boolean isBossModeUnlocked(ServerPlayer player) {
+        var data = uk.co.extraspecialstudio.dead_air.broadcast.BroadcastProgress.get(player.server);
+        return data != null && data.get(player.getUUID()).bossModeUnlocked;
+    }
+
+    /** True once this player has killed The Listener (Endless Waves gate). */
+    public static boolean isListenerDefeated(ServerPlayer player) {
+        var data = uk.co.extraspecialstudio.dead_air.broadcast.BroadcastProgress.get(player.server);
+        return data != null && data.get(player.getUUID()).finalDefeated;
+    }
+
+    /**
+     * Start the final, killable encounter next to this player (e.g. as the last Boss Mode boss).
+     * Only Signal Breaker hits hurt him. Returns false if one is already running for the player.
+     */
+    public static boolean startListenerFinalEncounter(ServerPlayer player) {
+        return player != null && uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter.start(
+            player, uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter.Mode.FINAL) != null;
+    }
+
     /**
      * Generate a unique frequency for a station ID.
      */

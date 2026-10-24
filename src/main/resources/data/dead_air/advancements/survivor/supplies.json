@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:survivor/settle",
+  "display": {
+    "icon": { "item": "minecraft:chest" },
+    "title": { "translate": "advancements.dead_air.survivor.supplies.title" },
+    "description": { "translate": "advancements.dead_air.survivor.supplies.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

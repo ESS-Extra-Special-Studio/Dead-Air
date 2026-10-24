@@ -21,8 +21,8 @@ public class RadioTower {
     private final boolean isOfficial; // True for official towers, false for player-built
     /** Volatile so client thread sees server updates in singleplayer (shared tower list). */
     private volatile boolean isPowered;
-    /** Per-tower module/capability state (server-authoritative; may be default on client until synced). */
-    private volatile TowerCapabilities capabilities = new TowerCapabilities();
+    /** Per-tower module/capability state (server-authoritative; may be default on client until synced). Lazy — avoids ModuleClassLoader NCDFE on field init before force-load. */
+    private volatile TowerCapabilities capabilities;
     private long lastPowerCheck;
     private static final long POWER_CHECK_INTERVAL = 20; // Check every second
     
@@ -109,7 +109,12 @@ public class RadioTower {
     }
 
     public TowerCapabilities getCapabilities() {
-        return capabilities;
+        TowerCapabilities caps = capabilities;
+        if (caps == null) {
+            caps = new TowerCapabilities();
+            capabilities = caps;
+        }
+        return caps;
     }
 
     public void setCapabilities(TowerCapabilities capabilities) {

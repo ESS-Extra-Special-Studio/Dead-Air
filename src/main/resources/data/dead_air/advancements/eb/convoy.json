@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:eb/survivor_call",
+  "display": {
+    "icon": { "item": "minecraft:campfire" },
+    "title": { "translate": "advancements.dead_air.eb.convoy.title" },
+    "description": { "translate": "advancements.dead_air.eb.convoy.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

@@ -1,10 +1,13 @@
 package uk.co.extraspecialstudio.dead_air.station;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements;
+import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastScheduler;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +24,21 @@ public class StationUnlockManager {
      * Unlock a station for a player. Persists to world storage so it survives restart.
      */
     public static void unlockStation(Player player, RadioStation station) {
+        if (player == null || station == null) return;
         UUID playerId = player.getUUID();
         Set<ResourceLocation> unlocked = UNLOCKED_STATIONS.computeIfAbsent(playerId, k -> ConcurrentHashMap.newKeySet());
-        unlocked.add(station.getId());
+        boolean firstTime = unlocked.add(station.getId());
         // Persist to world so discovered stations are remembered
         if (player.level() instanceof net.minecraft.server.level.ServerLevel level) {
             var storage = UnlockedStationsStorage.get(level);
             if (storage != null) storage.addStation(playerId, station.getId());
+        }
+        if (firstTime && player instanceof ServerPlayer sp
+            && !station.getId().equals(StationRegistry.EMERGENCY_BROADCAST_ID)) {
+            DeadAirAdvancements.award(sp, DeadAirAdvancements.ROOT);
+            if (unlocked.size() >= 3) {
+                DeadAirAdvancements.award(sp, DeadAirAdvancements.RADIO_THREE_STATIONS);
+            }
         }
     }
 
@@ -43,15 +54,20 @@ public class StationUnlockManager {
         Set<ResourceLocation> stations = storage.getStations(player.getUUID());
         if (stations.isEmpty()) return;
         unlocked.addAll(stations);
+        // Catch up advancements for worlds that discovered stations before the tab existed.
+        DeadAirAdvancements.award(player, DeadAirAdvancements.ROOT);
+        if (unlocked.size() >= 3) {
+            DeadAirAdvancements.award(player, DeadAirAdvancements.RADIO_THREE_STATIONS);
+        }
     }
     
     /**
      * Check if a player has unlocked a station.
-     * Emergency Broadcast is always considered unlocked (always on, full signal).
+     * Emergency Broadcast is T3-only (handheld EB channel).
      */
     public static boolean hasUnlocked(Player player, RadioStation station) {
         if (station != null && station.getId().equals(StationRegistry.EMERGENCY_BROADCAST_ID)) {
-            return true;
+            return BroadcastScheduler.hasT3(player);
         }
         Set<ResourceLocation> unlocked = UNLOCKED_STATIONS.get(player.getUUID());
         if (unlocked == null) {
@@ -75,16 +91,19 @@ public class StationUnlockManager {
     }
     
     /**
-     * Get all available stations (Emergency Broadcast always first, then unlocked, then current tuned so it's always visible).
+     * Get all available stations (Emergency Broadcast first when T3, then unlocked,
+     * then current tuned so it's always visible — except EB on non-T3).
      */
     public static List<RadioStation> getAvailableStations(Player player) {
         List<RadioStation> available = new ArrayList<>();
         var emergencyId = StationRegistry.EMERGENCY_BROADCAST_ID;
         
-        // Emergency Broadcast is always available (once - never duplicated)
-        RadioStation emergency = StationRegistry.getStation(emergencyId);
-        if (emergency != null) {
-            available.add(emergency);
+        // Emergency Broadcast is T3-only
+        if (BroadcastScheduler.hasT3(player)) {
+            RadioStation emergency = StationRegistry.getStation(emergencyId);
+            if (emergency != null) {
+                available.add(emergency);
+            }
         }
         
         // Add unlocked stations (excluding Emergency so we don't duplicate)
@@ -94,8 +113,10 @@ public class StationUnlockManager {
         }
         
         // Always include current tuned station so overlay and GUI match (e.g. if tuned from NBT but not "discovered")
-        RadioStation tuned = WalkieTalkieManager.getState(player).getCurrentStation();
-        if (tuned != null && !available.stream().anyMatch(s -> s.getId().equals(tuned.getId()))) {
+        RadioStation tuned = RadioManager.getState(player).getCurrentStation();
+        if (tuned != null
+            && !(tuned.getId().equals(emergencyId) && !BroadcastScheduler.hasT3(player))
+            && available.stream().noneMatch(s -> s.getId().equals(tuned.getId()))) {
             available.add(tuned);
         }
         

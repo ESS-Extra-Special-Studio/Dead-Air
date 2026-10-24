@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:eb/first",
+  "display": {
+    "icon": { "item": "minecraft:map" },
+    "title": { "translate": "advancements.dead_air.eb.survivor_call.title" },
+    "description": { "translate": "advancements.dead_air.eb.survivor_call.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

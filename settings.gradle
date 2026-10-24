@@ -17,6 +17,12 @@ rootProject.name = 'dead-air'
 // JLayer relocation runs here (Shadow only) so MixinGradle in the root project does not hook that ShadowJar task (avoids circular dependency).
 include 'embedded-jlayer'
 
+includeBuild('../ESL') {
+    dependencySubstitution {
+        substitute module('uk.co.extraspecialstudio:extraspeciallib') using project(':')
+    }
+}
+
 includeBuild('../ESC') {
     dependencySubstitution {
         substitute module('uk.co.extraspecialstudio:extraspecialcore') using project(':')

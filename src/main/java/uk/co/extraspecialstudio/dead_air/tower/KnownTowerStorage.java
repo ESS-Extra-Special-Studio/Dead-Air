@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Persisted list of towers: (dimension, towerPos, panelPos, stationId, activated).
  * <ul>
- *   <li><b>Detected</b> ({@code activated=false}): written on chunk scan — walkie direction only.</li>
+ *   <li><b>Detected</b> ({@code activated=false}): written on chunk scan — radio direction only.</li>
  *   <li><b>Activated</b> ({@code activated=true}): panel turned on — music / unlock / full signal.</li>
  * </ul>
  * Signal for music resolves from activated entries only — no chunk scanning.
@@ -215,7 +215,7 @@ public final class KnownTowerStorage {
     }
 
     /**
-     * Demote a panel to detection-only (panel turned off). Keeps position for walkie direction.
+     * Demote a panel to detection-only (panel turned off). Keeps position for radio direction.
      */
     public static void deactivateToDetected(ServerLevel level, BlockPos panelPos) {
         if (level == null || level.dimension() != Level.OVERWORLD || panelPos == null) return;
@@ -235,7 +235,7 @@ public final class KnownTowerStorage {
     }
 
     /**
-     * @deprecated Prefer {@link #deactivateToDetected} so walkie can still point at the tower.
+     * @deprecated Prefer {@link #deactivateToDetected} so radio can still point at the tower.
      * Kept as alias for older call sites; now demotes instead of removing.
      */
     @Deprecated

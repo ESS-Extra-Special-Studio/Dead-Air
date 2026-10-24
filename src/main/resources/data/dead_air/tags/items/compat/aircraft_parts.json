@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "immersive_aircraft:engine", "required": false },
+    { "id": "immersive_aircraft:boiler", "required": false },
+    { "id": "immersive_aircraft:propeller", "required": false },
+    { "id": "immersive_aircraft:sail", "required": false },
+    { "id": "immersive_aircraft:hull", "required": false },
+    { "id": "immersive_aircraft:gyroscope", "required": false },
+    { "id": "immersive_aircraft:improved_landing_gear", "required": false },
+    { "id": "minecraft:iron_ingot", "required": false },
+    { "id": "minecraft:copper_ingot", "required": false }
+  ]
+}

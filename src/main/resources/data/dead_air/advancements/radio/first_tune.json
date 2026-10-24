@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:root",
+  "display": {
+    "icon": { "item": "dead_air:radio_t1" },
+    "title": { "translate": "advancements.dead_air.radio.first_tune.title" },
+    "description": { "translate": "advancements.dead_air.radio.first_tune.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

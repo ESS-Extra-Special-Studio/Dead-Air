@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:eb/survivor_call",
+  "display": {
+    "icon": { "item": "minecraft:chest" },
+    "title": { "translate": "advancements.dead_air.eb.plane.title" },
+    "description": { "translate": "advancements.dead_air.eb.plane.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

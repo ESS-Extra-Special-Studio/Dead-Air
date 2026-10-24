@@ -31,6 +31,12 @@ public final class RadioChannelTracker {
         }
     }
 
+    /** Drop every tracked channel (after stopAll / failed-start thrash). */
+    public static void clearAll() {
+        CHANNEL_TO_SOUND.clear();
+        SOUND_TO_CHANNEL.clear();
+    }
+
     /** True once the sound engine has actually bound this sound to a channel and started streaming it. */
     public static boolean hasChannel(RadioSoundInstance sound) {
         return sound != null && SOUND_TO_CHANNEL.containsKey(sound);

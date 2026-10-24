@@ -21,7 +21,7 @@ import uk.co.extraspecialstudio.dead_air.radio.TowerManager;
 import uk.co.extraspecialstudio.dead_air.station.FieldGuideGrantStorage;
 import uk.co.extraspecialstudio.dead_air.station.StationUnlockManager;
 import uk.co.extraspecialstudio.dead_air.tower.modules.TowerModuleStorage;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +40,7 @@ public class ModEvents {
         return uk.co.extraspecialstudio.dead_air.Dead_air.isShutdownRequested();
     }
 
-    // Walkie GUI opens from WalkieItem.use() on the client (Dead Air owns the items now).
+    // Radio GUI opens from RadioItem.use() on the client (Dead Air owns the items now).
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
@@ -59,6 +59,7 @@ public class ModEvents {
         }
 
         try {
+            uk.co.extraspecialstudio.dead_air.commands.DeadAirSurvivorCommand.tickPendingTests(server);
             // Delayed world load refreshes
             var delaysToProcess = new ArrayList<net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>>();
             for (var entry : WORLD_LOAD_DELAYS.entrySet()) {
@@ -104,22 +105,22 @@ public class ModEvents {
             return;
         }
         
-        // Check for new towers in range when player has powered-on walkie-talkie
+        // Check for new towers in range when player has powered-on radio
         if (event.player instanceof ServerPlayer serverPlayer) {
             checkForNewTowers(serverPlayer);
         }
     }
     
     /**
-     * Check if player with powered-on walkie-talkie has entered range of a new tower.
+     * Check if player with powered-on radio has entered range of a new tower.
      */
     private static void checkForNewTowers(ServerPlayer player) {
-        // Only check if player is holding walkie-talkie and it's powered on
-        if (!WalkieTalkieManager.isHoldingWalkieTalkie(player)) {
+        // Only check if player is holding radio and it's powered on
+        if (!RadioManager.isHoldingRadio(player)) {
             return;
         }
         
-        WalkieTalkieManager.WalkieTalkieState state = WalkieTalkieManager.getState(player);
+        RadioManager.RadioState state = RadioManager.getState(player);
         if (!state.isOn()) {
             return;
         }
@@ -193,7 +194,32 @@ public class ModEvents {
             uk.co.extraspecialstudio.dead_air.station.StationUnlockManager.restoreFromStorage(serverPlayer);
             // Sync known towers to client so it can compute signal locally (no per-tick packets needed)
             syncKnownTowersToPlayer(serverPlayer);
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(
+                net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
+                uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig());
             grantFieldGuideIfFirstJoin(serverPlayer);
+            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.catchUpOnLogin(serverPlayer);
+            // Immediate party HUD — don't wait up to 1s for the periodic sync tick.
+            uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyEvents.syncPlayerNow(serverPlayer);
+            maybeRunDownedAbandonFlagTest(serverPlayer);
+        }
+    }
+
+    /**
+     * One-shot SP harness: if {@code config/dead_air/run_downed_abandon_test.flag} exists on login,
+     * delete it and schedule {@code /deadair survivor testdownedabandon} after a short settle delay.
+     */
+    private static void maybeRunDownedAbandonFlagTest(ServerPlayer player) {
+        try {
+            java.nio.file.Path flag = player.server.getServerDirectory().toPath()
+                .resolve("config").resolve("dead_air").resolve("run_downed_abandon_test.flag");
+            if (!java.nio.file.Files.isRegularFile(flag)) return;
+            java.nio.file.Files.deleteIfExists(flag);
+            Dead_air.LOGGER.info("[Dead Air] TEST downed-abandon: flag consumed — starting now");
+            // Do not use TickTask for delay (it runs ASAP). Assert wait is entity-tick based.
+            uk.co.extraspecialstudio.dead_air.commands.DeadAirSurvivorCommand.runDownedAbandonTest(player);
+        } catch (Throwable t) {
+            Dead_air.LOGGER.warn("[Dead Air] TEST downed-abandon flag hook failed: {}", t.toString());
         }
     }
 
@@ -265,7 +291,7 @@ public class ModEvents {
         if (event.getEntity().level().getServer() != null && event.getEntity().level().getServer().getPlayerCount() <= 1) {
             uk.co.extraspecialstudio.dead_air.Dead_air.setShutdownRequested(true);
         }
-        WalkieTalkieManager.removePlayer(event.getEntity());
+        RadioManager.removePlayer(event.getEntity());
         uk.co.extraspecialstudio.dead_air.station.StationUnlockManager.removePlayer(event.getEntity());
         NOTIFIED_TOWERS.remove(event.getEntity().getUUID());
     }
@@ -287,6 +313,13 @@ public class ModEvents {
         }
     }
     
+    @SubscribeEvent
+    public static void onServerStarted(net.minecraftforge.event.server.ServerStartedEvent event) {
+        uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.onServerStarted(event.getServer());
+        // Re-sync panel-base force-loads from Dead Air SavedData into ESL (survives ESL ticket release on stop).
+        uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.reapplyForceLoads(event.getServer());
+    }
+
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onServerStopping(net.minecraftforge.event.server.ServerStoppingEvent event) {
         uk.co.extraspecialstudio.dead_air.Dead_air.setShutdownRequested(true);

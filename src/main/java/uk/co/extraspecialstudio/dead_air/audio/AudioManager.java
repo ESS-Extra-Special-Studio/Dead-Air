@@ -21,10 +21,10 @@ import java.util.Set;
  * Client-side audio manager for radio station playback.
  *
  * Design rules:
- * - Music plays only when the player is tuned to a station (walkie on, station selected).
+ * - Music plays only when the player is tuned to a station (radio on, station selected).
  * - Music plays only when in range of a powered tower broadcasting that station with signal >= 0.1.
  * - Out of tower range or tower unpowered: no music. No fallback playback.
- * - Only one station plays at a time (the tuned station). Music plays only when walkie is on the player (in hand, hotbar, or inventory).
+ * - Only one station plays at a time (the tuned station). Music plays only when radio is on the player (in hand, hotbar, or inventory).
  * - Each station uses pre-made playlists (see MusicStationManager); custom tracks are added later.
  */
 @SuppressWarnings("null") // mc.level is checked for null before use
@@ -128,19 +128,26 @@ public class AudioManager {
             return;
         }
         
-        // Emergency Broadcast stations do not play music
-        if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST) {
-            stopAll();
+        // Emergency Broadcast / jam: stop music only — overlay owns EB static (stopAll would kill it every tick).
+        if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST
+            || uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.isJammed()) {
+            stopAllRadioSounds();
+            return;
+        }
+
+        // Stand-in station for a soundtrack pack this player has not installed: nothing to play
+        if (uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.isMissingPack(station.getId())) {
+            stopAllRadioSounds();
             return;
         }
         
         // We no longer poll engine.isActive() - for streaming/OGG it often returns false while playing and caused track skipping.
         // We only advance when the engine actually removes the sound (SoundEngineMixin.onRadioSoundRemovedFromEngine).
         
-        // If switching stations, stop ALL radio sounds so the previous track definitely stops, then force new sound
+        // If switching stations, stop music only so static can hand off cleanly via StaticSoundManager.
         boolean isSwitchingStations = currentStation != null && !currentStation.getId().equals(station.getId());
         if (isSwitchingStations) {
-            stopAll();
+            stopAllRadioSounds();
         }
         
         // Set currentStation early so overlay shows "Now Playing" - only clear on explicit stop/return
@@ -148,7 +155,7 @@ public class AudioManager {
         
         try {
             // Signal to decide "can we start": overlay (server → TowerManager → cache) so if HUD shows bars, music can start
-            float signalForStart = uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.calculateSignalStrengthForStation(mc, station);
+            float signalForStart = uk.co.extraspecialstudio.dead_air.client.RadioOverlay.calculateSignalStrengthForStation(mc, station);
             // When musicPlaysWithoutTower is true, boost weak signal so music can play when no tower in world - but never boost 0 (out of range)
             // so music still stops dynamically when leaving tower range and starts when re-entering.
             if (uk.co.extraspecialstudio.dead_air.Config.musicPlaysWithoutTower && signalForStart > 0f && signalForStart < 0.2f) {
@@ -229,16 +236,26 @@ public class AudioManager {
                     // Keep the resume point current every tick: teardown paths run in an unpredictable order
                     // and any of them may clear the live state before it can be recorded.
                     snapshotResumePoint(station.getId(), playedMs, sound.getLocation());
-                } else if (sinceIssued > START_CONFIRM_MS && !sound.isStreamPending() && isTrackedAsStreaming(sound)) {
-                    int attempts = FAILED_START_RETRIES.merge(station.getId(), 1, Integer::sum);
-                    boolean giveUp = attempts > MAX_FAILED_START_RETRIES;
-                    // Once out of retries, start a fresh track rather than leaving the player in silence.
-                    retryFailedStart(station, sound, giveUp ? 0L : playedMs);
-                    if (giveUp) {
-                        FAILED_START_RETRIES.remove(station.getId());
-                        Dead_air.LOGGER.warn("Radio for {} could not resume after {} attempts; starting a new track", station.getId(), attempts);
+                } else if (sinceIssued > START_CONFIRM_MS && !sound.isStreamPending()) {
+                    // No OpenAL channel (and not mid-resume-skip): GUI would show "playing" while silent.
+                    boolean engineDead = false;
+                    try {
+                        engineDead = mc.getSoundManager() == null || !mc.getSoundManager().isActive(sound);
+                    } catch (Throwable ignored) {
+                        engineDead = true;
                     }
-                    return;
+                    if (engineDead || isTrackedAsStreaming(sound)) {
+                        int attempts = FAILED_START_RETRIES.merge(station.getId(), 1, Integer::sum);
+                        boolean giveUp = attempts > MAX_FAILED_START_RETRIES;
+                        retryFailedStart(station, sound, giveUp ? 0L : playedMs);
+                        if (giveUp) {
+                            FAILED_START_RETRIES.remove(station.getId());
+                            RadioChannelTracker.clearAll();
+                            Dead_air.LOGGER.warn("Radio for {} could not bind a channel after {} attempts; clearing tracker and retrying",
+                                station.getId(), attempts);
+                        }
+                        return;
+                    }
                 }
                 ResourceLocation trackId = MusicStationManager.getCurrentTrackId(station.getId(), mc.player);
                 float trackDurationSec = 0f;
@@ -424,6 +441,7 @@ public class AudioManager {
                 for (RadioSoundInstance sound : soundsToStop) {
                     if (sound != null) {
                         try {
+                            RadioChannelTracker.unregister(sound);
                             mc.getSoundManager().stop(sound);
                         } catch (Exception e) {
                             // Ignore errors during shutdown
@@ -435,6 +453,7 @@ public class AudioManager {
             // Ignore all errors during shutdown
         } finally {
             ACTIVE_SOUNDS.clear();
+            RadioChannelTracker.clearAll();
             SOUND_START_TICK.clear();
             STATIONS_SOUND_REMOVED_THIS_TICK.clear();
             PENDING_NEXT_TRACK.clear();
@@ -795,7 +814,7 @@ public class AudioManager {
         if (currentStation == null || !currentStation.getId().equals(stationId)) {
             return;
         }
-        float signal = uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.calculateSignalStrengthForStation(mc, station);
+        float signal = uk.co.extraspecialstudio.dead_air.client.RadioOverlay.calculateSignalStrengthForStation(mc, station);
         advanceToNextTrack(mc, station, signal, mc.player.position());
     }
 
@@ -849,7 +868,7 @@ public class AudioManager {
 
     /**
      * Create a sound instance for a radio station.
-     * Music plays from the player (walkie must be in hand, hotbar, or inventory).
+     * Music plays from the player (radio must be in hand, hotbar, or inventory).
      * @param startRandom true when tuning in (start at random track); false when cycling to next track
      */
     private static RadioSoundInstance createSoundForStation(RadioStation station, float signalStrength, boolean startRandom, Vec3 playerPos) {
@@ -913,14 +932,14 @@ public class AudioManager {
     }
 
     /**
-     * If the player is tuned to the given station (or any station when stationId is null) with walkie on,
+     * If the player is tuned to the given station (or any station when stationId is null) with radio on,
      * run update() so music can start. Call this when we receive tower list or signal so music starts on world load without right-click.
      */
     public static void tryStartMusicIfTuned(ResourceLocation stationId) {
         Minecraft mc = Minecraft.getInstance();
         if (mc == null || mc.player == null || mc.level == null || !mc.level.isClientSide) return;
-        uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager.WalkieTalkieState state =
-            uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager.getState(mc.player);
+        uk.co.extraspecialstudio.dead_air.radio.RadioManager.RadioState state =
+            uk.co.extraspecialstudio.dead_air.radio.RadioManager.getState(mc.player);
         if (!state.isOn() || state.getCurrentStation() == null) return;
         RadioStation station = state.getCurrentStation();
         if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST) return;

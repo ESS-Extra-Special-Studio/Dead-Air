@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:survivor/settle",
+  "display": {
+    "icon": { "item": "dead_air:dimensional_relay" },
+    "title": { "translate": "advancements.dead_air.survivor.base.title" },
+    "description": { "translate": "advancements.dead_air.survivor.base.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

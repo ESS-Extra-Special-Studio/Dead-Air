@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=true": { "model": "dead_air:block/signal_firepit" },
+    "lit=false": { "model": "dead_air:block/signal_firepit_off" }
+  }
+}

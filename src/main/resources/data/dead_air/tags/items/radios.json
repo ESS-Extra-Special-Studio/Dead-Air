@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "dead_air:radio_t1",
+    "dead_air:radio_t2",
+    "dead_air:radio_t3"
+  ]
+}

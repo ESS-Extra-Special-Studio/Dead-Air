@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:story/summon",
+  "display": {
+    "icon": { "item": "minecraft:leather_boots" },
+    "title": { "translate": "advancements.dead_air.hidden.radio_silence.title" },
+    "description": { "translate": "advancements.dead_air.hidden.radio_silence.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

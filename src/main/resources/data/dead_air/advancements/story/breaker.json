@@ -1,0 +1,22 @@
+{
+  "parent": "dead_air:story/summon",
+  "display": {
+    "icon": { "item": "dead_air:signal_breaker" },
+    "title": { "translate": "advancements.dead_air.story.breaker.title" },
+    "description": { "translate": "advancements.dead_air.story.breaker.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_breaker": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["dead_air:signal_breaker"] }
+        ]
+      }
+    }
+  }
+}

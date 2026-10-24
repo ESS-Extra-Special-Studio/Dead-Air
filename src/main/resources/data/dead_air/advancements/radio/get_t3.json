@@ -1,0 +1,22 @@
+{
+  "parent": "dead_air:radio/three_stations",
+  "display": {
+    "icon": { "item": "dead_air:radio_t3" },
+    "title": { "translate": "advancements.dead_air.radio.get_t3.title" },
+    "description": { "translate": "advancements.dead_air.radio.get_t3.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_t3": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "tag": "dead_air:radio_t3" }
+        ]
+      }
+    }
+  }
+}

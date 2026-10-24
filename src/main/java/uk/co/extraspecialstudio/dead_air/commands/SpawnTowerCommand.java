@@ -1,6 +1,6 @@
 package uk.co.extraspecialstudio.dead_air.commands;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -63,7 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * (worldgen pools use {@code block_ignore} on sponge, which leaves holes when we place the
  * raw template on flat ground via this command).
  *
- * Usage: /dead_air spawntower &lt;standard|fenced|overrun&gt; [x y z]
+ * Usage: /dead_air structures tower &lt;standard|fenced|overrun&gt; [x y z]
  */
 @SuppressWarnings("null")
 public class SpawnTowerCommand {
@@ -93,22 +93,19 @@ public class SpawnTowerCommand {
     // ---------- Command registration ----------
 
     /**
-     * Use literal subcommands (standard, fenced, overrun) so the client always shows them as suggestions
-     * after "/dead_air spawntower ". Register only in RegisterCommandsEvent.
+     * Tower branch under {@code /dead_air structures tower ...}.
+     * Literal type names so the client always suggests standard / fenced / overrun.
      */
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        var spawntower = Commands.literal("spawntower").requires(cs -> true);
+    public static LiteralArgumentBuilder<CommandSourceStack> towerBranch() {
+        var tower = Commands.literal("tower");
         for (String type : new String[] { "standard", "fenced", "overrun" }) {
-            spawntower = spawntower
+            tower = tower
                 .then(Commands.literal(type)
                     .executes(ctx -> runSpawn(ctx, type, null))
                     .then(Commands.argument("pos", BlockPosArgument.blockPos())
                         .executes(ctx -> runSpawn(ctx, type, BlockPosArgument.getLoadedBlockPos(ctx, "pos")))));
         }
-        dispatcher.register(
-            Commands.literal("dead_air")
-                .requires(cs -> true)
-                .then(spawntower));
+        return tower;
     }
 
     private static int runSpawn(CommandContext<CommandSourceStack> ctx, String typeArg, BlockPos targetPos) {

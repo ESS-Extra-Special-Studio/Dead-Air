@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:radio/get_t3",
+  "display": {
+    "icon": { "item": "dead_air:static_note" },
+    "title": { "translate": "advancements.dead_air.story.relay_broadcast.title" },
+    "description": { "translate": "advancements.dead_air.story.relay_broadcast.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

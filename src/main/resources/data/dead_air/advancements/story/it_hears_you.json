@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:story/all_relays",
+  "display": {
+    "icon": { "item": "dead_air:radio_t3" },
+    "title": { "translate": "advancements.dead_air.story.it_hears_you.title" },
+    "description": { "translate": "advancements.dead_air.story.it_hears_you.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

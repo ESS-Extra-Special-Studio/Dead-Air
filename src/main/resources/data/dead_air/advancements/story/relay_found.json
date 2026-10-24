@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:story/relay_broadcast",
+  "display": {
+    "icon": { "item": "dead_air:resonant_chord" },
+    "title": { "translate": "advancements.dead_air.story.relay_found.title" },
+    "description": { "translate": "advancements.dead_air.story.relay_found.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

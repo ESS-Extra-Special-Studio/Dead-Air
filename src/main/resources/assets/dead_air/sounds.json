@@ -10,22 +10,256 @@
   },
   "music.round_1": {
     "category": "music",
-    "sounds": [{ "name": "dead_air:music/round_1", "stream": true }]
+    "sounds": [
+      {
+        "name": "dead_air:music/round_1",
+        "stream": true
+      }
+    ]
   },
   "music.slime_island": {
     "category": "music",
-    "sounds": [{ "name": "dead_air:music/slime_island", "stream": true }]
+    "sounds": [
+      {
+        "name": "dead_air:music/slime_island",
+        "stream": true
+      }
+    ]
   },
   "music.mineshaft": {
     "category": "music",
-    "sounds": [{ "name": "dead_air:music/mineshaft", "stream": true }]
+    "sounds": [
+      {
+        "name": "dead_air:music/mineshaft",
+        "stream": true
+      }
+    ]
   },
   "music.fire_in_the_static": {
     "category": "music",
-    "sounds": [{ "name": "dead_air:music/fire_in_the_static", "stream": true }]
+    "sounds": [
+      {
+        "name": "dead_air:music/fire_in_the_static",
+        "stream": true
+      }
+    ]
   },
   "music.copper_age": {
     "category": "music",
-    "sounds": [{ "name": "dead_air:music/copper_age", "stream": true }]
+    "sounds": [
+      {
+        "name": "dead_air:music/copper_age",
+        "stream": true
+      }
+    ]
+  },
+  "listener.ambient": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.ambient",
+    "sounds": [
+      "dead_air:listener/ambient1",
+      "dead_air:listener/ambient2",
+      "dead_air:listener/ambient3"
+    ]
+  },
+  "listener.hurt": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.hurt",
+    "sounds": [
+      "dead_air:listener/hurt1",
+      "dead_air:listener/hurt2"
+    ]
+  },
+  "listener.deflect": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.deflect",
+    "sounds": [
+      "dead_air:listener/deflect"
+    ]
+  },
+  "listener.death": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.death",
+    "sounds": [
+      "dead_air:listener/death"
+    ]
+  },
+  "listener.scream": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.scream",
+    "sounds": [
+      "dead_air:listener/scream"
+    ]
+  },
+  "listener.step": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.step",
+    "sounds": [
+      "dead_air:listener/step1",
+      "dead_air:listener/step2"
+    ]
+  },
+  "listener.jump_out": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.jump_out",
+    "sounds": [
+      "dead_air:listener/jump_out"
+    ]
+  },
+  "listener.jump_in": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.jump_in",
+    "sounds": [
+      "dead_air:listener/jump_in"
+    ]
+  },
+  "listener.silence": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.silence",
+    "sounds": [
+      "dead_air:listener/silence"
+    ]
+  },
+  "listener.pulse": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.pulse",
+    "sounds": [
+      "dead_air:listener/pulse"
+    ]
+  },
+  "listener.claw": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.claw",
+    "sounds": [
+      "dead_air:listener/claw"
+    ]
+  },
+  "listener.drone": {
+    "category": "ambient",
+    "subtitle": "subtitles.dead_air.listener.drone",
+    "sounds": [
+      {
+        "name": "dead_air:listener/drone",
+        "stream": true
+      }
+    ]
+  },
+  "listener.fade_pulse": {
+    "category": "ambient",
+    "subtitle": "subtitles.dead_air.listener.fade_pulse",
+    "sounds": [
+      {
+        "name": "dead_air:listener/fade_pulse",
+        "stream": true
+      }
+    ]
+  },
+  "listener.agro": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.agro",
+    "sounds": [
+      "dead_air:listener/agro"
+    ]
+  },
+  "listener.spawn": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.spawn",
+    "sounds": [
+      "dead_air:listener/spawn"
+    ]
+  },
+  "listener.dissolve": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.dissolve",
+    "sounds": [
+      "dead_air:listener/dissolve"
+    ]
+  },
+  "anchor.hum": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.anchor.hum",
+    "sounds": [
+      "dead_air:listener/anchor_hum"
+    ]
+  },
+  "anchor.break": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.anchor.break",
+    "sounds": [
+      "dead_air:listener/anchor_break"
+    ]
+  },
+  "broadcast.alert": {
+    "category": "record",
+    "subtitle": "subtitles.dead_air.broadcast.alert",
+    "sounds": [
+      "dead_air:broadcast/alert"
+    ]
+  },
+  "broadcast.voice": {
+    "category": "record",
+    "subtitle": "subtitles.dead_air.broadcast.voice",
+    "sounds": [
+      "dead_air:broadcast/voice1",
+      "dead_air:broadcast/voice2",
+      "dead_air:broadcast/voice3",
+      "dead_air:broadcast/voice4"
+    ]
+  },
+  "broadcast.distress_call": {
+    "category": "record",
+    "subtitle": "subtitles.dead_air.broadcast.distress_call",
+    "sounds": [
+      "dead_air:broadcast/distress_call"
+    ]
+  },
+  "broadcast.decoded": {
+    "category": "record",
+    "subtitle": "subtitles.dead_air.broadcast.decoded",
+    "sounds": [
+      "dead_air:broadcast/decoded"
+    ]
+  },
+  "relay.ping": {
+    "category": "block",
+    "subtitle": "subtitles.dead_air.relay.ping",
+    "sounds": [
+      "dead_air:broadcast/relay_ping"
+    ]
+  },
+  "base.under_attack": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.base.under_attack",
+    "sounds": [
+      "dead_air:base/under_attack"
+    ]
+  },
+  "breaker.swing": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.breaker.swing",
+    "sounds": [
+      "dead_air:breaker/swing"
+    ]
+  },
+  "breaker.hit": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.breaker.hit",
+    "sounds": [
+      "dead_air:breaker/hit"
+    ]
+  },
+  "acoustic.hit": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.acoustic.hit",
+    "sounds": [
+      "dead_air:acoustic/hit"
+    ]
+  },
+  "chord.merge": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.chord.merge",
+    "sounds": [
+      "dead_air:chord/merge"
+    ]
   }
 }

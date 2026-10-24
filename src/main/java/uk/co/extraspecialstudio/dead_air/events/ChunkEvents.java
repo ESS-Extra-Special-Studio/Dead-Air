@@ -17,7 +17,7 @@ import net.minecraft.core.BlockPos;
  * Event handlers for chunk loading to scan for existing towers.
  * We need to scan chunks because Forge does not fire a "structure placed" event when
  * worldgen or structure blocks place structures—we only get chunk load. When we ourselves
- * place a tower (e.g. /dead_air spawntower), we use origin+offset instead (see SpawnTowerCommand).
+ * place a tower (e.g. /dead_air structures tower), we use origin+offset instead (see SpawnTowerCommand).
  */
 @Mod.EventBusSubscriber(modid = Dead_air.MODID)
 @SuppressWarnings("null")
@@ -159,7 +159,7 @@ public class ChunkEvents {
                             if (station != null) {
                                 TowerManager.registerTower(level, panelPos, station, towerType);
                                 processedPanels.add(panelPos);
-                                // Persist detection so walkie can point even after chunk unload (no unlock/music)
+                                // Persist detection so radio can point even after chunk unload (no unlock/music)
                                 BlockPos towerPos = panelPos;
                                 uk.co.extraspecialstudio.dead_air.radio.RadioTower reg =
                                     TowerManager.findTowerForPanel(level, panelPos);

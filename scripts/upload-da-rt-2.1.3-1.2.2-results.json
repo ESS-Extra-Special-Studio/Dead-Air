@@ -1,0 +1,30 @@
+[
+  {
+    "name": "2.1.3 (Forge 1.20.1)",
+    "modrinth": "6qqjncb5",
+    "curseforge": {
+      "error": "CF 2.1.3 (Forge 1.20.1): 524 <!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class=\"no-js ie7 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 8]>    <html class=\"no-js ie8 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html class=\"no-js\" lang=\"en-US\"> <!--<![endif]-->\n<head>\n\n<title>curseforge.com | 524: A timeout occurred</title>\n<meta charset=\"UTF-8\" />\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n<meta name=\"robots\" content=\"noindex, nofollow\" />\n<meta name=\"viewpor"
+    }
+  },
+  {
+    "name": "2.1.3 (NeoForge 1.21.1)",
+    "modrinth": null,
+    "curseforge": {
+      "error": "CF 2.1.3 (NeoForge 1.21.1): 524 <!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class=\"no-js ie7 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 8]>    <html class=\"no-js ie8 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if gt IE 8]><!--> <html class=\"no-js\" lang=\"en-US\"> <!--<![endif]-->\n<head>\n\n<title>curseforge.com | 524: A timeout occurred</title>\n<meta charset=\"UTF-8\" />\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n<meta name=\"robots\" content=\"noindex, nofollow\" />\n<meta name=\"viewpor"
+    }
+  },
+  {
+    "name": "1.2.2 (Forge 1.20.1)",
+    "modrinth": null,
+    "curseforge": {
+      "error": "fetch failed"
+    }
+  },
+  {
+    "name": "1.2.2 (NeoForge 1.21.1)",
+    "modrinth": "r0x451Ur",
+    "curseforge": {
+      "id": 8818467
+    }
+  }
+]

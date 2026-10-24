@@ -69,7 +69,7 @@ public class RadioSignalResponsePacket {
                 clientTick = net.minecraft.client.Minecraft.getInstance().player.tickCount;
             }
             // Do not replace the cache with an empty list: non-Overworld / edge responses used to wipe sync and
-            // forced the walkie GUI to fall back to all unlocked stations (every station ever discovered).
+            // forced the radio GUI to fall back to all unlocked stations (every station ever discovered).
             if (!msg.towers.isEmpty()) {
                 KnownTowersClientCache.setTowers(msg.towers);
             }

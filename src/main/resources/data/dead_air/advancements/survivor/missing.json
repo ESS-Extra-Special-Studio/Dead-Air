@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:survivor/recruit",
+  "display": {
+    "icon": { "item": "minecraft:recovery_compass" },
+    "title": { "translate": "advancements.dead_air.survivor.missing.title" },
+    "description": { "translate": "advancements.dead_air.survivor.missing.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

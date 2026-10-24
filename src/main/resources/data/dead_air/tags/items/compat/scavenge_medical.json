@@ -1,0 +1,32 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "apocalypsenow:bandage", "required": false },
+    { "id": "apocalypsenow:antibiotics", "required": false },
+    { "id": "apocalypsenow:pain_killers", "required": false },
+    { "id": "apocalypsenow:splint", "required": false },
+    { "id": "apocalypsenow:saline", "required": false },
+    { "id": "apocalypsenow:alcohol", "required": false },
+    { "id": "apocalypsenow:syringe", "required": false },
+    { "id": "apocalypsenow:medicalkit", "required": false },
+    { "id": "survival_instinct:bandage", "required": false },
+    { "id": "survival_instinct:homemade_bandage", "required": false },
+    { "id": "survival_instinct:alcohol_wipes", "required": false },
+    { "id": "survival_instinct:antibiotics", "required": false },
+    { "id": "survival_instinct:adrenaline_syringe", "required": false },
+    { "id": "survival_instinct:survival_medkit", "required": false },
+    { "id": "zombiekit:bandage", "required": false },
+    { "id": "zombiekit:alcohol", "required": false },
+    { "id": "zombiekit:painkiller", "required": false },
+    { "id": "zombiekit:camphor", "required": false },
+    { "id": "zombiekit:medical_kit", "required": false },
+    { "id": "chovys_apocalypse_mod:bandage", "required": false },
+    { "id": "chovys_apocalypse_mod:antibiotics", "required": false },
+    { "id": "zmodfood:bint", "required": false },
+    { "id": "zmodfood:aspirin", "required": false },
+    { "id": "zmodfood:tabletki", "required": false },
+    { "id": "zmodfood:med_kit", "required": false },
+    { "id": "zmodfood:firstaidkit_ai_2", "required": false },
+    { "id": "zmodfood:antiradin", "required": false }
+  ]
+}

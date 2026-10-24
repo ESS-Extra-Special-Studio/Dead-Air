@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:survivor/settle",
+  "display": {
+    "icon": { "item": "minecraft:iron_ingot" },
+    "title": { "translate": "advancements.dead_air.survivor.train.title" },
+    "description": { "translate": "advancements.dead_air.survivor.train.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

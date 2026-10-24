@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "dead_air:block/camp_lantern" },
+    "facing=east": { "model": "dead_air:block/camp_lantern", "y": 90 },
+    "facing=south": { "model": "dead_air:block/camp_lantern", "y": 180 },
+    "facing=west": { "model": "dead_air:block/camp_lantern", "y": 270 }
+  }
+}

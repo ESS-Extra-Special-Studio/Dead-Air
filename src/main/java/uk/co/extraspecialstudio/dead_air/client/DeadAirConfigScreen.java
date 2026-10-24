@@ -23,7 +23,7 @@ import java.util.List;
 public class DeadAirConfigScreen extends EscScreen {
     private final Screen parent;
     private static final int SLIDER_W = 200;
-    private static final int FIELD_COUNT = 6;
+    private static final int FIELD_COUNT = 10;
 
     public DeadAirConfigScreen(Screen parent) {
         super(Component.literal("Dead Air Config"));
@@ -84,10 +84,10 @@ public class DeadAirConfigScreen extends EscScreen {
             .withValues(List.of(true, false))
             .withInitialValue(Config.radioAlwaysOn)
             .create(0, 0, sliderW, 20,
-                EscText.literal("Radio when walkie in inventory: " + (Config.radioAlwaysOn ? "On" : "Off")),
+                EscText.literal("Radio when radio in inventory: " + (Config.radioAlwaysOn ? "On" : "Off")),
                 (b, v) -> {
                     Config.setRadioAlwaysOn(v);
-                    b.setMessage(EscText.literal("Radio when walkie in inventory: " + (v ? "On" : "Off")));
+                    b.setMessage(EscText.literal("Radio when radio in inventory: " + (v ? "On" : "Off")));
                 });
         layoutWidget(radioBtn, resolve(fieldRows[2], EscLayoutSpec.of(EscAnchor.CENTER, 0, 0, sliderW, 20)));
         addRenderableWidget(radioBtn);
@@ -152,6 +152,78 @@ public class DeadAirConfigScreen extends EscScreen {
         };
         layoutWidget(offsetY, resolve(fieldRows[5], EscLayoutSpec.of(EscAnchor.CENTER, 0, 0, sliderW, 20)));
         addRenderableWidget(offsetY);
+
+        CycleButton<Boolean> partyHudBtn = CycleButton.<Boolean>builder(v -> EscText.literal(v ? "On" : "Off"))
+            .withValues(List.of(true, false))
+            .withInitialValue(Config.partyHudEnabled)
+            .create(0, 0, sliderW, 20,
+                EscText.literal("Party HUD: " + (Config.partyHudEnabled ? "On" : "Off")),
+                (b, v) -> {
+                    Config.setPartyHudEnabled(v);
+                    b.setMessage(EscText.literal("Party HUD: " + (v ? "On" : "Off")));
+                });
+        layoutWidget(partyHudBtn, resolve(fieldRows[6], EscLayoutSpec.of(EscAnchor.CENTER, 0, 0, sliderW, 20)));
+        addRenderableWidget(partyHudBtn);
+
+        String partyCur = Config.partyHudCorner != null ? Config.partyHudCorner : "top_left";
+        int partyIdx = corners.indexOf(partyCur);
+        if (partyIdx < 0) {
+            partyIdx = 0;
+        }
+        final int[] partyCornerIndex = {partyIdx};
+        CycleButton<String> partyCornerBtn = CycleButton.builder((String s) -> EscText.literal(formatCorner(s)))
+            .withValues(corners).withInitialValue(corners.get(partyCornerIndex[0]))
+            .create(0, 0, sliderW, 20,
+                EscText.literal("Party HUD corner: " + formatCorner(corners.get(partyCornerIndex[0]))),
+                (b, s) -> {
+                    partyCornerIndex[0] = corners.indexOf(s);
+                    Config.setPartyHudCorner(s);
+                    b.setMessage(EscText.literal("Party HUD corner: " + formatCorner(s)));
+                });
+        layoutWidget(partyCornerBtn, resolve(fieldRows[7], EscLayoutSpec.of(EscAnchor.CENTER, 0, 0, sliderW, 20)));
+        addRenderableWidget(partyCornerBtn);
+
+        AbstractSliderButton partyOffsetX = new AbstractSliderButton(0, 0, sliderW, 20,
+            EscText.literal("Party HUD offset X: " + Config.partyHudOffsetX),
+            (Config.partyHudOffsetX - (-200)) / 400.0) {
+            {
+                updateMessage();
+            }
+
+            @Override
+            protected void updateMessage() {
+                int v = (int) Math.round(-200 + this.value * 400);
+                Config.setPartyHudOffsetX(v);
+                setMessage(EscText.literal("Party HUD offset X: " + v));
+            }
+
+            @Override
+            protected void applyValue() {
+            }
+        };
+        layoutWidget(partyOffsetX, resolve(fieldRows[8], EscLayoutSpec.of(EscAnchor.CENTER, 0, 0, sliderW, 20)));
+        addRenderableWidget(partyOffsetX);
+
+        AbstractSliderButton partyOffsetY = new AbstractSliderButton(0, 0, sliderW, 20,
+            EscText.literal("Party HUD offset Y: " + Config.partyHudOffsetY),
+            (Config.partyHudOffsetY - (-200)) / 400.0) {
+            {
+                updateMessage();
+            }
+
+            @Override
+            protected void updateMessage() {
+                int v = (int) Math.round(-200 + this.value * 400);
+                Config.setPartyHudOffsetY(v);
+                setMessage(EscText.literal("Party HUD offset Y: " + v));
+            }
+
+            @Override
+            protected void applyValue() {
+            }
+        };
+        layoutWidget(partyOffsetY, resolve(fieldRows[9], EscLayoutSpec.of(EscAnchor.CENTER, 0, 0, sliderW, 20)));
+        addRenderableWidget(partyOffsetY);
 
         EscRect footer = EscPanel.footer(content, style);
         int btnH = style.defaultButtonHeight();

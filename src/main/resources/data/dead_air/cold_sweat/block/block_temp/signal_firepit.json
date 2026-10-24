@@ -1,0 +1,19 @@
+{
+  "required_mods": [
+    "cold_sweat"
+  ],
+  "block": {
+    "blocks": [
+      "dead_air:signal_firepit"
+    ],
+    "state": {
+      "lit": true
+    }
+  },
+  "temperature": 25,
+  "max_effect": 50,
+  "units": "f",
+  "fade": true,
+  "range": 7,
+  "max_temp": 400
+}

@@ -193,21 +193,33 @@ public class ApocalypseTowerDetector {
      * Radio Panels are typically within the tower structure.
      */
     public static BlockPos findRadioPanel(ServerLevel level, BlockPos towerPos) {
-        // Radio panels are typically within 10 blocks of any tower position
-        int searchRadius = 10;
-        
-        for (int x = -searchRadius; x <= searchRadius; x++) {
-            for (int y = -searchRadius; y <= searchRadius; y++) {
-                for (int z = -searchRadius; z <= searchRadius; z++) {
-                    BlockPos checkPos = towerPos.offset(x, y, z);
-                    if (isRadioPanel(level, checkPos)) {
-                        return checkPos;
+        return findNearestRadioPanel(level, towerPos, 10);
+    }
+
+    /**
+     * Nearest radio panel within {@code radius} blocks of {@code origin} (inclusive cube).
+     * Matches RadioTowers {@code findNearbyRadioPanel} (~10 blocks) used by opencall.
+     * Prefers the closest panel by squared Euclidean distance.
+     */
+    @javax.annotation.Nullable
+    public static BlockPos findNearestRadioPanel(ServerLevel level, BlockPos origin, int radius) {
+        if (level == null || origin == null || radius < 0) return null;
+        BlockPos best = null;
+        int bestDist = Integer.MAX_VALUE;
+        for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    BlockPos p = origin.offset(dx, dy, dz);
+                    if (!isRadioPanel(level, p)) continue;
+                    int d = dx * dx + dy * dy + dz * dz;
+                    if (d < bestDist) {
+                        bestDist = d;
+                        best = p.immutable();
                     }
                 }
             }
         }
-        
-        return null;
+        return best;
     }
     
     /**

@@ -63,7 +63,7 @@ public final class KnownTowersClientCache {
     }
 
     /**
-     * Tower position for walkie compass: nearest detected or activated tower for this station in range.
+     * Tower position for radio compass: nearest detected or activated tower for this station in range.
      * Does not require the chunk to be loaded.
      */
     public static Vec3 getBestTowerPositionForStation(ResourceLocation stationId, Vec3 playerPos, net.minecraft.world.level.Level level) {
@@ -159,7 +159,7 @@ public final class KnownTowersClientCache {
 
     /**
      * Signal-Upgraded tower broadcasting {@code stationId} that is within that station's
-     * broadcast range of the player (same reach as the walkie station list). Prefers strongest signal.
+     * broadcast range of the player (same reach as the radio station list). Prefers strongest signal.
      */
     public static KnownTowersSyncPacket.TowerEntry findBoostedTowerInRangeForStation(
             Vec3 playerPos, ResourceLocation stationId, net.minecraft.world.level.Level level) {

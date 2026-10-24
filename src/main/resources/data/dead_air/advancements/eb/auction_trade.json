@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:eb/auction_hear",
+  "display": {
+    "icon": { "item": "minecraft:emerald" },
+    "title": { "translate": "advancements.dead_air.eb.auction_trade.title" },
+    "description": { "translate": "advancements.dead_air.eb.auction_trade.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

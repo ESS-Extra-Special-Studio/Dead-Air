@@ -27,8 +27,11 @@ public final class DeadAirCreativeTabs {
                 // Guide
                 output.accept(DeadAirItems.DEAD_AIR_FIELD_GUIDE.get());
                 // Radios
-                output.accept(DeadAirItems.WALKIE_T1.get());
-                output.accept(DeadAirItems.WALKIE_T2.get());
+                output.accept(DeadAirItems.RADIO_T1.get());
+                output.accept(DeadAirItems.RADIO_T2.get());
+                output.accept(DeadAirItems.RADIO_T3.get());
+                output.accept(DeadAirItems.SIGNAL_DECODER.get());
+                output.accept(DeadAirItems.RELAY_LOG.get());
                 // Resources / craft parts
                 output.accept(DeadAirItems.STATIC_NOTE.get());
                 output.accept(DeadAirItems.RESONANT_CHORD.get());
@@ -40,6 +43,28 @@ public final class DeadAirCreativeTabs {
                 // Tower upgrades
                 output.accept(DeadAirItems.SIGNAL_UPGRADE.get());
                 output.accept(DeadAirItems.JUKEBOX_UPGRADE.get());
+                // The Listener
+                output.accept(DeadAirItems.BROKEN_RELAY.get());
+                output.accept(DeadAirItems.SURVIVOR_TENT.get());
+                output.accept(DeadAirItems.SIGNAL_FIREPIT.get());
+                output.accept(DeadAirItems.FOLDING_CHAIR.get());
+                output.accept(DeadAirItems.SURVIVOR_BACKPACK.get());
+                output.accept(DeadAirItems.CAMP_TABLE.get());
+                output.accept(DeadAirItems.CAMP_LANTERN.get());
+                output.accept(DeadAirItems.JERRYCAN.get());
+                output.accept(DeadAirItems.COOKING_POT.get());
+                output.accept(DeadAirItems.MEDICAL_CASE.get());
+                output.accept(DeadAirItems.CLOTHESLINE.get());
+                output.accept(DeadAirItems.TRAFFIC_CONE.get());
+                output.accept(DeadAirItems.SIGNAL_BREAKER.get());
+                output.accept(DeadAirItems.COMPONENT_DISTORTION_CORE.get());
+                output.accept(DeadAirItems.COMPONENT_BROADCASTER_COIL.get());
+                output.accept(DeadAirItems.COMPONENT_MAW_FANG.get());
+                output.accept(DeadAirItems.COMPONENT_SCRAMBLER_CHIP.get());
+                output.accept(DeadAirItems.COMPONENT_ECHO_CRYSTAL.get());
+                output.accept(DeadAirItems.THE_LISTENER_SPAWN_EGG.get());
+                output.accept(DeadAirItems.SIGNAL_ANCHOR_SPAWN_EGG.get());
+                output.accept(DeadAirItems.SURVIVOR_SPAWN_EGG.get());
             })
             .build()
     );

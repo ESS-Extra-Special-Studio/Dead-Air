@@ -499,10 +499,13 @@ public class TowerManager {
 
         List<RadioStation> musicAll = StationRegistry.getStationsByType(RadioStation.StationType.MUSIC);
         List<RadioStation> musicStations = musicAll.stream()
-            .filter(s -> s != null && !StationRegistry.JUKEBOX_FM_ID.equals(s.getId()))
+            .filter(s -> s != null && !StationRegistry.JUKEBOX_FM_ID.equals(s.getId())
+                && !uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.isMissingPack(s.getId()))
             .toList();
         if (musicStations.isEmpty()) {
-            musicStations = musicAll;
+            musicStations = musicAll.stream()
+                .filter(s -> s != null && !uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.isMissingPack(s.getId()))
+                .toList();
         }
         if (musicStations.isEmpty()) {
             return emergencyStation != null ? emergencyStation : null;

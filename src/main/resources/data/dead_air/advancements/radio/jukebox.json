@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:root",
+  "display": {
+    "icon": { "item": "dead_air:jukebox_upgrade" },
+    "title": { "translate": "advancements.dead_air.radio.jukebox.title" },
+    "description": { "translate": "advancements.dead_air.radio.jukebox.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

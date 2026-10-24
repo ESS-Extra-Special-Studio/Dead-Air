@@ -1,0 +1,75 @@
+﻿=== startup issues ===
+=== command output ===
+[21:04:38] [Server thread/INFO] [minecraft/DedicatedServer]: Starting remote control listener
+[21:04:38] [Server thread/INFO] [minecraft/GenericThread]: Thread RCON Listener started
+[21:04:38] [Server thread/INFO] [minecraft/RconThread]: RCON running on 0.0.0.0:25575
+[21:04:38] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[21:04:38] [Server thread/INFO] [uk.co.ex.es.EslMod/]: [ESL] Re-applied 0 force-load site(s)
+[21:04:38] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] DA3 smoke start
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]: Dead Air soft-compat:
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   tacz [tacz] missing ´┐¢ survivor equip/shoot + guns loot
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   journeymap [journeymap] missing ´┐¢ EB site waypoints
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   xaero [xaerominimap/xaeroworldmap] missing ´┐¢ EB site waypoints
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   ftbchunks [ftbchunks] missing ´┐¢ base claim/highlight best-effort
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   cold_sweat [cold_sweat] missing ´┐¢ medic/auction temp loot
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   toughasnails [toughasnails] missing ´┐¢ medic/survivor water loot
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   vehicle [vehicle] missing ´┐¢ crash-site parts chest
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   immersive_aircraft [immersive_aircraft] missing ´┐¢ crash wreck loot flavour
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   pointblank [pointblank] missing ´┐¢ survivor gun equip + guns loot
+[21:04:40] [Server thread/INFO] [minecraft/MinecraftServer]:   horde [zombieawareness|enhancedai] missing ´┐¢ base-attack wave bump
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: === Dead Air live config ===
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: emergencyBroadcastRange=2000
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: musicStationRange=375
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: effective bedrockStation=375 emergencyStation=2000
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: minTowerSpacing=400
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: enableLineOfSight=true
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: enableWeatherEffects=true
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: maxVolume=0.7 minVolume=0.1
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: radioAlwaysOn=true
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: musicPlaysWithoutTower=true
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: autoDiscoverModMusic=true
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: overlayCorner=top_right offset=0,0
+[21:04:41] [Server thread/INFO] [minecraft/MinecraftServer]: customMusicPath=(empty)
+[21:04:43] [Server thread/INFO] [minecraft/MinecraftServer]: Hidden frequency set to 88.8 MHz
+[21:04:44] [Server thread/INFO] [minecraft/MinecraftServer]: Stopped 0 encounter(s).
+[21:04:46] [Server thread/INFO] [minecraft/MinecraftServer]: Loaded template "dead_air:broken_relay/small" at 8, 80, 8
+[21:04:47] [Server thread/INFO] [minecraft/MinecraftServer]: Loaded template "dead_air:broken_relay/medium" at 28, 80, 8
+[21:04:49] [Server thread/INFO] [minecraft/MinecraftServer]: Loaded template "dead_air:broken_relay/large" at 48, 80, 8
+[21:04:50] [Server thread/INFO] [minecraft/MinecraftServer]: Loaded template "dead_air:survivor_camp/camp" at 68, 80, 8
+[21:04:52] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Survivor
+[21:04:53] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Signal Anchor
+[21:04:55] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new The Listener
+[21:04:56] [Server thread/INFO] [minecraft/MinecraftServer]: Dropped 5 items
+[21:04:58] [Server thread/INFO] [minecraft/MinecraftServer]: Dropped 3 items
+[21:04:59] [Server thread/INFO] [minecraft/MinecraftServer]: Dropped 5 items
+[21:05:01] [Server thread/INFO] [minecraft/MinecraftServer]: Dropped 2 items
+[21:05:02] [Server thread/INFO] [minecraft/MinecraftServer]: Dropped 2 items
+[21:05:03] [Server thread/INFO] [minecraft/LivingEntity]: Named entity SurvivorEntity['Survivor'/78, l='ServerLevel[world]', x=10.50, y=100.00, z=10.50] died: Survivor suffocated in a wall
+[21:05:04] [Server thread/INFO] [minecraft/MinecraftServer]: Dropped 2 items
+[21:05:05] [Server thread/INFO] [minecraft/MinecraftServer]: Could not set the block
+[21:05:07] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:08] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:10] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:11] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:13] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:14] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:16] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:17] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:19] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:20] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:22] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:23] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:25] [Server thread/INFO] [minecraft/MinecraftServer]: A player is required to run this command here
+[21:05:26] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] DA3 smoke end
+[21:05:31] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping the server
+[21:05:31] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[21:05:31] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[21:05:31] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[21:05:31] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[21:05:32] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[21:05:32] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[21:05:32] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[21:05:32] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[21:05:32] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[21:05:32] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[21:05:32] [Server thread/INFO] [minecraft/GenericThread]: Thread RCON Listener stopped

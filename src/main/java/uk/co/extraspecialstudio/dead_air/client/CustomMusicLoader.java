@@ -103,7 +103,7 @@ public final class CustomMusicLoader {
               config/dead_air/custom stations/LoFi Nights/track_02.ogg
 
             On next launch, Dead Air creates "LoFi Nights Radio" automatically.
-            Folder stations always appear in the walkie station list (no tower required).
+            Folder stations always appear in the radio station list (no tower required).
             A nearby tower can still broadcast them for signal bars like any other station.
 
             Restart the game (or reload resources) after adding / renaming folders or tracks.

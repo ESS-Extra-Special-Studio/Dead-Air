@@ -144,6 +144,15 @@ public class StationRegistry {
             minSpacing,
             "https://music.creatopia.uk/listen/ambiance-fm/radio.mp3"
         ));
+
+        RadioStation bedrock = getStation(BEDROCK_RADIO_ID);
+        RadioStation emergency = getStation(EMERGENCY_BROADCAST_ID);
+        Dead_air.LOGGER.info(
+            "[Dead Air] Station ranges at startup: musicConfig={} emergencyConfig={} bedrockStation={} emergencyStation={}",
+            Config.musicStationRange,
+            Config.emergencyBroadcastRange,
+            bedrock == null ? -1 : bedrock.getBroadcastRange(),
+            emergency == null ? -1 : emergency.getBroadcastRange());
     }
     
     public static void registerStation(RadioStation station) {

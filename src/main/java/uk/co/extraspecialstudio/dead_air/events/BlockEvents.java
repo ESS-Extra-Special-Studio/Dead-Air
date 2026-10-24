@@ -3,6 +3,7 @@ package uk.co.extraspecialstudio.dead_air.events;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -35,31 +36,38 @@ public class BlockEvents {
         
         BlockPos pos = event.getPos();
         
-        // Check if placed block is a Radio Panel (towers are identified by their Radio Panels)
-        if (ApocalypseTowerDetector.isRadioPanel(level, pos)) {
-            // Found a Radio Panel - check if it's an official tower or player-built
-            ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
-            
-            if (towerType != ApocalypseTowerType.UNKNOWN) {
-                // Official tower - register it (TowerManager avoids same station within range)
-                RadioStation station = TowerManager.determineStationForTower(level, pos, towerType);
-                if (station != null) {
-                    // Register tower at the Radio Panel position
-                    TowerManager.registerTower(level, pos, station, towerType);
-                }
-            } else {
-                // Player-built tower - register with default station (Emergency Broadcast)
-                // Player can change station later if we add that feature
-                RadioStation defaultStation = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-                if (defaultStation != null) {
-                    TowerManager.registerPlayerTower(level, pos, defaultStation);
+        try {
+            // Check if placed block is a Radio Panel (towers are identified by their Radio Panels)
+            if (ApocalypseTowerDetector.isRadioPanel(level, pos)) {
+                // Found a Radio Panel - check if it's an official tower or player-built
+                ApocalypseTowerType towerType = ApocalypseTowerDetector.getTowerType(level, pos);
+                
+                if (towerType != ApocalypseTowerType.UNKNOWN) {
+                    // Official tower - register it (TowerManager avoids same station within range)
+                    RadioStation station = TowerManager.determineStationForTower(level, pos, towerType);
+                    if (station != null) {
+                        // Register tower at the Radio Panel position
+                        TowerManager.registerTower(level, pos, station, towerType);
+                    }
+                } else {
+                    // Player-built tower - register with default station (Emergency Broadcast)
+                    // Player can change station later if we add that feature
+                    RadioStation defaultStation = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
+                    if (defaultStation != null) {
+                        TowerManager.registerPlayerTower(level, pos, defaultStation);
+                    }
                 }
             }
+        } catch (LinkageError | Exception e) {
+            // Never let panel place kill the integrated server (ModuleClassLoader NoClassDefFoundError)
+            Dead_air.LOGGER.error("Dead Air: failed to register tower on panel place at {}", pos, e);
         }
     }
     
-    @SubscribeEvent
+    /** LOWEST so cancelled breaks (protection mods, claims) do not unregister towers / clear bases. */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.isCanceled()) return;
         if (!(event.getLevel() instanceof ServerLevel level)) {
             return;
         }
@@ -72,6 +80,8 @@ public class BlockEvents {
             RadioStation station = tower != null ? tower.getStation() : null;
             TowerManager.removeTower(level, pos);
             uk.co.extraspecialstudio.dead_air.tower.RadioPanelManager.clearPanel(pos);
+            // Drop any player base pinned to this panel (stale force-load + ghost base attacks).
+            uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.clearBasesAt(level.getServer(), level.dimension(), pos);
             // If no other tower in this dimension broadcasts this station, remove it from the GUI station list for all players
             if (station != null && !TowerManager.hasTowerBroadcasting(level, station.getId())) {
                 StationUnlockManager.removeStationForAllPlayers(level, station.getId());

@@ -1,0 +1,387 @@
+{
+  "at": "2026-09-07T08:27:47.536Z",
+  "results": [
+    {
+      "slug": "apocalypse-structures-radio-towers-and-airdrops",
+      "id": "Klhraky4",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge",
+        "neoforge"
+      ],
+      "game_versions": [
+        "1.20.1",
+        "1.21.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 228,
+      "body_preview": "Companion world content for Dead Air. Original author: that1lilguy (not Extra Special Studio). See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/apo",
+      "moderation_headings": [
+        "Insufficient Description"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T01:51:45.995633Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air",
+      "id": "roenfdI8",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "neoforge",
+        "forge"
+      ],
+      "game_versions": [
+        "1.21.1",
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 159,
+      "body_preview": "Apocalypse radio: towers, stations, walkie, music, and airdrops. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T02:49:34.038218Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T03:10:37.960798Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-pip-boy-radio-conversion",
+      "id": "kJRwmrZz",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 161,
+      "body_preview": "Dead Air walkie on a Pip-Boy-style radio. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-pip-boy-radio-conversion) for full description.",
+      "moderation_headings": [
+        "Insufficient Description"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T01:51:41.326375Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-after-hours-fm",
+      "id": "QPIM9htt",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 137,
+      "body_preview": "Dead Air station expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-after-hours-fm) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T02:48:44.434846Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T03:10:45.781515Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-block-beats",
+      "id": "utkUPcJF",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 134,
+      "body_preview": "Dead Air station expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-block-beats) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T02:54:21.207155Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T03:10:37.724164Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-broken-youth-radio",
+      "id": "iIldhggN",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 141,
+      "body_preview": "Dead Air station expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-broken-youth-radio) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T01:49:21.321034Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T02:44:02.765243Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-frontline-fm",
+      "id": "o7mtlrrS",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 135,
+      "body_preview": "Dead Air station expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-frontline-fm) for full description.",
+      "moderation_headings": [
+        "Insufficient Description"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T02:46:55.565538Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-iron-rain-fm",
+      "id": "H5vDBLRB",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 135,
+      "body_preview": "Dead Air station expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-iron-rain-fm) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T01:48:01.427773Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T02:44:06.781174Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-wayfarer-radio",
+      "id": "McjRabzF",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 137,
+      "body_preview": "Dead Air station expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-wayfarer-radio) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T02:31:09.679019Z",
+          "headings": [
+            "Insufficient Description"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T02:44:08.570223Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    },
+    {
+      "slug": "dead-air-zero-gravity",
+      "id": "TZAIWM0Z",
+      "status": "rejected",
+      "environment": [
+        "client_and_server"
+      ],
+      "side_types_migration_review_status": "reviewed",
+      "loaders": [
+        "forge"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "version_environments": [
+        "client_and_server"
+      ],
+      "body_length": 127,
+      "body_preview": "Dead Air expansion. See [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dead-air-zero-gravity) for full description.",
+      "moderation_headings": [
+        "Insufficient Description",
+        "Insufficient Summary",
+        "Prohibited Images"
+      ],
+      "moderation": [
+        {
+          "created": "2026-09-05T02:52:44.610508Z",
+          "headings": [
+            "Insufficient Description",
+            "Insufficient Summary"
+          ],
+          "preview": "We've recently updated out minimum requirements for project submission. For detailed guidance on how to meet these requirements and resubmit your project, refer to the publishing checklist above, and address all moderation concerns listed below, thank you! ## Insufficient Description Per section 2.1 of [Modrinth's Content Rules](https://modrinth.com/legal/rules), your Description should clearly in"
+        },
+        {
+          "created": "2026-09-05T03:10:36.926092Z",
+          "headings": [
+            "Prohibited Images"
+          ],
+          "preview": "## Prohibited Images Per section 6.2a of [Modrinth's Content Rules](https://modrinth.com/legal/rules#prohibited-usage-of-ai), we ask that you remove any AI generated images from your project page. Images created or significantly altered with AI are not permitted to be uploaded as a part of your project pages on Modrinth. \\ We ask that you remove any and all AI images from your project's [Icon](./s"
+        }
+      ]
+    }
+  ]
+}

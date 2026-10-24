@@ -1,0 +1,608 @@
+{
+  "at": "2026-09-07T08:34:05.861Z",
+  "dryRun": false,
+  "env": "client_and_server",
+  "resubmit": false,
+  "results": [
+    {
+      "slug": "esl-extra-special-lib",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "tYRCyRC8",
+          "version_number": "1.0.1+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "ufjECZUj",
+          "version_number": "1.0.1+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 2,
+      "versionsPatched": 2,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "esc-extra-special-core",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "sLd5UC2q",
+          "version_number": "2.0.1+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "CNKjxDw8",
+          "version_number": "2.0.1+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 2,
+      "versionsPatched": 2,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "esh-extra-special-hub",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "Ma4VTOd7",
+          "version_number": "1.0.0+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "loJcwSfN",
+          "version_number": "1.0.0+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 2,
+      "versionsPatched": 2,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "esg-extra-special-gui",
+      "targetEnv": "client_and_server",
+      "skipped": "GET /v2/project/esg-extra-special-gui -> 404: "
+    },
+    {
+      "slug": "whatlib",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "v0FfRWeA",
+          "version_number": "1.0.0+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "s07SsqMX",
+          "version_number": "1.0.0+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 2,
+      "versionsPatched": 2,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "pantheonapi",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "xnoF6dCo",
+          "version_number": "1.1.7+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "nxu77KUa",
+          "version_number": "1.1.7+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 2,
+      "versionsPatched": 2,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "aegis-accord",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "VxZDnyQt",
+          "version_number": "1.2.2+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "YLxDa0O4",
+          "version_number": "1.2.2",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 2,
+      "versionsPatched": 2,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "hermes",
+      "targetEnv": "client_and_server",
+      "status": "unlisted",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "pending",
+      "versions": [
+        {
+          "id": "9lAi77qa",
+          "version_number": "1.2.0",
+          "environment": "client_and_server",
+          "loaders": [
+            "fabric"
+          ]
+        },
+        {
+          "id": "l5w6s8Si",
+          "version_number": "1.0.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "fabric"
+          ]
+        },
+        {
+          "id": "FltHBg6O",
+          "version_number": "1.0.0",
+          "environment": "client_and_server",
+          "loaders": [
+            "fabric"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "apocalypse-structures-radio-towers-and-airdrops",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "TvI4L4zm",
+          "version_number": "1.2.2+1.20.1-forge",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        },
+        {
+          "id": "r0x451Ur",
+          "version_number": "1.2.2+1.21.1-neoforge",
+          "environment": "client_and_server",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "YPR85Pko",
+          "version_number": "1.2.1+1.20.1-forge.jar",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "Ya01FDfF",
+          "version_number": "2.1.3+1.21.1-neoforge",
+          "environment": "client_and_server",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "6qqjncb5",
+          "version_number": "2.1.3+1.20.1-forge",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        },
+        {
+          "id": "9zuo44Cm",
+          "version_number": "2.1.2+1.20.1-forge.jar",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        },
+        {
+          "id": "SeSrXlcU",
+          "version_number": "2.1.2+1.20.1-forge.jar",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-pip-boy-radio-conversion",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "8z04msOd",
+          "version_number": "1.0.0+1.20.1-forge.jar",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-after-hours-fm",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "6kUpjbwv",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-block-beats",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "3VFJnSI7",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        },
+        {
+          "id": "Jrdcvtb8",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-broken-youth-radio",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "61ZdycI3",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-frontline-fm",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "o7jf6UHx",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-iron-rain-fm",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "xkpZa4LS",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-wayfarer-radio",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "hZCsE3th",
+          "version_number": "1.1.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "dead-air-zero-gravity",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "client_and_server"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "d8I6cose",
+          "version_number": "1.0.1",
+          "environment": "client_and_server",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": false,
+      "versionsNeedingFix": 0,
+      "action": "already set"
+    },
+    {
+      "slug": "calm-the-leaks",
+      "targetEnv": "client_and_server",
+      "skipped": "GET /v2/project/calm-the-leaks -> 404: "
+    },
+    {
+      "slug": "lootr-liaison",
+      "targetEnv": "client_and_server",
+      "skipped": "GET /v2/project/lootr-liaison -> 404: "
+    },
+    {
+      "slug": "dead-letters",
+      "targetEnv": "client_and_server",
+      "status": "rejected",
+      "projectEnvBefore": [
+        "unknown"
+      ],
+      "sideReview": "reviewed",
+      "versions": [
+        {
+          "id": "6OuPTNK2",
+          "version_number": "1.0.4+1.21.1-neoforge",
+          "environment": "unknown",
+          "loaders": [
+            "neoforge"
+          ]
+        },
+        {
+          "id": "V1qxjPFy",
+          "version_number": "1.0.4+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        },
+        {
+          "id": "EugNqyAj",
+          "version_number": "1.0.3+1.20.1-forge",
+          "environment": "unknown",
+          "loaders": [
+            "forge"
+          ]
+        }
+      ],
+      "projectNeedsFix": true,
+      "versionsNeedingFix": 3,
+      "versionsPatched": 3,
+      "projectPatched": true,
+      "projectEnvAfter": [
+        "client_and_server"
+      ],
+      "versionEnvsAfter": [
+        "client_and_server"
+      ],
+      "action": "fixed"
+    },
+    {
+      "slug": "nag",
+      "targetEnv": "client_and_server",
+      "skipped": "GET /v2/project/nag -> 404: "
+    }
+  ]
+}

@@ -29,5 +29,13 @@ public final class DeadAirEvents {
     public static boolean post(DeadAirAirdropRequestedEvent event) {
         return MinecraftForge.EVENT_BUS.post(event);
     }
+
+    public static boolean post(uk.co.extraspecialstudio.dead_air.api.events.types.ListenerFirstEncounterSurvivedEvent event) {
+        return MinecraftForge.EVENT_BUS.post(event);
+    }
+
+    public static boolean post(uk.co.extraspecialstudio.dead_air.api.events.types.ListenerDefeatedEvent event) {
+        return MinecraftForge.EVENT_BUS.post(event);
+    }
 }
 

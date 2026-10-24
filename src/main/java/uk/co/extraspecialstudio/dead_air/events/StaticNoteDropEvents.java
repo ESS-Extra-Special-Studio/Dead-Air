@@ -9,12 +9,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.item.DeadAirItems;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 /**
- * Drops Static Notes when a player kills a mob while their single active walkie is on and tuned.
+ * Drops Static Notes when a player kills a mob while their single active radio is on and tuned.
  * Chance comes only from that active radio (T1 15% / T2 30%) — extra radios in inventory do not help.
- * Does not require holding the walkie.
+ * Does not require holding the radio.
  */
 @Mod.EventBusSubscriber(modid = Dead_air.MODID)
 public class StaticNoteDropEvents {
@@ -26,11 +26,11 @@ public class StaticNoteDropEvents {
         if (!(event.getSource().getEntity() instanceof Player player)) return;
         if (event.getEntity() instanceof Player) return;
 
-        // Enforce one active radio on the server inventory, then roll that walkie's chance only.
-        WalkieTalkieManager.ensureSingleActiveListening(player);
-        if (!WalkieTalkieManager.isListeningToRadio(player)) return;
+        // Enforce one active radio on the server inventory, then roll that radio's chance only.
+        RadioManager.ensureSingleActiveListening(player);
+        if (!RadioManager.isListeningToRadio(player)) return;
 
-        float chance = WalkieTalkieManager.getStaticNoteDropChance(player);
+        float chance = RadioManager.getStaticNoteDropChance(player);
         if (chance <= 0f) return;
         if (player.getRandom().nextFloat() >= chance) return;
 

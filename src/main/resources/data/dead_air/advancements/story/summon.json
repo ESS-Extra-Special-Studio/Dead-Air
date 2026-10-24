@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:story/it_hears_you",
+  "display": {
+    "icon": { "item": "minecraft:echo_shard" },
+    "title": { "translate": "advancements.dead_air.story.summon.title" },
+    "description": { "translate": "advancements.dead_air.story.summon.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

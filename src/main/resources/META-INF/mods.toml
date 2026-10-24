@@ -8,12 +8,14 @@
 #   forge                     Forge loader           (required)
 #   minecraft                 Minecraft              (required)
 #   extraspecialcore          Extra Special Core     (required)
-#   geckolib                  GeckoLib (walkie models) (required)
+#   geckolib                  GeckoLib (radio models) (required)
 #   radiotowers               Apocalypse RadioTowers (required)
 #   voicechat                 Simple Voice Chat      (optional; voice UI cosmetic)
 #   berezkas_zombie_waves_api Zombie Waves API       (optional integration)
 #   berezka_api               Berezka Library        (optional integration)
-#   tacz                      Timeless and Classics  (optional airdrop catalog)
+#   tacz                      Timeless and Classics  (optional guns / loot)
+#   journeymap / xaerominimap Soft map waypoints
+#   ftbchunks / cold_sweat / toughasnails / vehicle / immersive_aircraft / pointblank / zombieawareness
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader = "javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
@@ -82,7 +84,14 @@ versionRange = "${esc_version_range}"
 ordering = "AFTER"
 side = "BOTH"
 
-# Optional - Simple Voice Chat (Walkie tab voice UI is cosmetic without it)
+[[dependencies."${mod_id}"]]
+modId = "extraspeciallib"
+mandatory = true
+versionRange = "${esl_version_range}"
+ordering = "AFTER"
+side = "BOTH"
+
+# Optional - Simple Voice Chat (Radio tab voice UI is cosmetic without it)
 [[dependencies."${mod_id}"]]
 modId = "voicechat"
 mandatory = false
@@ -90,7 +99,7 @@ versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
-# Required - GeckoLib (animated Dead Air walkie models)
+# Required - GeckoLib (animated Dead Air radio models)
 [[dependencies."${mod_id}"]]
 modId = "geckolib"
 mandatory = true
@@ -99,10 +108,11 @@ ordering = "AFTER"
 side = "BOTH"
 
 # Required - Apocalypse Structures: Radio Towers and Airdrops (radiotowers). Dead Air loads BEFORE to avoid mod-sort cycle.
+# 1.2.5+ for ESN lobby + Dead Air unlock bridge (Boss/Endless tabs).
 [[dependencies."${mod_id}"]]
 modId = "radiotowers"
 mandatory = true
-versionRange = "[1.0,)"
+versionRange = "[1.3.0,2.0)"
 ordering = "BEFORE"
 side = "BOTH"
 
@@ -122,9 +132,87 @@ versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
-# Optional: TaCZ (Timeless and Classics Zero Guns) – guns/ammo in airdrop catalog when present
+# Optional: TaCZ (Timeless and Classics Zero Guns) – survivor guns + loot tag
 [[dependencies."${mod_id}"]]
 modId = "tacz"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "journeymap"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies."${mod_id}"]]
+modId = "xaerominimap"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies."${mod_id}"]]
+modId = "xaeroworldmap"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies."${mod_id}"]]
+modId = "ftbchunks"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "cold_sweat"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "toughasnails"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "vehicle"
+mandatory = false
+# MrCrayfish Vehicle / Unofficial reborn ships as 0.45.x on 1.20.1 — do not require 1.0+
+versionRange = "[0.45,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "immersive_aircraft"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "pointblank"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "zombieawareness"
+mandatory = false
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "enhancedai"
 mandatory = false
 versionRange = "[1.0,)"
 ordering = "AFTER"

@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:survivor/recruit",
+  "display": {
+    "icon": { "item": "minecraft:lead" },
+    "title": { "translate": "advancements.dead_air.survivor.follow.title" },
+    "description": { "translate": "advancements.dead_air.survivor.follow.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

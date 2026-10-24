@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " N ",
+    "RCR",
+    " U "
+  ],
+  "key": {
+    "N": {
+      "item": "dead_air:static_note"
+    },
+    "R": {
+      "item": "dead_air:dimensional_relay"
+    },
+    "C": {
+      "item": "dead_air:resonant_chord"
+    },
+    "U": {
+      "item": "dead_air:signal_upgrade"
+    }
+  },
+  "result": {
+    "item": "dead_air:signal_decoder",
+    "count": 1
+  }
+}

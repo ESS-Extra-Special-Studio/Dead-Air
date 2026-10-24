@@ -10,11 +10,20 @@ import org.lwjgl.glfw.GLFW;
  */
 @SuppressWarnings("null")
 public class KeyBindings {
-    public static final KeyMapping TUNE_WALKIE = new KeyMapping(
-        "key.dead_air.tune_walkie",
+    public static final KeyMapping TUNE_RADIO = new KeyMapping(
+        "key.dead_air.tune_radio",
         KeyConflictContext.IN_GAME,
         InputConstants.Type.KEYSYM,
-        GLFW.GLFW_KEY_N,  // N = tune radio (H = mute, G = other menu, B = walkie on/off)
+        GLFW.GLFW_KEY_N,  // N = tune radio (H = mute, G = other menu, B = radio on/off)
+        "key.categories.dead_air"
+    );
+
+    /** Hold to open squad order radial wheel. */
+    public static final KeyMapping PARTY_ORDERS = new KeyMapping(
+        "key.dead_air.party_orders",
+        KeyConflictContext.IN_GAME,
+        InputConstants.Type.KEYSYM,
+        GLFW.GLFW_KEY_C,
         "key.categories.dead_air"
     );
     

@@ -1,0 +1,28 @@
+[
+  {
+    "name": "2.1.3 (Forge 1.20.1)",
+    "modrinth": null,
+    "curseforge": {
+      "error": "CF 2.1.3 (Forge 1.20.1): 524 <!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class=\"no-js ie7 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 8]>    <html class=\"no-"
+    }
+  },
+  {
+    "name": "2.1.3 (NeoForge 1.21.1)",
+    "modrinth": "Ya01FDfF",
+    "curseforge": {
+      "error": "CF 2.1.3 (NeoForge 1.21.1): 524 <!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class=\"no-js ie7 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 8]>    <html class=\"no-"
+    }
+  },
+  {
+    "name": "1.2.2 (Forge 1.20.1)",
+    "modrinth": "TvI4L4zm",
+    "curseforge": {
+      "id": 8818517
+    }
+  },
+  {
+    "name": "1.2.2 (NeoForge 1.21.1)",
+    "modrinth": null,
+    "curseforge": null
+  }
+]

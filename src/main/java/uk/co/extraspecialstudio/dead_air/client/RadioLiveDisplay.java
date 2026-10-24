@@ -13,7 +13,7 @@ import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.SignalStrength;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
 import uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Paints the live radio HUD into an arbitrary item atlas screen rectangle.
- * Used by the built-in T2 walkie and by companion radios (e.g. Pip-Boy) with their own UVs.
+ * Used by the built-in T2 radio and by companion radios (e.g. Pip-Boy) with their own UVs.
  */
 public final class RadioLiveDisplay {
     /**
@@ -45,6 +45,61 @@ public final class RadioLiveDisplay {
         public int cx() { return (x0 + x1) / 2; }
     }
 
+    /** Per-radio LCD colours (ABGR). T2 green CRT vs T3 blue deck. */
+    public record LcdPalette(
+        int bg,
+        int pixelDark,
+        int pixelDim,
+        int pixelCyan,
+        int pixelGold,
+        int pixelLime,
+        int pixelRed,
+        int[] barColors,
+        int barOff,
+        int compassFill
+    ) {
+        public static final LcdPalette GREEN = new LcdPalette(
+            abgr(255, 159, 162, 57),
+            abgr(255, 18, 22, 8),
+            abgr(255, 70, 76, 28),
+            abgr(255, 12, 90, 120),
+            abgr(255, 55, 48, 10),
+            abgr(255, 20, 90, 18),
+            abgr(255, 160, 16, 8),
+            new int[]{
+                abgr(255, 200, 20, 10),
+                abgr(255, 200, 90, 10),
+                abgr(255, 200, 180, 10),
+                abgr(255, 90, 180, 10),
+                abgr(255, 20, 180, 10)
+            },
+            abgr(255, 90, 95, 40),
+            abgr(255, 40, 45, 18)
+        );
+        /**
+         * Cool blue LCD for T3 — labels (HZ/LOC) use bright cyan/white ({@code pixelDim}/{@code pixelDark})
+         * so they stay readable on the blue background.
+         */
+        public static final LcdPalette BLUE = new LcdPalette(
+            abgr(255, 22, 58, 98),
+            abgr(255, 210, 235, 255),
+            abgr(255, 140, 220, 255),
+            abgr(255, 60, 220, 255),
+            abgr(255, 200, 230, 255),
+            abgr(255, 90, 210, 255),
+            abgr(255, 255, 90, 70),
+            new int[]{
+                abgr(255, 50, 120, 220),
+                abgr(255, 50, 160, 240),
+                abgr(255, 80, 200, 255),
+                abgr(255, 110, 230, 255),
+                abgr(255, 160, 245, 255)
+            },
+            abgr(255, 18, 36, 64),
+            abgr(255, 10, 24, 48)
+        );
+    }
+
     public record Spec(
         ResourceLocation baseTexture,
         ResourceLocation liveId,
@@ -58,10 +113,11 @@ public final class RadioLiveDisplay {
          * {@code 0} = none, {@code 90} = counter-clockwise, {@code -90} = clockwise,
          * {@code 180} = flip both axes, {@code 270} = clockwise 90 then 180 (Pip wrist).
          */
-        int paintRotateDegrees
+        int paintRotateDegrees,
+        LcdPalette palette
     ) {
         public Spec(ResourceLocation baseTexture, ResourceLocation liveId, LcdRect rect, Integer expectedAtlasSize) {
-            this(baseTexture, liveId, rect, expectedAtlasSize, true, 0);
+            this(baseTexture, liveId, rect, expectedAtlasSize, true, 0, LcdPalette.GREEN);
         }
 
         public Spec(
@@ -71,7 +127,18 @@ public final class RadioLiveDisplay {
             Integer expectedAtlasSize,
             boolean showModeBadge
         ) {
-            this(baseTexture, liveId, rect, expectedAtlasSize, showModeBadge, 0);
+            this(baseTexture, liveId, rect, expectedAtlasSize, showModeBadge, 0, LcdPalette.GREEN);
+        }
+
+        public Spec(
+            ResourceLocation baseTexture,
+            ResourceLocation liveId,
+            LcdRect rect,
+            Integer expectedAtlasSize,
+            boolean showModeBadge,
+            int paintRotateDegrees
+        ) {
+            this(baseTexture, liveId, rect, expectedAtlasSize, showModeBadge, paintRotateDegrees, LcdPalette.GREEN);
         }
 
         /** @deprecated use {@link #paintRotateDegrees()} */
@@ -84,23 +151,8 @@ public final class RadioLiveDisplay {
     private static final Map<ResourceLocation, RadioLiveDisplay> BY_LIVE_ID = new ConcurrentHashMap<>();
     private static final Map<ResourceLocation, IdlePainter> IDLE_PAINTERS = new ConcurrentHashMap<>();
 
-    private static final int LCD_BG = abgr(255, 159, 162, 57);
     /** Fallout idle CRT black (ABGR). */
     private static final int LCD_IDLE_BG = abgr(255, 0, 0, 0);
-    private static final int PIXEL_DARK = abgr(255, 18, 22, 8);
-    private static final int PIXEL_DIM = abgr(255, 70, 76, 28);
-    private static final int PIXEL_CYAN = abgr(255, 12, 90, 120);
-    private static final int PIXEL_GOLD = abgr(255, 55, 48, 10);
-    private static final int PIXEL_LIME = abgr(255, 20, 90, 18);
-    private static final int PIXEL_RED = abgr(255, 160, 16, 8);
-    private static final int[] BAR_COLORS = {
-        abgr(255, 200, 20, 10),
-        abgr(255, 200, 90, 10),
-        abgr(255, 200, 180, 10),
-        abgr(255, 90, 180, 10),
-        abgr(255, 20, 180, 10)
-    };
-    private static final int BAR_OFF = abgr(255, 90, 95, 40);
     private static final Map<Character, Integer> GLYPHS = createGlyphs();
     private static final long REDRAW_MS = 80L;
 
@@ -127,7 +179,8 @@ public final class RadioLiveDisplay {
             || existing.spec.showModeBadge() != spec.showModeBadge()
             || !java.util.Objects.equals(existing.spec.expectedAtlasSize(), spec.expectedAtlasSize())
             || !existing.spec.rect().equals(spec.rect())
-            || !existing.spec.baseTexture().equals(spec.baseTexture())) {
+            || !existing.spec.baseTexture().equals(spec.baseTexture())
+            || existing.spec.palette() != spec.palette()) {
             existing.reset();
             RadioLiveDisplay created = new RadioLiveDisplay(spec);
             BY_LIVE_ID.put(spec.liveId(), created);
@@ -195,7 +248,8 @@ public final class RadioLiveDisplay {
             long now = System.currentTimeMillis();
             int scrollPhase = (int) ((now / 90L) % 10_000);
             String fingerprint = state.fingerprint() + "|" + (scrollPhase / 2)
-                + "|r" + spec.paintRotateDegrees();
+                + "|r" + spec.paintRotateDegrees()
+                + "|eb" + EbHuntClient.lcdFingerprint();
             if (fingerprint.equals(lastFingerprint) && now - lastDrawMs < REDRAW_MS) {
                 return spec.liveId();
             }
@@ -267,12 +321,14 @@ public final class RadioLiveDisplay {
         try {
             IdlePainter idle = IDLE_PAINTERS.get(spec.liveId());
             boolean usedIdle = false;
-            if (!state.listening() && idle != null) {
+            // EB hunt must paint on companions even when idle painter would swallow the HUD.
+            boolean forceHuntHud = paintsEbHunt() && EbHuntClient.isActive();
+            if (!state.listening() && idle != null && !forceHuntHud) {
                 fill(buf, 0, 0, lw, lh, LCD_IDLE_BG);
                 usedIdle = idle.paint(buf, lw, lh, System.currentTimeMillis());
             }
             if (!usedIdle) {
-                fill(buf, 0, 0, lw, lh, LCD_BG);
+                fill(buf, 0, 0, lw, lh, spec.palette().bg());
                 paintHud(buf, lw, lh, state, scrollPhase);
             }
             int deg = spec.paintRotateDegrees();
@@ -297,9 +353,18 @@ public final class RadioLiveDisplay {
         }
     }
 
+    /**
+     * Hunt needle belongs on T3 / companion LCDs — not the stock T2 green screen, which can
+     * still render while a listening T3 is in inventory.
+     */
+    private boolean paintsEbHunt() {
+        return !T2RadioDisplayTexture.SPEC.liveId().equals(spec.liveId());
+    }
+
     private void paintHud(NativeImage buf, int lw, int lh, HudState state, int scrollPhase) {
+        LcdPalette p = spec.palette();
         if (!state.on) {
-            drawCentered(buf, "RADIO OFF", lw / 2, lh / 2 - 3, 2, PIXEL_DIM);
+            drawCentered(buf, "RADIO OFF", lw / 2, lh / 2 - 3, 2, p.pixelDim());
             return;
         }
 
@@ -307,37 +372,139 @@ public final class RadioLiveDisplay {
         // Stock T2 atlas (~92px) uses scale 2; Pip stays at 1 so glyphs don't bloat when the 3D model is large.
         int scale = lw >= 200 ? 2 : 1;
         int line1 = pad + 2;
-        drawMarquee(buf, state.scrollLine, pad, line1, lw - pad * 2, scale, PIXEL_LIME, scrollPhase);
+        boolean hunt = paintsEbHunt() && EbHuntClient.isActive();
+        String scroll = hunt
+            ? huntScrollLine(state.scrollLine)
+            : state.scrollLine;
+        drawMarquee(buf, scroll, pad, line1, lw - pad * 2, scale, p.pixelLime(), scrollPhase);
 
         int barY = line1 + 8 * scale + pad;
         for (int i = 0; i < 5; i++) {
             int h = 2 + i;
-            int color = i < state.bars ? BAR_COLORS[i] : BAR_OFF;
+            int color = i < state.bars ? p.barColors()[i] : p.barOff();
             int x = pad + i * (3 * scale + 2);
             fill(buf, x, barY + (6 - h) * scale, x + 3 * scale, barY + 6 * scale, color);
         }
         String station = fit(state.stationName, lw >= 200 ? 22 : 14);
-        drawText(buf, station, pad + 5 * (3 * scale + 2), barY, scale, PIXEL_CYAN);
+        drawText(buf, station, pad + 5 * (3 * scale + 2), barY, scale, p.pixelCyan());
 
-        int freqY = barY + 10 * scale;
-        drawCentered(buf, state.frequency, lw / 2, freqY, Math.max(2, scale), PIXEL_GOLD);
+        int bottomH = 10 * scale;
+        int boxY = lh - bottomH - pad;
 
-        int boxY = Math.min(lh - 12 * scale, freqY + 12 * scale);
-        int boxW = Math.max(textWidth(state.compass, scale) + 6 * scale, 28 * scale);
-        int boxX = lw / 2 - boxW / 2;
-        int border = state.facingTower ? PIXEL_LIME : PIXEL_RED;
-        int fillCol = abgr(255, 40, 45, 18);
-        fill(buf, boxX, boxY, boxX + boxW, boxY + 10 * scale, fillCol);
+        if (hunt) {
+            paintEbHuntCompass(buf, lw, pad, scale, barY, boxY, p);
+        } else {
+            // Frequency number centered; unit + compass share the bottom row without overlap.
+            int freqScale = Math.max(2, scale);
+            int freqY = barY + 10 * scale;
+            drawCentered(buf, state.freqNumber, lw / 2, freqY, freqScale, p.pixelGold());
+            boxY = Math.max(freqY + 8 * freqScale + pad, lh - bottomH - pad);
+            if (boxY < freqY + 6 * freqScale) {
+                boxY = lh - bottomH - pad;
+            }
+        }
+
+        int unitW = textWidth("HZ", scale);
+        int unitX = lw - unitW - pad;
+        String compassLabel = hunt
+            ? (EbHuntClient.facingTarget() ? "FIX" : String.valueOf(EbHuntClient.distanceMeters()) + "M")
+            : state.compass;
+        boolean compassHot = hunt ? EbHuntClient.facingTarget() : state.facingTower;
+        int boxW = Math.max(textWidth(compassLabel, scale) + 4 * scale, 18 * scale);
+        int boxX = pad;
+        // Keep compass clear of the HZ unit on the right.
+        if (boxX + boxW + 2 * scale > unitX) {
+            boxW = Math.max(12 * scale, unitX - boxX - 2 * scale);
+        }
+        int border = compassHot ? p.pixelLime() : p.pixelRed();
+        fill(buf, boxX, boxY, boxX + boxW, boxY + bottomH, p.compassFill());
         hline(buf, boxX, boxX + boxW, boxY, border);
-        hline(buf, boxX, boxX + boxW, boxY + 10 * scale - 1, border);
-        vline(buf, boxX, boxY, boxY + 10 * scale, border);
-        vline(buf, boxX + boxW - 1, boxY, boxY + 10 * scale, border);
-        drawCentered(buf, state.compass, lw / 2, boxY + 2 * scale, scale, state.facingTower ? blinkLime() : PIXEL_RED);
+        hline(buf, boxX, boxX + boxW, boxY + bottomH - 1, border);
+        vline(buf, boxX, boxY, boxY + bottomH, border);
+        vline(buf, boxX + boxW - 1, boxY, boxY + bottomH, border);
+        drawCentered(buf, compassLabel, boxX + boxW / 2, boxY + 2 * scale, scale,
+            compassHot ? blinkAccent(p) : p.pixelRed());
+        // Labels: dim on green LCDs, bright cyan/white on blue (T3) via palette.
+        drawText(buf, "HZ", unitX, boxY + 2 * scale, scale, p.pixelDim());
 
         if (spec.showModeBadge()) {
-            String mode = state.linked ? "LINK" : "LOC";
-            drawText(buf, mode, lw - textWidth(mode, scale) - pad, boxY + 2 * scale, scale,
-                state.linked ? PIXEL_DARK : PIXEL_DIM);
+            String mode = hunt ? "EB" : (state.linked ? "LINK" : "LOC");
+            int modeX = (boxX + boxW + unitX - textWidth(mode, scale)) / 2;
+            if (modeX > boxX + boxW + scale && modeX + textWidth(mode, scale) < unitX - scale) {
+                int modeColor = hunt ? p.pixelGold() : (state.linked ? p.pixelCyan() : p.pixelDim());
+                drawText(buf, mode, modeX, boxY + 2 * scale, scale, modeColor);
+            }
+        }
+    }
+
+    /** Keep day/time prefix; swap the status tail for hunt range. */
+    private static String huntScrollLine(String normalScroll) {
+        int dist = EbHuntClient.distanceMeters();
+        String range = dist + "M TO SITE";
+        if (normalScroll == null || normalScroll.isBlank()) {
+            return "EB FIX  " + range + "      ";
+        }
+        // "DAY n  hh:mm  …" → keep clock, replace song/status segment.
+        int lastSep = normalScroll.lastIndexOf("  ");
+        if (lastSep > 0 && lastSep < normalScroll.length() - 2) {
+            // Prefer splitting after the time field (second "  ").
+            int first = normalScroll.indexOf("  ");
+            int second = first >= 0 ? normalScroll.indexOf("  ", first + 2) : -1;
+            if (second > 0) {
+                return normalScroll.substring(0, second + 2) + range + "      ";
+            }
+        }
+        return "EB FIX  " + range + "      ";
+    }
+
+    /**
+     * Needle + range in the LCD body (where frequency normally sits).
+     * Up on the dial = target ahead when relative bearing is ~0.
+     */
+    private void paintEbHuntCompass(NativeImage buf, int lw, int pad, int scale,
+                                    int barY, int boxY, LcdPalette p) {
+        float relative = EbHuntClient.relativeBearingDegrees();
+        int dist = EbHuntClient.distanceMeters();
+        boolean hot = EbHuntClient.facingTarget();
+
+        int top = barY + 8 * scale;
+        int bottom = boxY - pad;
+        int availH = Math.max(12, bottom - top);
+        int r = Math.min(lw / 2 - pad * 2, availH / 2) - 2;
+        r = Math.max(8, Math.min(r, 16 * scale));
+        int cx = lw / 2;
+        int cy = top + availH / 2;
+
+        // Dial ring
+        int ring = hot ? blinkAccent(p) : p.pixelDim();
+        for (int a = 0; a < 360; a += 8) {
+            double rad = Math.toRadians(a);
+            int px = cx + (int) Math.round(Math.sin(rad) * r);
+            int py = cy + (int) Math.round(-Math.cos(rad) * r);
+            fill(buf, px, py, px + scale, py + scale, ring);
+        }
+        // Cardinal tick (top = ahead)
+        fill(buf, cx - scale, cy - r - scale, cx + scale * 2, cy - r + scale, p.pixelGold());
+
+        // Needle
+        double rad = Math.toRadians(relative);
+        double tipX = Math.sin(rad) * (r - 2);
+        double tipY = -Math.cos(rad) * (r - 2);
+        int steps = Math.max(6, r - 1);
+        int needle = hot ? p.pixelLime() : p.pixelRed();
+        for (int i = 1; i <= steps; i++) {
+            double t = i / (double) steps;
+            int px = cx + (int) Math.round(tipX * t);
+            int py = cy + (int) Math.round(tipY * t);
+            fill(buf, px, py, px + scale, py + scale, needle);
+        }
+        fill(buf, cx - scale, cy - scale, cx + scale * 2, cy + scale * 2, p.pixelDark());
+
+        // Range under the dial (fits between ring and bottom row)
+        String range = dist + "M";
+        int rangeY = Math.min(cy + r + 2, boxY - 6 * scale - 1);
+        if (rangeY > cy + 2) {
+            drawCentered(buf, range, cx, rangeY, scale, hot ? p.pixelLime() : p.pixelGold());
         }
     }
 
@@ -423,10 +590,10 @@ public final class RadioLiveDisplay {
     private HudState describe(ItemStack stack, Minecraft mc) {
         CompoundTag tag = stack.getTag();
         boolean on = tag == null || !tag.contains("DeadAirOn") || tag.getBoolean("DeadAirOn");
-        ResourceLocation stationId = WalkieTalkieManager.getTunedStationId(stack);
+        ResourceLocation stationId = RadioManager.getTunedStationId(stack);
         RadioStation station = stationId != null ? StationRegistry.getStation(stationId) : null;
-        boolean linked = WalkieTalkieManager.hasLinkedTower(stack)
-            && WalkieTalkieManager.getLinkMode(stack) == WalkieTalkieManager.LinkMode.LINKED;
+        boolean linked = RadioManager.hasLinkedTower(stack)
+            && RadioManager.getLinkMode(stack) == RadioManager.LinkMode.LINKED;
 
         float signal = 0f;
         int bars = 0;
@@ -434,10 +601,10 @@ public final class RadioLiveDisplay {
         boolean facingTower = false;
         if (on && mc.player != null && mc.level != null) {
             float yaw = mc.player.getYRot();
-            compass = WalkieTalkieOverlay.compassDirectionFromYaw(yaw);
+            compass = RadioOverlay.compassDirectionFromYaw(yaw);
             if (station != null) {
                 try {
-                    signal = WalkieTalkieOverlay.calculateSignalStrengthForStation(mc, station);
+                    signal = RadioOverlay.calculateSignalStrengthForStation(mc, station);
                     bars = SignalStrength.getSignalBars(signal);
                     facingTower = isFacingTower(mc, station, signal, yaw);
                 } catch (Exception ignored) {
@@ -446,12 +613,12 @@ public final class RadioLiveDisplay {
         }
 
         String stationName = station != null ? sanitize(station.getName()) : "NO STATION";
-        String frequency = station != null
-            ? String.format(Locale.ROOT, "%.1f MHZ", station.getFrequency())
-            : "--.- MHZ";
+        String freqNumber = station != null
+            ? String.format(Locale.ROOT, "%.1f", station.getFrequency())
+            : "--.-";
         boolean listening = isListening(mc, station, signal, on);
         String scroll = buildScrollLine(mc, station, signal, on, listening);
-        return new HudState(on, linked, bars, stationName, frequency, scroll, compass, facingTower, listening);
+        return new HudState(on, linked, bars, stationName, freqNumber, scroll, compass, facingTower, listening);
     }
 
     /**
@@ -512,8 +679,8 @@ public final class RadioLiveDisplay {
         return diff <= 35f;
     }
 
-    private static int blinkLime() {
-        return (System.currentTimeMillis() / 400) % 2 == 0 ? PIXEL_LIME : abgr(255, 40, 140, 40);
+    private static int blinkAccent(LcdPalette p) {
+        return (System.currentTimeMillis() / 400) % 2 == 0 ? p.pixelLime() : p.pixelDim();
     }
 
     private void drawMarquee(NativeImage image, String text, int x, int y, int width, int scale, int color, int phase) {
@@ -667,14 +834,15 @@ public final class RadioLiveDisplay {
         boolean linked,
         int bars,
         String stationName,
-        String frequency,
+        /** Frequency digits only (unit drawn separately as HZ). */
+        String freqNumber,
         String scrollLine,
         String compass,
         boolean facingTower,
         boolean listening
     ) {
         String fingerprint() {
-            return on + "|" + linked + "|" + bars + "|" + stationName + "|" + frequency
+            return on + "|" + linked + "|" + bars + "|" + stationName + "|" + freqNumber
                 + "|" + scrollLine + "|" + compass + "|" + facingTower + "|" + listening;
         }
     }

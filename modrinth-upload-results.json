@@ -1,0 +1,73 @@
+[
+  {
+    "slug": "apocalypse-structures-radio-towers-and-airdrops",
+    "label": "Radio Towers",
+    "jar": "radiotowers-1.2.1+1.20.1-forge.jar",
+    "projectId": "Klhraky4",
+    "dryRun": true,
+    "ok": true
+  },
+  {
+    "slug": "dead-air",
+    "label": "Dead Air",
+    "jar": "dead_air-2.1.2+1.20.1-forge.jar",
+    "ok": false,
+    "error": "GET /project/dead-air -> 404: "
+  },
+  {
+    "slug": "dead-air-frontline-fm",
+    "label": "Frontline FM",
+    "jar": "dead_air_frontline_fm-1.1.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-frontline-fm -> 404: "
+  },
+  {
+    "slug": "dead-air-wayfarer-radio",
+    "label": "Wayfarer Radio",
+    "jar": "dead_air_wayfarer_radio-1.1.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-wayfarer-radio -> 404: "
+  },
+  {
+    "slug": "dead-air-after-hours-fm",
+    "label": "After Hours FM",
+    "jar": "dead_air_after_hours_fm-1.1.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-after-hours-fm -> 404: "
+  },
+  {
+    "slug": "dead-air-iron-rain-fm",
+    "label": "Iron Rain FM",
+    "jar": "dead_air_iron_rain_fm-1.1.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-iron-rain-fm -> 404: "
+  },
+  {
+    "slug": "dead-air-broken-youth-radio",
+    "label": "Broken Youth Radio",
+    "jar": "dead_air_broken_youth_radio-1.1.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-broken-youth-radio -> 404: "
+  },
+  {
+    "slug": "dead-air-block-beats",
+    "label": "Beat Blocks",
+    "jar": "dead_air_block_beats_fm-1.1.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-block-beats -> 404: "
+  },
+  {
+    "slug": "dead-air-zero-gravity",
+    "label": "Zero Gravity",
+    "jar": "dead_air_zero_gravity-1.0.1.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-zero-gravity -> 404: "
+  },
+  {
+    "slug": "dead-air-pip-boy-radio-conversion",
+    "label": "Pip-Boy Conversion",
+    "jar": "dead_air_pip_boy_radio_conversion-1.0.0+1.20.1-forge.jar",
+    "ok": false,
+    "error": "GET /project/dead-air-pip-boy-radio-conversion -> 404: "
+  }
+]

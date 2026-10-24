@@ -20,7 +20,7 @@
           "I": { "item": "minecraft:iron_ingot" },
           "C": { "item": "dead_air:resonant_chord" },
           "E": { "item": "minecraft:echo_shard" },
-          "T": { "item": "dead_air:walkie_t1" }
+          "T": { "item": "dead_air:radio_t1" }
         },
         "result": { "item": "radiotowers:radio_panel", "count": 1 }
       }

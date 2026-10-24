@@ -156,34 +156,52 @@ tasks.register('copyCustomMusic', Copy) {
     onlyIf { customSoundsDir.exists() && customSoundsDir.listFiles()?.any { it.name.toLowerCase().endsWith('.ogg') } }
 }
 
+/**
+ * Merge custom/bundled music entries into the processed sounds.json.
+ * MUST NOT replace the file — that wiped Listener / broadcast / breaker SFX from the jar.
+ */
 tasks.register('generateCustomSoundsJson') {
     doLast {
         soundsJsonDest.mkdirs()
-        def staticEntry = "\"static\": {\"category\":\"ambient\",\"sounds\":[{\"name\":\"${mod_id}:static\",\"stream\":true}]}"
-        def entries = [staticEntry]
-        // Bundled Creatopia tracks (music.*, same folder as existing Creatopia Radio songs)
+        def soundsFile = new File(soundsJsonDest, 'sounds.json')
+        def slurper = new groovy.json.JsonSlurper()
+        def map = soundsFile.exists()
+            ? (slurper.parse(soundsFile) as Map)
+            : new LinkedHashMap()
+
+        map['static'] = [
+            category: 'ambient',
+            sounds: [[name: "${mod_id}:static", stream: true]]
+        ]
         ['round_1', 'slime_island', 'mineshaft', 'fire_in_the_static', 'copper_age'].each { safe ->
-            entries.add("\"music.${safe}\": {\"category\":\"music\",\"sounds\":[{\"name\":\"${mod_id}:music/${safe}\",\"stream\":true}]}")
+            map["music.${safe}"] = [
+                category: 'music',
+                sounds: [[name: "${mod_id}:music/${safe}", stream: true]]
+            ]
         }
         if (customSoundsDir.exists()) {
             def oggs = customSoundsDir.listFiles()?.findAll { it.name.toLowerCase().endsWith('.ogg') }
             if (oggs) {
                 oggs.each { f ->
                     def safe = f.name.substring(0, f.name.length() - 4).toLowerCase().replaceAll('[^a-z0-9/_.-]', '_')
-                    if (!entries.any { it.contains("\"music.custom.${safe}\"") }) {
-                        entries.add("\"music.custom.${safe}\": {\"category\":\"music\",\"sounds\":[{\"name\":\"${mod_id}:music/custom/${safe}\",\"stream\":true}]}")
-                    }
+                    map["music.custom.${safe}"] = [
+                        category: 'music',
+                        sounds: [[name: "${mod_id}:music/custom/${safe}", stream: true]]
+                    ]
                 }
             }
         }
-        def json = "{\n  " + entries.join(",\n  ") + "\n}"
-        new File(soundsJsonDest, 'sounds.json').text = json
+        soundsFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(map)) + '\n'
     }
 }
 
 tasks.named('processResources').configure {
     dependsOn tasks.named('copyCustomMusic')
     finalizedBy tasks.named('generateCustomSoundsJson')
+}
+
+tasks.named('jar').configure {
+    dependsOn tasks.named('generateCustomSoundsJson')
 }
 
 repositories {
@@ -212,6 +230,7 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation "uk.co.extraspecialstudio:extraspecialcore:${esc_version}"
+    implementation "uk.co.extraspecialstudio:extraspeciallib:${esl_version}"
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
     implementation("com.eliotlash.mclib:mclib:20")
 
@@ -246,7 +265,8 @@ tasks.named('processResources', ProcessResources).configure {
                              loader_version_range: loader_version_range,
                              mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
                              mod_authors         : mod_authors, mod_description: mod_description,
-                             esc_version_range   : esc_version_range,]
+                             esc_version_range   : esc_version_range,
+                             esl_version_range   : esl_version_range,]
 
     inputs.properties replaceProperties
 
@@ -290,7 +310,8 @@ tasks.withType(JavaCompile).configureEach {
 
 // Copy built jar to CurseForge instances (prefer current version: dead_air-2.0.2+1.20.1-forge.jar)
 def curseForgeModsDirs = [
-        file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/C.Ideas/mods")
+        file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/C.Ideas/mods"),
+        file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/ESS Lastlight (post-apocalyptic modpack - 1.20.1 Forge)/mods")
 ]
 tasks.named('build').configure {
     doLast {

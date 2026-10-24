@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:story/breaker",
+  "display": {
+    "icon": { "item": "minecraft:nether_star" },
+    "title": { "translate": "advancements.dead_air.story.final.title" },
+    "description": { "translate": "advancements.dead_air.story.final.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

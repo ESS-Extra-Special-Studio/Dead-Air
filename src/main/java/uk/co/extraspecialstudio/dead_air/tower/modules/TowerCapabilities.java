@@ -21,7 +21,7 @@ public class TowerCapabilities {
     private boolean hasSafeZoneEmitter;
     /** Server: Jukebox Upgrade installed on this panel (off-hand apply on radio panel). */
     private boolean jukeboxModuleInstalled;
-    /** Server: Signal Upgrade / Tower Boost — enables T2 walkie cross-dim sync. */
+    /** Server: Signal Upgrade / Tower Boost — enables T2 radio cross-dim sync. */
     private boolean signalBoostInstalled;
     private final Set<ResourceLocation> unlockedStations = new HashSet<>();
 

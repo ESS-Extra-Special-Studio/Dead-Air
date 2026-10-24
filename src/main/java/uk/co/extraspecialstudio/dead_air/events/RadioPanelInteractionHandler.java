@@ -56,6 +56,15 @@ public class RadioPanelInteractionHandler {
             if (!(event.getLevel() instanceof ServerLevel level)) return;
 
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                // Sneak + empty hand on panel = set as player base
+                if (serverPlayer.isShiftKeyDown()
+                    && serverPlayer.getMainHandItem().isEmpty()
+                    && serverPlayer.getOffhandItem().isEmpty()) {
+                    uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.setBase(serverPlayer, pos);
+                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    event.setCanceled(true);
+                    return;
+                }
                 HeldUpgrade held = getHeldUpgrade(serverPlayer);
                 if (held != null) {
                     ItemStack upgradeStack = serverPlayer.getItemInHand(held.hand);
@@ -87,6 +96,8 @@ public class RadioPanelInteractionHandler {
                                     }
                                 }
                             }
+                            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(serverPlayer,
+                                uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.RADIO_JUKEBOX);
                             for (ServerPlayer p : level.players()) {
                                 ModEvents.syncKnownTowersToPlayer(p);
                             }
@@ -113,6 +124,8 @@ public class RadioPanelInteractionHandler {
                                 Component.literal("[Radio] ").withStyle(ChatFormatting.GOLD)
                                     .append(Component.translatable("message.dead_air.radio.signal_upgrade_installed").withStyle(ChatFormatting.WHITE))
                             );
+                            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(serverPlayer,
+                                uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.RADIO_SIGNAL_BOOST);
                             for (ServerPlayer p : level.players()) {
                                 ModEvents.syncKnownTowersToPlayer(p);
                             }
@@ -323,7 +336,7 @@ public class RadioPanelInteractionHandler {
         for (net.minecraft.world.entity.player.Player player : players) {
             if (player instanceof ServerPlayer) {
                 ServerPlayer serverPlayer = (ServerPlayer) player;
-                // Check if player is in range and has walkie-talkie
+                // Check if player is in range and has radio
                 double distance = player.position().distanceTo(tower.getPositionVec());
                 if (distance <= tower.getStation().getBroadcastRange()) {
                     // Check if player has unlocked this station

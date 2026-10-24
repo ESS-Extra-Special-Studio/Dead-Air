@@ -35,6 +35,12 @@ public final class DeadAirConfigCommand {
         line(src, "=== Dead Air live config ===");
         line(src, "emergencyBroadcastRange=" + Config.emergencyBroadcastRange);
         line(src, "musicStationRange=" + Config.musicStationRange);
+        var bedrock = uk.co.extraspecialstudio.dead_air.radio.StationRegistry.getStation(
+            uk.co.extraspecialstudio.dead_air.radio.StationRegistry.BEDROCK_RADIO_ID);
+        var emergency = uk.co.extraspecialstudio.dead_air.radio.StationRegistry.getStation(
+            uk.co.extraspecialstudio.dead_air.radio.StationRegistry.EMERGENCY_BROADCAST_ID);
+        line(src, "effective bedrockStation=" + (bedrock == null ? "n/a" : bedrock.getBroadcastRange())
+            + " emergencyStation=" + (emergency == null ? "n/a" : emergency.getBroadcastRange()));
         line(src, "minTowerSpacing=" + Config.minTowerSpacing);
         line(src, "enableLineOfSight=" + Config.enableLineOfSight);
         line(src, "enableWeatherEffects=" + Config.enableWeatherEffects);
@@ -44,6 +50,14 @@ public final class DeadAirConfigCommand {
         line(src, "autoDiscoverModMusic=" + Config.autoDiscoverModMusic);
         line(src, "overlayCorner=" + Config.overlayCorner
             + " offset=" + Config.overlayOffsetX + "," + Config.overlayOffsetY);
+        line(src, "maxSurvivorsPerPlayer=" + Config.maxSurvivorsPerPlayer
+            + " maxPartySize=" + Config.maxPartySize);
+        line(src, "partyHudEnabled=" + Config.partyHudEnabled
+            + " corner=" + Config.partyHudCorner
+            + " offset=" + Config.partyHudOffsetX + "," + Config.partyHudOffsetY);
+        line(src, "partyFollowLeash=" + Config.partyFollowLeash
+            + " partyLostDistance=" + Config.partyLostDistance
+            + " partyFormationSpacing=" + Config.partyFormationSpacing);
         line(src, "customMusicPath=" + (Config.customMusicPath.isEmpty() ? "(empty)" : Config.customMusicPath));
         return 1;
     }
@@ -63,9 +77,9 @@ public final class DeadAirConfigCommand {
     private static int checklist(CommandSourceStack src) {
         line(src, "=== Dead Air checks (current values) ===");
         line(src, "1. HUD is " + Config.overlayCorner + " inset "
-            + Config.overlayOffsetX + "," + Config.overlayOffsetY + " — look at walkie overlay.");
+            + Config.overlayOffsetX + "," + Config.overlayOffsetY + " — look at radio overlay.");
         line(src, "2. radioAlwaysOn=" + Config.radioAlwaysOn
-            + " — " + (Config.radioAlwaysOn ? "music should play from inventory." : "music ONLY while walkie is held."));
+            + " — " + (Config.radioAlwaysOn ? "music should play from inventory." : "music ONLY while radio is held."));
         line(src, "3. musicStationRange=" + Config.musicStationRange
             + " — walk away; bars should drop by ~75-block steps. At 75, you lose signal almost immediately.");
         line(src, "4. emergencyBroadcastRange=" + Config.emergencyBroadcastRange

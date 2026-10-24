@@ -6,7 +6,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 import uk.co.extraspecialstudio.dead_air.Config;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
-import uk.co.extraspecialstudio.dead_air.client.DeadAirSounds;
+import uk.co.extraspecialstudio.dead_air.sound.DeadAirSounds;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.SignalStrength;
 
@@ -25,7 +25,7 @@ public class StaticSoundManager {
 
     /**
      * Update static playback based on station, signal strength, and whether music is playing.
-     * Call from WalkieTalkieOverlay when the HUD is visible.
+     * Call from RadioOverlay when the HUD is visible.
      *
      * @param mc           Minecraft instance
      * @param station      Current tuned station (null if no station)
@@ -39,7 +39,7 @@ public class StaticSoundManager {
                 return;
             }
 
-            // No station or walkie off: no static
+            // No station or radio off: no static
             if (station == null) {
                 stopStatic(mc);
                 return;
@@ -49,6 +49,11 @@ public class StaticSoundManager {
             float maxVol = (float) (Config.maxVolume >= 0.01 ? Config.maxVolume : 0.7f);
             // Static volume halved overall; halved again for 1/5 (1 bar) overlay
             float staticScale = 0.5f;
+
+            if (uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.isJammed()) {
+                playOrUpdateStatic(mc, maxVol * 0.8f);
+                return;
+            }
 
             // Emergency Broadcast: static at half volume
             if (station.getType() == RadioStation.StationType.EMERGENCY_BROADCAST) {
@@ -83,7 +88,7 @@ public class StaticSoundManager {
     }
 
     /**
-     * Stop static. Call when walkie off, no station, or switching away.
+     * Stop static. Call when radio off, no station, or switching away.
      */
     public static void stopStatic(Minecraft mc) {
         if (activeStatic != null) {
@@ -96,8 +101,17 @@ public class StaticSoundManager {
 
     private static void playOrUpdateStatic(Minecraft mc, float volume) {
         if (activeStatic != null) {
-            activeStatic.setVolume(volume);
-            return;
+            boolean stillGoing = false;
+            try {
+                stillGoing = mc.getSoundManager().isActive(activeStatic);
+            } catch (Throwable ignored) {
+            }
+            if (stillGoing) {
+                activeStatic.setVolume(volume);
+                return;
+            }
+            // Stale ref after stopAll/engine wipe — would leave EB "on" with no audible static.
+            activeStatic = null;
         }
         LoopingStaticSound sound = new LoopingStaticSound(volume);
         activeStatic = sound;

@@ -1,0 +1,15 @@
+{
+  "parent": "dead_air:story/summon",
+  "display": {
+    "icon": { "item": "minecraft:clock" },
+    "title": { "translate": "advancements.dead_air.story.survive_timer.title" },
+    "description": { "translate": "advancements.dead_air.story.survive_timer.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": { "trigger": "minecraft:impossible" }
+  }
+}

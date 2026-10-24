@@ -1,0 +1,116 @@
+{
+  "at": "2026-09-07T08:26:58.593Z",
+  "dryRun": true,
+  "results": [
+    {
+      "slug": "apocalypse-structures-radio-towers-and-airdrops",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "Klhraky4",
+      "versionCount": 3,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "roenfdI8",
+      "versionCount": 4,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-pip-boy-radio-conversion",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "kJRwmrZz",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-after-hours-fm",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "QPIM9htt",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-block-beats",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "utkUPcJF",
+      "versionCount": 2,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-broken-youth-radio",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "iIldhggN",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-frontline-fm",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "o7mtlrrS",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-iron-rain-fm",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "H5vDBLRB",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-wayfarer-radio",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "McjRabzF",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    },
+    {
+      "slug": "dead-air-zero-gravity",
+      "statusBefore": "rejected",
+      "environmentBefore": [
+        "client_and_server"
+      ],
+      "projectId": "TZAIWM0Z",
+      "versionCount": 1,
+      "action": "would fix env + submit",
+      "versionsUnknown": 0
+    }
+  ]
+}
