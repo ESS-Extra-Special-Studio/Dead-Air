@@ -1,3 +1,10 @@
+## 3.0.1
+
+Changed:
+
+- Remove optional Simple Voice Chat dependency (voice UI / dep no longer used).
+- Paired NeoForge release with RadioTowers 1.3.1 (lobby event fix verified in NeoForge 1.21.1 test pack).
+
 ## 3.0.0
 
 Added:

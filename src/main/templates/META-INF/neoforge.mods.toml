@@ -58,13 +58,6 @@ ordering="BEFORE"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
-modId="voicechat"
-type="optional"
-versionRange="[1.0,)"
-ordering="AFTER"
-side="BOTH"
-
-[[dependencies.${mod_id}]]
 modId="berezkas_zombie_waves_api"
 type="optional"
 versionRange="[1.0,)"
