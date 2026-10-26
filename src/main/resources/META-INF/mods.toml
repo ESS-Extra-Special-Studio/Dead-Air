@@ -10,7 +10,6 @@
 #   extraspecialcore          Extra Special Core     (required)
 #   geckolib                  GeckoLib (radio models) (required)
 #   radiotowers               Apocalypse RadioTowers (required)
-#   voicechat                 Simple Voice Chat      (optional; voice UI cosmetic)
 #   berezkas_zombie_waves_api Zombie Waves API       (optional integration)
 #   berezka_api               Berezka Library        (optional integration)
 #   tacz                      Timeless and Classics  (optional guns / loot)
@@ -88,14 +87,6 @@ side = "BOTH"
 modId = "extraspeciallib"
 mandatory = true
 versionRange = "${esl_version_range}"
-ordering = "AFTER"
-side = "BOTH"
-
-# Optional - Simple Voice Chat (Radio tab voice UI is cosmetic without it)
-[[dependencies."${mod_id}"]]
-modId = "voicechat"
-mandatory = false
-versionRange = "[1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 

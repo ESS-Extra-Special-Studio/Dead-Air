@@ -82,7 +82,13 @@ Further options: **dead_air-common.toml** and the in-game config (ranges, volume
 
 **Server commands**
 
-`/dead_air structures tower <type> [x] [y] [z]` — spawns a tower at your position or the given coords. Types: **standard**, **fenced**, **overrun**. Spawned towers are active immediately. Also: `structures camp|auction|convoy|crash|relay`.
+`/dead_air structures tower <type> [x] [y] [z]` — spawns a tower at your position or the given coords. Types: **standard**, **fenced**, **overrun**. Spawned towers are active immediately.
+
+`/dead_air structures camp|auction|convoy|crash` — places that Emergency Broadcast site kit at your feet.
+
+`/dead_air structures relay [small|medium|large]` — places a broken relay (optional variant; defaults from story progress).
+
+`/dead_air structures list` — lists your pending EB sites.
 
 ---
 
@@ -103,7 +109,7 @@ Optional companion soundtrack packs — work standalone or plug into Dead Air as
 **Dependencies**
 
 - **Required:** **Apocalypse Structures: Radio Towers and Airdrops** (RadioTowers), **GeckoLib 4.x**, **ExtraSpecialLIB (ESL)**, **ExtraSpecialCore (ESC)**
-- **Optional:** **Simple Voice Chat** (Walkie tab voice UI); **Berezka’s Library** + **Berezka’s Zombie Waves API** (full airdrop / wave flows with RadioTowers); soft map / gun / survival mod hooks listed in the changelog
+- **Optional:** **Berezka’s Library** + **Berezka’s Zombie Waves API** (full airdrop / wave flows with RadioTowers); soft map / gun / survival mod hooks listed in the changelog
 
 Dead Air does **not** replace RadioTowers — it adds broadcasts, stations, signal, music, radios, and progression on top.
 
