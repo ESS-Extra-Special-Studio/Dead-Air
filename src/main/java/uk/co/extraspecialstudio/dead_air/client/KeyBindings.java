@@ -10,8 +10,9 @@ import org.lwjgl.glfw.GLFW;
  */
 @SuppressWarnings("null")
 public class KeyBindings {
-    public static final KeyMapping TUNE_WALKIE = new KeyMapping(
-        "key.dead_air.tune_walkie",
+    /** Same translation key as Forge (`tune_radio`) so options.txt stays loader-parity. */
+    public static final KeyMapping TUNE_RADIO = new KeyMapping(
+        "key.dead_air.tune_radio",
         KeyConflictContext.IN_GAME,
         InputConstants.Type.KEYSYM,
         GLFW.GLFW_KEY_N,  // N = tune radio (H = mute, G = other menu, B = walkie on/off)

@@ -1,3 +1,9 @@
+## 3.0.2
+
+Fixed:
+
+- NeoForge client crash on launch from a duplicate Open Radio Tuner key binding (`key.dead_air.tune_walkie` twice in options). Tuner key now matches Forge as `key.dead_air.tune_radio`; stray GAME-bus key register removed.
+
 ## 3.0.1
 
 Changed:

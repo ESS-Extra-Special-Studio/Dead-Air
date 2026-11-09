@@ -226,7 +226,7 @@ public class Dead_air {
 
         @SubscribeEvent
         public static void onRegisterKeys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
-            event.register(uk.co.extraspecialstudio.dead_air.client.KeyBindings.TUNE_WALKIE);
+            event.register(uk.co.extraspecialstudio.dead_air.client.KeyBindings.TUNE_RADIO);
             event.register(uk.co.extraspecialstudio.dead_air.client.KeyBindings.PARTY_ORDERS);
         }
 

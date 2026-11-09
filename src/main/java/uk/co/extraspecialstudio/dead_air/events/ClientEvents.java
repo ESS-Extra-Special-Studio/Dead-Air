@@ -16,7 +16,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import uk.co.extraspecialstudio.dead_air.audio.AudioManager;
 import uk.co.extraspecialstudio.dead_air.client.KeyBindings;
 import uk.co.extraspecialstudio.dead_air.client.WalkieTalkieTuningScreen;
@@ -132,12 +131,8 @@ public class ClientEvents {
     }
 
     /* Walkie HUD overlay is registered via RegisterGuiOverlaysEvent in Dead_air.ClientModEvents (reliable; not tied to CROSSHAIR/HOTBAR). */
+    /* Keys register only in Dead_air.ClientModEvents (MOD bus) — do not also register here on the GAME bus. */
 
-    @SubscribeEvent
-    public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
-        event.register(KeyBindings.TUNE_WALKIE);
-    }
-    
     /** Clear tower cache when the client loads a (new) level so we don't use stale towers from a previous world (phantom signal). */
     @SubscribeEvent
     public static void onLevelLoad(LevelEvent.Load event) {
@@ -202,7 +197,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onClientTickKeybind(ClientTickEvent.Post event) { 
         // Check for keybind press (N = open our GUI; right-click walkie also opens it)
-        while (KeyBindings.TUNE_WALKIE.consumeClick()) {
+        while (KeyBindings.TUNE_RADIO.consumeClick()) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && WalkieTalkieManager.isHoldingWalkieTalkie(mc.player)) {
                 // Prefer off-hand when it holds a walkie and main does not â€” Pip-Boys equip there.

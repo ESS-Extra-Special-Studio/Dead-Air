@@ -231,5 +231,9 @@
   "subtitles.dead_air.broadcast.alert": "Emergency tone",
   "subtitles.dead_air.broadcast.voice": "Garbled voice",
   "subtitles.dead_air.broadcast.decoded": "Signal clears",
-  "subtitles.dead_air.relay.ping": "Relay pings"
+  "subtitles.dead_air.relay.ping": "Relay pings",
+  "key.categories.dead_air": "Dead Air",
+  "key.dead_air.tune_radio": "Open Radio Tuner",
+  "key.dead_air.tune_walkie": "Open Radio Tuner",
+  "key.dead_air.party_orders": "Squad Orders (hold)"
 }
