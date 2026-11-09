@@ -200,6 +200,6 @@ public class BroadcastProgress extends SavedData {
         if (server == null) return null;
         ServerLevel overworld = server.overworld();
         if (overworld == null) return null;
-        return overworld.getDataStorage().computeIfAbsent(BroadcastProgress::load, BroadcastProgress::new, DATA_NAME);
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(BroadcastProgress::new, BroadcastProgress::load, null), DATA_NAME);
     }
 }

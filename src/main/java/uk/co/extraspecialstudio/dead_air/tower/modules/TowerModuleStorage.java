@@ -21,7 +21,7 @@ public class TowerModuleStorage extends SavedData {
     private final Map<BlockPos, CompoundTag> byPos = new HashMap<>();
 
     public static TowerModuleStorage get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(TowerModuleStorage::load, TowerModuleStorage::new, DATA_NAME);
+        return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(TowerModuleStorage::new, TowerModuleStorage::load, null), DATA_NAME);
     }
 
     private static TowerModuleStorage load(CompoundTag tag) {

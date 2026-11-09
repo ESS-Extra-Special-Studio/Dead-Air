@@ -1,9 +1,8 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /** Client -> Server: request known tower list so client can compute signal locally (volume steps, stop when out of range). */
 public class RequestTowerSyncPacket {
@@ -16,8 +15,7 @@ public class RequestTowerSyncPacket {
         return new RequestTowerSyncPacket();
     }
 
-    public static void handle(RequestTowerSyncPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(RequestTowerSyncPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             if (ctx.getSender() != null) {
                 uk.co.extraspecialstudio.dead_air.events.ModEvents.syncKnownTowersToPlayer(ctx.getSender());

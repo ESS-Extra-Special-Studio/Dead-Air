@@ -3,10 +3,9 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.station.StationUnlockManager;
 
-import java.util.function.Supplier;
 
 /** Server -> Client: a station was removed from the world (last tower broken); remove it from the GUI station list. */
 public class StationRemovedFromListPacket {
@@ -24,8 +23,7 @@ public class StationRemovedFromListPacket {
         return new StationRemovedFromListPacket(buf.readResourceLocation());
     }
 
-    public static void handle(StationRemovedFromListPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(StationRemovedFromListPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             if (msg.stationId == null) return;
             Minecraft mc = Minecraft.getInstance();

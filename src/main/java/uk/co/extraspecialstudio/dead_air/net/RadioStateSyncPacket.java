@@ -8,12 +8,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
 import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
-import java.util.function.Supplier;
 
 /**
  * Client → Server: apply the active radio's tune/power/link NBT and untune every other radio.
@@ -98,8 +97,7 @@ public class RadioStateSyncPacket {
         return new RadioStateSyncPacket(slot, on, stationId, linked, linkDim, linkPanel, linkStationId);
     }
 
-    public static void handle(RadioStateSyncPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(RadioStateSyncPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ctx.getSender();
             if (player == null) return;

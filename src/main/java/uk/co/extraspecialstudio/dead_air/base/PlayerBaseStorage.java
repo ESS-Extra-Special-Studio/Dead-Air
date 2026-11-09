@@ -88,6 +88,6 @@ public final class PlayerBaseStorage extends SavedData {
 
     public static PlayerBaseStorage get(MinecraftServer server) {
         ServerLevel overworld = server.overworld();
-        return overworld.getDataStorage().computeIfAbsent(PlayerBaseStorage::load, PlayerBaseStorage::new, DATA_NAME);
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(PlayerBaseStorage::new, PlayerBaseStorage::load, null), DATA_NAME);
     }
 }

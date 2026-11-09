@@ -1,9 +1,8 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /**
  * Server -> Client: open the Dead Air radio tuning GUI.
@@ -17,8 +16,7 @@ public class OpenRadioGuiPacket {
         return new OpenRadioGuiPacket();
     }
 
-    public static void handle(OpenRadioGuiPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(OpenRadioGuiPacket msg, CustomPayloadEvent.Context ctx) {
         if (ctx.getDirection().getReceptionSide().isClient()) {
             ctx.enqueueWork(DeadAirNet::runOpenRadioGuiCallback);
         }

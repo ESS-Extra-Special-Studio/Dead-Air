@@ -1,5 +1,7 @@
 package uk.co.extraspecialstudio.dead_air.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -31,6 +33,12 @@ import javax.annotation.Nullable;
  * Right-click from outside to sleep; wake/cancel exits outside the tent.
  */
 public class SurvivorTentBlock extends HorizontalDirectionalBlock {
+    public static final MapCodec<SurvivorTentBlock> CODEC = simpleCodec(SurvivorTentBlock::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
     // Model (north-facing frame): opening toward -Z, A-frame canopy runs +Z for 2 blocks.
     // Outline = solid stepped A-frame silhouette; collision = hollow stepped walls + floor so players can step in.
     private static final double LEAN_TAN = Math.tan(Math.toRadians(22.5));

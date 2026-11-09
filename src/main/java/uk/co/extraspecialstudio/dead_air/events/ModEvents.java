@@ -194,12 +194,10 @@ public class ModEvents {
             uk.co.extraspecialstudio.dead_air.station.StationUnlockManager.restoreFromStorage(serverPlayer);
             // Sync known towers to client so it can compute signal locally (no per-tick packets needed)
             syncKnownTowersToPlayer(serverPlayer);
-            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(
-                net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
-                uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig());
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig(), net.minecraftforge.network.PacketDistributor.PLAYER.with(serverPlayer));
             grantFieldGuideIfFirstJoin(serverPlayer);
             uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.catchUpOnLogin(serverPlayer);
-            // Immediate party HUD — don't wait up to 1s for the periodic sync tick.
+            // Immediate party HUD - don't wait up to 1s for the periodic sync tick.
             uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyEvents.syncPlayerNow(serverPlayer);
             maybeRunDownedAbandonFlagTest(serverPlayer);
         }
@@ -215,7 +213,7 @@ public class ModEvents {
                 .resolve("config").resolve("dead_air").resolve("run_downed_abandon_test.flag");
             if (!java.nio.file.Files.isRegularFile(flag)) return;
             java.nio.file.Files.deleteIfExists(flag);
-            Dead_air.LOGGER.info("[Dead Air] TEST downed-abandon: flag consumed — starting now");
+            Dead_air.LOGGER.info("[Dead Air] TEST downed-abandon: flag consumed - starting now");
             // Do not use TickTask for delay (it runs ASAP). Assert wait is entity-tick based.
             uk.co.extraspecialstudio.dead_air.commands.DeadAirSurvivorCommand.runDownedAbandonTest(player);
         } catch (Throwable t) {
@@ -280,9 +278,7 @@ public class ModEvents {
                 e.towerPos, e.panelPos, e.stationId,
                 caps.isJukeboxModuleInstalled(), caps.isSignalBoostInstalled(), e.activated));
         }
-        uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(
-            net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
-            new uk.co.extraspecialstudio.dead_air.net.KnownTowersSyncPacket(list));
+        uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(new uk.co.extraspecialstudio.dead_air.net.KnownTowersSyncPacket(list), net.minecraftforge.network.PacketDistributor.PLAYER.with(player));
     }
 
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)

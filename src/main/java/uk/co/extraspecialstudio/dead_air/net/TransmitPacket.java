@@ -1,10 +1,9 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.encounter.Transmissions;
 
-import java.util.function.Supplier;
 
 /** Client -> Server: the player pressed Transmit on a T3 radio at this frequency. */
 public class TransmitPacket {
@@ -22,8 +21,7 @@ public class TransmitPacket {
         return new TransmitPacket(buf.readFloat());
     }
 
-    public static void handle(TransmitPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(TransmitPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             if (ctx.getSender() != null && Float.isFinite(msg.frequency)) {
                 Transmissions.onTransmit(ctx.getSender(), msg.frequency);

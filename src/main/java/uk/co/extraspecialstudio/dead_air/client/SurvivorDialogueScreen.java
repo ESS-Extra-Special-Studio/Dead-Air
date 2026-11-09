@@ -184,14 +184,14 @@ public class SurvivorDialogueScreen extends EscScreen {
 
     private void act(int action) {
         keepTalkingAfterClose = action == SurvivorActionPacket.OPEN_EQUIPMENT;
-        DeadAirNet.CHANNEL.sendToServer(new SurvivorActionPacket(data.entityId, action));
+        DeadAirNet.sendToServer(new SurvivorActionPacket(data.entityId, action));
         onClose();
     }
 
     @Override
     public void onClose() {
         if (!keepTalkingAfterClose) {
-            DeadAirNet.CHANNEL.sendToServer(
+            DeadAirNet.sendToServer(
                 new SurvivorActionPacket(data.entityId, SurvivorActionPacket.END_DIALOGUE));
         }
         super.onClose();
@@ -199,7 +199,7 @@ public class SurvivorDialogueScreen extends EscScreen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
+        renderBackground(g, mouseX, mouseY, partialTick);
         EscPanel.renderPanel(g, boxRect, style);
         EscText.drawString(g, font, data.name, boxRect.x() + 10, boxRect.y() + 8,
             opaque(style.textColorTitle()), false, uk.co.extraspecialstudio.extraspecial.esc.ui.EscFonts.DEFAULT);

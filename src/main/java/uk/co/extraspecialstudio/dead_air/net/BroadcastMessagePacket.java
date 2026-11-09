@@ -3,11 +3,10 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Server -> Client: an emergency broadcast transmission (already scrambled if the player has no decoder). */
 public class BroadcastMessagePacket {
@@ -42,8 +41,7 @@ public class BroadcastMessagePacket {
         return new BroadcastMessagePacket(title, lines, buf.readBoolean(), buf.readBoolean());
     }
 
-    public static void handle(BroadcastMessagePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(BroadcastMessagePacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
             () -> () -> uk.co.extraspecialstudio.dead_air.client.DeadAirClientPackets.onBroadcast(msg)));
         ctx.setPacketHandled(true);

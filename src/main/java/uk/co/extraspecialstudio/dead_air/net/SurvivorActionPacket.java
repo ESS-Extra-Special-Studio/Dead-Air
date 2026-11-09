@@ -1,10 +1,9 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorEntity;
 
-import java.util.function.Supplier;
 
 /** Client -> Server: a button in the survivor dialogue. */
 public class SurvivorActionPacket {
@@ -52,8 +51,7 @@ public class SurvivorActionPacket {
         return new SurvivorActionPacket(buf.readVarInt(), buf.readVarInt());
     }
 
-    public static void handle(SurvivorActionPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(SurvivorActionPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             var player = ctx.getSender();
             if (player == null) return;

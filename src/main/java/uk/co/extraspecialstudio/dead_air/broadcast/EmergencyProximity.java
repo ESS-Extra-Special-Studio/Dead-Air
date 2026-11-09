@@ -83,8 +83,7 @@ public final class EmergencyProximity {
                 Long until = progress.proximityPromptCooldownUntil.get(key);
                 if (until != null && now < until) continue;
                 PROMPT_PENDING.put(player.getUUID(), new PendingPrompt(key, now + PROMPT_TIMEOUT_TICKS));
-                DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                    new EbSignalPromptPacket(key, nearest.kind));
+                DeadAirNet.CHANNEL.send(new EbSignalPromptPacket(key, nearest.kind), PacketDistributor.PLAYER.with(player));
             }
         }
     }
@@ -166,8 +165,7 @@ public final class EmergencyProximity {
         boolean story = PendingSites.KIND_RELAY.equals(site.kind);
         String title = story ? "EMERGENCY PROXIMITY" : "DISTRESS PING";
         List<String> lines = proximityLines(site);
-        DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-            new BroadcastMessagePacket(title, lines, true, story));
+        DeadAirNet.CHANNEL.send(new BroadcastMessagePacket(title, lines, true, story), PacketDistributor.PLAYER.with(player));
         player.playNotifySound(DeadAirSounds.BROADCAST_ALERT.get(), SoundSource.RECORDS, 0.7f, 0.85f);
         BroadcastScheduler.playBroadcastVoiceForSite(player, site.kind, 0.85f, 0.9f);
         player.playNotifySound(DeadAirSounds.BROADCAST_DECODED.get(), SoundSource.RECORDS, 0.55f, 1.0f);

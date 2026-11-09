@@ -3,9 +3,8 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /** Server -> Client: open the survivor dialogue for this entity. */
 public class SurvivorScreenPacket {
@@ -69,8 +68,7 @@ public class SurvivorScreenPacket {
             buf.readUtf(32), buf.readUtf(32), buf.readUtf(128), buf.readBoolean());
     }
 
-    public static void handle(SurvivorScreenPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(SurvivorScreenPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
             () -> () -> uk.co.extraspecialstudio.dead_air.client.DeadAirClientPackets.onSurvivorScreen(msg)));
         ctx.setPacketHandled(true);

@@ -139,7 +139,7 @@ public class PendingSites extends SavedData {
         if (server == null) return null;
         ServerLevel overworld = server.overworld();
         if (overworld == null) return null;
-        return overworld.getDataStorage().computeIfAbsent(PendingSites::load, PendingSites::new, DATA_NAME);
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(PendingSites::new, PendingSites::load, null), DATA_NAME);
     }
 
     /** Record a new site 'min'..'max' blocks from the player on dry, flat land. Returns the rough centre. */

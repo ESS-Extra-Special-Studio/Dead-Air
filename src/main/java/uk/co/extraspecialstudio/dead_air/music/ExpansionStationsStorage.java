@@ -48,6 +48,6 @@ public class ExpansionStationsStorage extends SavedData {
         if (server == null) return null;
         ServerLevel overworld = server.overworld();
         if (overworld == null) return null;
-        return overworld.getDataStorage().computeIfAbsent(ExpansionStationsStorage::load, ExpansionStationsStorage::new, DATA_NAME);
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ExpansionStationsStorage::new, ExpansionStationsStorage::load, null), DATA_NAME);
     }
 }

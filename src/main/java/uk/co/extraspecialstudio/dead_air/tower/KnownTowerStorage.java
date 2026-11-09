@@ -106,7 +106,7 @@ public final class KnownTowerStorage {
             }
             List<KnownTowerEntry> entries = new ArrayList<>();
             try (java.io.InputStream in = Files.newInputStream(file)) {
-                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
+                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
                 ListTag list = nbt.getList("known_towers", Tag.TAG_COMPOUND);
                 for (int i = 0; i < list.size(); i++) {
                     CompoundTag c = list.getCompound(i);

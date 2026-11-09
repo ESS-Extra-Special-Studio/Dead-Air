@@ -1,5 +1,7 @@
 package uk.co.extraspecialstudio.dead_air.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +25,12 @@ import javax.annotation.Nullable;
  * Model is authored north-facing with X from -16..32; clothes are player-scale.
  */
 public class ClotheslineBlock extends HorizontalDirectionalBlock {
+    public static final MapCodec<ClotheslineBlock> CODEC = simpleCodec(ClotheslineBlock::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
     private static final VoxelShape[] OUTLINE = new VoxelShape[4];
     private static final VoxelShape[] COLLISION = new VoxelShape[4];
 

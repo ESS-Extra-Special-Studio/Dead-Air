@@ -280,7 +280,7 @@ public class RadioTuningScreen extends EscScreen {
             transmitButton = addButton(Component.translatable("screen.dead_air.radio.transmit"),
                 new EscRect(0, 0, 120, 20),
                 button -> {
-                    uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
+                    uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
                         new uk.co.extraspecialstudio.dead_air.net.TransmitPacket(Math.round(currentFrequency * 10f) / 10f));
                     button.active = false;
                     transmitCooldownUntil = System.currentTimeMillis() + 3000L;

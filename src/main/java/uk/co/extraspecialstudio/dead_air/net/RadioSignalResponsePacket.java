@@ -3,13 +3,12 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.audio.AudioManager;
 import uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Server -> Client: signal strength for a station (0 = no tower / not in range). Optional tower list so client can compute signal locally. */
 public class RadioSignalResponsePacket {
@@ -61,8 +60,7 @@ public class RadioSignalResponsePacket {
         return new RadioSignalResponsePacket(stationId, signal, list);
     }
 
-    public static void handle(RadioSignalResponsePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(RadioSignalResponsePacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             int clientTick = 0;
             if (net.minecraft.client.Minecraft.getInstance().player != null) {

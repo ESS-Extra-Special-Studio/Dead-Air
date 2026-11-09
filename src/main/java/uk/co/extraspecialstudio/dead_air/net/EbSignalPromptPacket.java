@@ -3,9 +3,8 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /** Server -> Client: "EB signal detected — Tune now?" near a story/distress site. */
 public class EbSignalPromptPacket {
@@ -26,8 +25,7 @@ public class EbSignalPromptPacket {
         return new EbSignalPromptPacket(buf.readUtf(256), buf.readUtf(32));
     }
 
-    public static void handle(EbSignalPromptPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(EbSignalPromptPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
             () -> () -> uk.co.extraspecialstudio.dead_air.client.DeadAirClientPackets.onEbSignalPrompt(msg.siteKey, msg.siteKind)));
         ctx.setPacketHandled(true);

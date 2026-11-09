@@ -3,6 +3,7 @@ package uk.co.extraspecialstudio.dead_air.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
@@ -13,7 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import uk.co.extraspecialstudio.dead_air.block.DeadAirBlocks;
 import uk.co.extraspecialstudio.dead_air.block.EbDecorBlock;
 import uk.co.extraspecialstudio.dead_air.block.FoldingChairBlock;
@@ -21,7 +23,7 @@ import uk.co.extraspecialstudio.dead_air.block.FoldingChairBlock;
 import javax.annotation.Nullable;
 
 /** Invisible mount used so players / survivors / villagers can sit on folding chairs. */
-public class SeatEntity extends Entity {
+public class SeatEntity extends Entity implements IEntityAdditionalSpawnData {
     /**
      * Mount Y above the block. After ~1.18× enlarge, cushion top is ~8.08/16 (0.51).
      * Sit pose parks hips ~0.55 above the entity origin, so mount below the cushion.
@@ -123,12 +125,17 @@ public class SeatEntity extends Entity {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return ForgeHooks.getEntitySpawnPacket(this);
     }
 
     @Override
-    public double getPassengersRidingOffset() {
-        return 0.0;
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        buffer.writeBlockPos(sourcePos);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        sourcePos = additionalData.readBlockPos();
     }
 
     @Override

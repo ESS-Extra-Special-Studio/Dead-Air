@@ -564,7 +564,7 @@ public class RadioManager {
         int slot = findRadioSlot(player, radio);
         if (slot == -2) return;
         try {
-            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
                 uk.co.extraspecialstudio.dead_air.net.RadioStateSyncPacket.fromRadio(slot, radio));
         } catch (Exception ignored) {
         }

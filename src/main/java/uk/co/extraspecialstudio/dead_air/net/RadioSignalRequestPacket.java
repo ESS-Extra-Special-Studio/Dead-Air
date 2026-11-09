@@ -5,13 +5,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.PacketDistributor;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
 import uk.co.extraspecialstudio.dead_air.tower.modules.TowerModuleStorage;
 
-import java.util.function.Supplier;
 
 /** Client -> Server: request signal strength for a station at the player's position. Resolves from persisted known towers + panel backup only (no chunk scan). */
 public class RadioSignalRequestPacket {
@@ -29,14 +28,12 @@ public class RadioSignalRequestPacket {
         return new RadioSignalRequestPacket(buf.readResourceLocation());
     }
 
-    public static void handle(RadioSignalRequestPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(RadioSignalRequestPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ctx.getSender();
             if (player == null || player.level() == null || !(player.level() instanceof ServerLevel serverLevel)) {
                 if (player != null) {
-                    DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                        new RadioSignalResponsePacket(msg.stationId, 0f));
+                    DeadAirNet.CHANNEL.send(new RadioSignalResponsePacket(msg.stationId, 0f), PacketDistributor.PLAYER.with(player));
                 }
                 return;
             }
@@ -59,8 +56,7 @@ public class RadioSignalRequestPacket {
                     }
                 }
             }
-            DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new RadioSignalResponsePacket(msg.stationId, signal, towerList));
+            DeadAirNet.CHANNEL.send(new RadioSignalResponsePacket(msg.stationId, signal, towerList), PacketDistributor.PLAYER.with(player));
         });
         ctx.setPacketHandled(true);
     }

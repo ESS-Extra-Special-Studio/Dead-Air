@@ -122,6 +122,6 @@ public class SurvivorRoster extends SavedData {
         if (server == null) return null;
         ServerLevel overworld = server.overworld();
         if (overworld == null) return null;
-        return overworld.getDataStorage().computeIfAbsent(SurvivorRoster::load, SurvivorRoster::new, DATA_NAME);
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(SurvivorRoster::new, SurvivorRoster::load, null), DATA_NAME);
     }
 }

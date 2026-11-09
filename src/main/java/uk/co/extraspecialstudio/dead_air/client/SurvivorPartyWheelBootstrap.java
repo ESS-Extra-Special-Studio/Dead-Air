@@ -43,7 +43,7 @@ public final class SurvivorPartyWheelBootstrap {
     private static void confirmOrder(int index) {
         if (index < SurvivorParty.ORDER_FOLLOW || index > SurvivorParty.ORDER_REGROUP) return;
         if (!SurvivorPartyHud.hasLoadedMembers()) return;
-        DeadAirNet.CHANNEL.sendToServer(new SurvivorPartyOrderPacket(index));
+        DeadAirNet.sendToServer(new SurvivorPartyOrderPacket(index));
         SurvivorPartyHud.notifyOrderApplied(index);
         var mc = net.minecraft.client.Minecraft.getInstance();
         if (mc.player != null) {

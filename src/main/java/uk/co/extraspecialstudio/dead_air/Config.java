@@ -601,9 +601,7 @@ public class Config {
         if (server == null) return;
         server.execute(() -> {
             uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.applyConfigList();
-            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(
-                net.minecraftforge.network.PacketDistributor.ALL.noArg(),
-                uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig());
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.send(uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig(), net.minecraftforge.network.PacketDistributor.ALL.noArg());
         });
     }
 

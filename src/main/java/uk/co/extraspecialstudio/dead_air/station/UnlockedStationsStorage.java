@@ -87,10 +87,7 @@ public class UnlockedStationsStorage extends SavedData {
         if (level == null || level.getServer() == null) return null;
         ServerLevel overworld = level.getServer().overworld();
         if (overworld == null) return null;
-        return overworld.getDataStorage().computeIfAbsent(
-            UnlockedStationsStorage::load,
-            UnlockedStationsStorage::new,
-            getDataName()
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(UnlockedStationsStorage::new, UnlockedStationsStorage::load, null), getDataName()
         );
     }
 

@@ -1,5 +1,7 @@
 package uk.co.extraspecialstudio.dead_air.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -16,6 +18,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** Simple horizontal-facing EB site decor (chair, crates, etc.). */
 public class EbDecorBlock extends HorizontalDirectionalBlock {
+    public static final MapCodec<EbDecorBlock> CODEC = simpleCodec(p -> new EbDecorBlock(p, Block.box(0, 0, 0, 16, 16, 16)));
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
     /** Shapes for N/E/S/W — collision matches the rotated model. */
     private final VoxelShape[] shapes = new VoxelShape[4];
 

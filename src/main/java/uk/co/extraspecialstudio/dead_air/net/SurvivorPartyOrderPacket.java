@@ -2,11 +2,10 @@ package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorParty;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyOrders;
 
-import java.util.function.Supplier;
 
 /** Client → server: squad order for all FOLLOWING survivors owned by the sender. */
 public class SurvivorPartyOrderPacket {
@@ -24,8 +23,7 @@ public class SurvivorPartyOrderPacket {
         return new SurvivorPartyOrderPacket(buf.readVarInt());
     }
 
-    public static void handle(SurvivorPartyOrderPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(SurvivorPartyOrderPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ctx.getSender();
             if (player == null) return;

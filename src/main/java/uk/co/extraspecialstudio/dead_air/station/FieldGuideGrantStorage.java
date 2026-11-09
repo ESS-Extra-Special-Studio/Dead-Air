@@ -70,10 +70,7 @@ public final class FieldGuideGrantStorage extends SavedData {
         if (overworld == null) {
             return null;
         }
-        return overworld.getDataStorage().computeIfAbsent(
-            FieldGuideGrantStorage::load,
-            FieldGuideGrantStorage::new,
-            DATA_ID
+        return overworld.getDataStorage().computeIfAbsent(new SavedData.Factory<>(FieldGuideGrantStorage::new, FieldGuideGrantStorage::load, null), DATA_ID
         );
     }
 }

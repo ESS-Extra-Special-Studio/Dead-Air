@@ -97,7 +97,7 @@ public class AirdropLootConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
-        renderBackground(gui);
+        renderBackground(gui, mouseX, mouseY, partialTick);
         refreshFilter();
         totalSlots = filteredEntries.size();
 
@@ -195,14 +195,14 @@ public class AirdropLootConfigScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (mouseX >= listAreaX && mouseX <= listAreaX + listAreaWidth
             && mouseY >= listAreaY && mouseY <= listAreaY + listAreaHeight) {
             int maxScroll = Math.max(0, (int) Math.ceil((double) totalSlots / COLS) - ROWS_VISIBLE);
-            scrollOffset = Mth.clamp(scrollOffset - (int) Math.signum(scrollAmount), 0, maxScroll);
+            scrollOffset = Mth.clamp(scrollOffset - (int) Math.signum(scrollY), 0, maxScroll);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollAmount);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
 }

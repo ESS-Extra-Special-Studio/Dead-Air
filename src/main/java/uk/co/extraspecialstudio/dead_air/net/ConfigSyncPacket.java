@@ -2,10 +2,9 @@ package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.Config;
 
-import java.util.function.Supplier;
 
 /**
  * Server -> Client: the server's gameplay config (ranges, spacing, line of sight, weather,
@@ -48,8 +47,7 @@ public class ConfigSyncPacket {
             buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
     }
 
-    public static void handle(ConfigSyncPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(ConfigSyncPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc == null || mc.hasSingleplayerServer()) return;

@@ -3,12 +3,11 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Server → client: current FOLLOWING party snapshot for the HUD. */
 public class SurvivorPartySyncPacket {
@@ -76,8 +75,7 @@ public class SurvivorPartySyncPacket {
         return new SurvivorPartySyncPacket(max, count, list);
     }
 
-    public static void handle(SurvivorPartySyncPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(SurvivorPartySyncPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
             () -> () -> SurvivorPartyHud.applySync(msg.maxPartySize, msg.partyCount, msg.members)));
         ctx.setPacketHandled(true);

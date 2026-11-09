@@ -85,7 +85,7 @@ public class BlockEvents {
             // If no other tower in this dimension broadcasts this station, remove it from the GUI station list for all players
             if (station != null && !TowerManager.hasTowerBroadcasting(level, station.getId())) {
                 StationUnlockManager.removeStationForAllPlayers(level, station.getId());
-                DeadAirNet.CHANNEL.send(PacketDistributor.ALL.noArg(), new StationRemovedFromListPacket(station.getId()));
+                DeadAirNet.CHANNEL.send(new StationRemovedFromListPacket(station.getId()), PacketDistributor.ALL.noArg());
             }
         }
     }

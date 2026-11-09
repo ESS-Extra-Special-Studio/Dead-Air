@@ -54,13 +54,13 @@ public class EbTunePromptScreen extends EscScreen {
     private void answer(boolean accept) {
         if (answered) return;
         answered = true;
-        DeadAirNet.CHANNEL.sendToServer(new EbTunePromptResponsePacket(siteKey, accept));
+        DeadAirNet.sendToServer(new EbTunePromptResponsePacket(siteKey, accept));
         onClose();
     }
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
+        renderBackground(g, mouseX, mouseY, partialTick);
         EscPanel.renderPanel(g, boxRect, style);
         EscText.drawCentered(g, font, Component.translatable("screen.dead_air.eb_prompt.title"),
             width / 2, boxRect.y() + 12, opaque(style.textColorTitle()), EscFonts.DEFAULT);
@@ -97,7 +97,7 @@ public class EbTunePromptScreen extends EscScreen {
     private void declineIfUnanswered() {
         if (answered) return;
         answered = true;
-        DeadAirNet.CHANNEL.sendToServer(new EbTunePromptResponsePacket(siteKey, false));
+        DeadAirNet.sendToServer(new EbTunePromptResponsePacket(siteKey, false));
     }
 
     /** Call before {@code setScreen} replaces this prompt so {@link #removed()} does not decline. */

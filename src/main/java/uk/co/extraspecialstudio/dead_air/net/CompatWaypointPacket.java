@@ -3,9 +3,8 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /** Server → Client: create/update a temporary map-mod waypoint at EB / proximity coords. */
 public class CompatWaypointPacket {
@@ -47,8 +46,7 @@ public class CompatWaypointPacket {
             buf.readUtf(128));
     }
 
-    public static void handle(CompatWaypointPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(CompatWaypointPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
             uk.co.extraspecialstudio.dead_air.compat.MapWaypointCompat.clientCreateWaypoint(
                 msg.x, msg.y, msg.z, msg.dimension, msg.name, msg.temporary, msg.stableId)));

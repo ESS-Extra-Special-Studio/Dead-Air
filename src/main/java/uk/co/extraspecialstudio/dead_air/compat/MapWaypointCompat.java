@@ -49,9 +49,8 @@ public final class MapWaypointCompat {
             String id = stableId != null && !stableId.isBlank()
                 ? stableId
                 : ("da_" + pos.getX() + "_" + pos.getZ());
-            DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new CompatWaypointPacket(pos.getX(), pos.getY(), pos.getZ(),
-                    player.level().dimension().location().toString(), name, true, id));
+            DeadAirNet.CHANNEL.send(new CompatWaypointPacket(pos.getX(), pos.getY(), pos.getZ(),
+                    player.level().dimension().location().toString(), name, true, id), PacketDistributor.PLAYER.with(player));
         } catch (Throwable t) {
             Dead_air.LOGGER.debug("[Dead Air] Waypoint send failed: {}", t.toString());
         }

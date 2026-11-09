@@ -3,9 +3,8 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /**
  * Server -> Client: encounter audio / HUD cues. {@code active} keeps the encounter drone + radio jam;
@@ -33,8 +32,7 @@ public class EncounterStatePacket {
         return new EncounterStatePacket(buf.readBoolean(), buf.readVarInt(), buf.readVarInt());
     }
 
-    public static void handle(EncounterStatePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(EncounterStatePacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
             () -> () -> uk.co.extraspecialstudio.dead_air.client.DeadAirClientPackets.onEncounterState(msg)));
         ctx.setPacketHandled(true);

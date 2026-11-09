@@ -133,11 +133,9 @@ public final class BroadcastScheduler {
         if (decoded) progress.decodedCount++;
         boolean storyLike = event.category() == BroadcastEvent.Category.STORY
             || event.category() == BroadcastEvent.Category.DEFENSE;
-        DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-            new BroadcastMessagePacket(event.title(), decoded ? lines : BroadcastText.scramble(lines), decoded, storyLike));
+        DeadAirNet.CHANNEL.send(new BroadcastMessagePacket(event.title(), decoded ? lines : BroadcastText.scramble(lines), decoded, storyLike), PacketDistributor.PLAYER.with(player));
         if (storyLike && Config.forceTuneOnStoryBroadcast) {
-            DeadAirNet.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new ForceEmergencyTunePacket(ForceEmergencyTunePacket.TUNE_EMERGENCY));
+            DeadAirNet.CHANNEL.send(new ForceEmergencyTunePacket(ForceEmergencyTunePacket.TUNE_EMERGENCY), PacketDistributor.PLAYER.with(player));
         }
         player.playNotifySound(DeadAirSounds.BROADCAST_ALERT.get(), SoundSource.RECORDS, 0.8f, 1.0f);
         playBroadcastVoice(player, event, 0.9f, 1.0f);

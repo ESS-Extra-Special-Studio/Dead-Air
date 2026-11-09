@@ -70,7 +70,7 @@ public final class SitePadClearer {
                 for (int y = 0; y <= 5; y++) {
                     BlockPos p = center.offset(x, y, z);
                     BlockState s = level.getBlockState(p);
-                    if (s.is(Blocks.CACTUS) || s.is(Blocks.DEAD_BUSH) || s.is(Blocks.GRASS)
+                    if (s.is(Blocks.CACTUS) || s.is(Blocks.DEAD_BUSH) || s.is(Blocks.SHORT_GRASS)
                         || s.is(Blocks.TALL_GRASS) || s.is(Blocks.SNOW) || s.is(Blocks.FERN)
                         || s.is(Blocks.LARGE_FERN) || s.canBeReplaced()) {
                         level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);

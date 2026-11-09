@@ -254,11 +254,25 @@ public class Dead_air {
                 java.nio.file.Path path = packRoot;
                 event.addRepositorySource(consumer -> {
                     try {
+                        net.minecraft.server.packs.repository.Pack.ResourcesSupplier resources =
+                            new net.minecraft.server.packs.repository.Pack.ResourcesSupplier() {
+                                @Override
+                                public net.minecraft.server.packs.PackResources openPrimary(String id) {
+                                    return new net.minecraft.server.packs.PathPackResources(
+                                        "Dead Air Custom Music", path, false);
+                                }
+
+                                @Override
+                                public net.minecraft.server.packs.PackResources openFull(
+                                    String id, net.minecraft.server.packs.repository.Pack.Info info) {
+                                    return openPrimary(id);
+                                }
+                            };
                         net.minecraft.server.packs.repository.Pack pack = net.minecraft.server.packs.repository.Pack.readMetaAndCreate(
                             Dead_air.MODID + "/custom_music",
                             net.minecraft.network.chat.Component.literal("Dead Air Custom Music"),
                             true,
-                            id -> new net.minecraft.server.packs.PathPackResources("Dead Air Custom Music", path, false),
+                            resources,
                             net.minecraft.server.packs.PackType.CLIENT_RESOURCES,
                             net.minecraft.server.packs.repository.Pack.Position.TOP,
                             net.minecraft.server.packs.repository.PackSource.DEFAULT

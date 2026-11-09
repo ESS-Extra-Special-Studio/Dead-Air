@@ -1,5 +1,7 @@
 package uk.co.extraspecialstudio.dead_air.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,6 +26,12 @@ import uk.co.extraspecialstudio.dead_air.broadcast.RelayInvestigation;
 
 /** Glowing relay cabinet at a Broken Relay site. Right-click to recover its log. */
 public class BrokenRelayBlock extends HorizontalDirectionalBlock {
+    public static final MapCodec<BrokenRelayBlock> CODEC = simpleCodec(BrokenRelayBlock::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     /** Cabinet body + stub mast — matches multi-element block model. */
     private static final VoxelShape SHAPE = Shapes.or(

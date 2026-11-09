@@ -105,7 +105,7 @@ public class PanelActivationStorage extends SavedData {
             if (!Files.isRegularFile(file)) return;
             Set<String> keys = new HashSet<>();
             try (java.io.InputStream in = Files.newInputStream(file)) {
-                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
+                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
                 ListTag list = nbt.getList("activated_panels", Tag.TAG_COMPOUND);
                 for (int i = 0; i < list.size(); i++) {
                     CompoundTag entry = list.getCompound(i);
@@ -169,7 +169,7 @@ public class PanelActivationStorage extends SavedData {
             Set<String> keys = new HashSet<>();
             if (Files.isRegularFile(file)) {
                 try (java.io.InputStream in = Files.newInputStream(file)) {
-                    CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
+                    CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
                     ListTag list = nbt.getList("activated_panels", Tag.TAG_COMPOUND);
                     for (int i = 0; i < list.size(); i++) {
                         CompoundTag entry = list.getCompound(i);
@@ -239,7 +239,7 @@ public class PanelActivationStorage extends SavedData {
                 return;
             }
             try (java.io.InputStream in = Files.newInputStream(file)) {
-                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in);
+                CompoundTag nbt = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
                 storage.replaceFromNbt(nbt);
             }
         } catch (IOException e) {
@@ -309,10 +309,7 @@ public class PanelActivationStorage extends SavedData {
             if (overworld == null) return null;
             var dataStorage = overworld.getDataStorage();
             if (dataStorage == null) return null;
-            PanelActivationStorage storage = dataStorage.computeIfAbsent(
-                PanelActivationStorage::load,
-                PanelActivationStorage::new,
-                getDataName()
+            PanelActivationStorage storage = dataStorage.computeIfAbsent(new SavedData.Factory<>(PanelActivationStorage::new, PanelActivationStorage::load, null), getDataName()
             );
             if (storage != null) storage.mergeFromBackupCache(level.dimension());
             return storage;

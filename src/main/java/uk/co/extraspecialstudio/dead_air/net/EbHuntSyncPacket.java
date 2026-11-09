@@ -1,9 +1,8 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
-import java.util.function.Supplier;
 
 /** Server → client: nearest pending EB pin for compass / beep hunt (or clear when inactive). */
 public class EbHuntSyncPacket {
@@ -37,8 +36,7 @@ public class EbHuntSyncPacket {
             buf.readUtf(32), buf.readUtf(256), buf.readBoolean());
     }
 
-    public static void handle(EbHuntSyncPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(EbHuntSyncPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(
             net.minecraftforge.api.distmarker.Dist.CLIENT,
             () -> () -> uk.co.extraspecialstudio.dead_air.client.EbHuntClient.apply(msg)));

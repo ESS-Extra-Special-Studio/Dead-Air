@@ -1,6 +1,6 @@
 package uk.co.extraspecialstudio.dead_air.advancement;
 
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -73,7 +73,7 @@ public final class DeadAirAdvancements {
     public static void award(ServerPlayer player, ResourceLocation advancementId) {
         if (player == null || advancementId == null || player.server == null) return;
         try {
-            Advancement adv = player.server.getAdvancements().getAdvancement(advancementId);
+            AdvancementHolder adv = player.server.getAdvancements().get(advancementId);
             if (adv == null) return;
             AdvancementProgress progress = player.getAdvancements().getOrStartProgress(adv);
             if (progress.isDone()) return;

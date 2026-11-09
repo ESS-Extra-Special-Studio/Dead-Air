@@ -223,22 +223,22 @@ public class DeadAirFieldGuideScreen extends EscScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (FieldGuideContent.isIndex(flatIndex)) {
             int vpTop = indexViewportTop();
             int vpBottom = indexViewportBottom();
             if (mouseY >= vpTop && mouseY <= vpBottom
                 && mouseX >= bodyRect.x() && mouseX <= bodyRect.right()) {
-                indexScroll = Mth.clamp(indexScroll - (int) (delta * indexRowStride()), 0, maxIndexScroll());
+                indexScroll = Mth.clamp(indexScroll - (int) (scrollY * indexRowStride()), 0, maxIndexScroll());
                 return true;
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         int left = bodyRect.x();

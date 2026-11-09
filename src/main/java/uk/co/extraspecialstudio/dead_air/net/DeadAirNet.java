@@ -1,8 +1,12 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.Channel;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.SimpleChannel;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 
 /**
@@ -10,13 +14,13 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
  * when the client has no tower data (e.g. shared static state not populated yet, or dedicated server).
  */
 public class DeadAirNet {
-    private static final String PROTOCOL = "9";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "main"),
-        () -> PROTOCOL,
-        PROTOCOL::equals,
-        PROTOCOL::equals
-    );
+    private static final int PROTOCOL = 9;
+    public static final SimpleChannel CHANNEL = ChannelBuilder
+        .named(new ResourceLocation(Dead_air.MODID, "main"))
+        .networkProtocolVersion(PROTOCOL)
+        .clientAcceptedVersions(Channel.VersionTest.exact(PROTOCOL))
+        .serverAcceptedVersions(Channel.VersionTest.exact(PROTOCOL))
+        .simpleChannel();
 
     private static int id;
 
@@ -34,106 +38,118 @@ public class DeadAirNet {
     }
 
     public static void register() {
-        CHANNEL.registerMessage(id++, RadioSignalRequestPacket.class,
-            RadioSignalRequestPacket::encode,
-            RadioSignalRequestPacket::decode,
-            RadioSignalRequestPacket::handle);
-        CHANNEL.registerMessage(id++, RadioSignalResponsePacket.class,
-            RadioSignalResponsePacket::encode,
-            RadioSignalResponsePacket::decode,
-            RadioSignalResponsePacket::handle);
-        CHANNEL.registerMessage(id++, KnownTowersSyncPacket.class,
-            KnownTowersSyncPacket::encode,
-            KnownTowersSyncPacket::decode,
-            KnownTowersSyncPacket::handle);
-        CHANNEL.registerMessage(id++, RequestTowerSyncPacket.class,
-            RequestTowerSyncPacket::encode,
-            RequestTowerSyncPacket::decode,
-            RequestTowerSyncPacket::handle);
-        CHANNEL.registerMessage(id++, OpenRadioGuiPacket.class,
-            OpenRadioGuiPacket::encode,
-            OpenRadioGuiPacket::decode,
-            OpenRadioGuiPacket::handle);
-        CHANNEL.registerMessage(id++, StationRemovedFromListPacket.class,
-            StationRemovedFromListPacket::encode,
-            StationRemovedFromListPacket::decode,
-            StationRemovedFromListPacket::handle);
-        CHANNEL.registerMessage(id++, RadioStateSyncPacket.class,
-            RadioStateSyncPacket::encode,
-            RadioStateSyncPacket::decode,
-            RadioStateSyncPacket::handle);
-        CHANNEL.registerMessage(id++, ConfigSyncPacket.class,
-            ConfigSyncPacket::encode,
-            ConfigSyncPacket::decode,
-            ConfigSyncPacket::handle);
-        CHANNEL.registerMessage(id++, ExpansionPacksAnnouncePacket.class,
-            ExpansionPacksAnnouncePacket::encode,
-            ExpansionPacksAnnouncePacket::decode,
-            ExpansionPacksAnnouncePacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, BroadcastMessagePacket.class,
-            BroadcastMessagePacket::encode,
-            BroadcastMessagePacket::decode,
-            BroadcastMessagePacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, ForceEmergencyTunePacket.class,
-            ForceEmergencyTunePacket::encode,
-            ForceEmergencyTunePacket::decode,
-            ForceEmergencyTunePacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, TransmitPacket.class,
-            TransmitPacket::encode,
-            TransmitPacket::decode,
-            TransmitPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, EncounterStatePacket.class,
-            EncounterStatePacket::encode,
-            EncounterStatePacket::decode,
-            EncounterStatePacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, SurvivorScreenPacket.class,
-            SurvivorScreenPacket::encode,
-            SurvivorScreenPacket::decode,
-            SurvivorScreenPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, SurvivorActionPacket.class,
-            SurvivorActionPacket::encode,
-            SurvivorActionPacket::decode,
-            SurvivorActionPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, EbSignalPromptPacket.class,
-            EbSignalPromptPacket::encode,
-            EbSignalPromptPacket::decode,
-            EbSignalPromptPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, EbTunePromptResponsePacket.class,
-            EbTunePromptResponsePacket::encode,
-            EbTunePromptResponsePacket::decode,
-            EbTunePromptResponsePacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, CompatWaypointPacket.class,
-            CompatWaypointPacket::encode,
-            CompatWaypointPacket::decode,
-            CompatWaypointPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, SurvivorPartySyncPacket.class,
-            SurvivorPartySyncPacket::encode,
-            SurvivorPartySyncPacket::decode,
-            SurvivorPartySyncPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, SurvivorPartyOrderPacket.class,
-            SurvivorPartyOrderPacket::encode,
-            SurvivorPartyOrderPacket::decode,
-            SurvivorPartyOrderPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, EbHuntSyncPacket.class,
-            EbHuntSyncPacket::encode,
-            EbHuntSyncPacket::decode,
-            EbHuntSyncPacket::handle,
-            java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.messageBuilder(RadioSignalRequestPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(RadioSignalRequestPacket::encode)
+            .decoder(RadioSignalRequestPacket::decode)
+            .consumerMainThread(RadioSignalRequestPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(RadioSignalResponsePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(RadioSignalResponsePacket::encode)
+            .decoder(RadioSignalResponsePacket::decode)
+            .consumerMainThread(RadioSignalResponsePacket::handle)
+            .add();
+        CHANNEL.messageBuilder(KnownTowersSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(KnownTowersSyncPacket::encode)
+            .decoder(KnownTowersSyncPacket::decode)
+            .consumerMainThread(KnownTowersSyncPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(RequestTowerSyncPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(RequestTowerSyncPacket::encode)
+            .decoder(RequestTowerSyncPacket::decode)
+            .consumerMainThread(RequestTowerSyncPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(OpenRadioGuiPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(OpenRadioGuiPacket::encode)
+            .decoder(OpenRadioGuiPacket::decode)
+            .consumerMainThread(OpenRadioGuiPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(StationRemovedFromListPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(StationRemovedFromListPacket::encode)
+            .decoder(StationRemovedFromListPacket::decode)
+            .consumerMainThread(StationRemovedFromListPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(RadioStateSyncPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(RadioStateSyncPacket::encode)
+            .decoder(RadioStateSyncPacket::decode)
+            .consumerMainThread(RadioStateSyncPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(ConfigSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(ConfigSyncPacket::encode)
+            .decoder(ConfigSyncPacket::decode)
+            .consumerMainThread(ConfigSyncPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(ExpansionPacksAnnouncePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(ExpansionPacksAnnouncePacket::encode)
+            .decoder(ExpansionPacksAnnouncePacket::decode)
+            .consumerMainThread(ExpansionPacksAnnouncePacket::handle)
+            .add();
+        CHANNEL.messageBuilder(BroadcastMessagePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(BroadcastMessagePacket::encode)
+            .decoder(BroadcastMessagePacket::decode)
+            .consumerMainThread(BroadcastMessagePacket::handle)
+            .add();
+        CHANNEL.messageBuilder(ForceEmergencyTunePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(ForceEmergencyTunePacket::encode)
+            .decoder(ForceEmergencyTunePacket::decode)
+            .consumerMainThread(ForceEmergencyTunePacket::handle)
+            .add();
+        CHANNEL.messageBuilder(TransmitPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(TransmitPacket::encode)
+            .decoder(TransmitPacket::decode)
+            .consumerMainThread(TransmitPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(EncounterStatePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(EncounterStatePacket::encode)
+            .decoder(EncounterStatePacket::decode)
+            .consumerMainThread(EncounterStatePacket::handle)
+            .add();
+        CHANNEL.messageBuilder(SurvivorScreenPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(SurvivorScreenPacket::encode)
+            .decoder(SurvivorScreenPacket::decode)
+            .consumerMainThread(SurvivorScreenPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(SurvivorActionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(SurvivorActionPacket::encode)
+            .decoder(SurvivorActionPacket::decode)
+            .consumerMainThread(SurvivorActionPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(EbSignalPromptPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(EbSignalPromptPacket::encode)
+            .decoder(EbSignalPromptPacket::decode)
+            .consumerMainThread(EbSignalPromptPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(EbTunePromptResponsePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(EbTunePromptResponsePacket::encode)
+            .decoder(EbTunePromptResponsePacket::decode)
+            .consumerMainThread(EbTunePromptResponsePacket::handle)
+            .add();
+        CHANNEL.messageBuilder(CompatWaypointPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(CompatWaypointPacket::encode)
+            .decoder(CompatWaypointPacket::decode)
+            .consumerMainThread(CompatWaypointPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(SurvivorPartySyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(SurvivorPartySyncPacket::encode)
+            .decoder(SurvivorPartySyncPacket::decode)
+            .consumerMainThread(SurvivorPartySyncPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(SurvivorPartyOrderPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(SurvivorPartyOrderPacket::encode)
+            .decoder(SurvivorPartyOrderPacket::decode)
+            .consumerMainThread(SurvivorPartyOrderPacket::handle)
+            .add();
+        CHANNEL.messageBuilder(EbHuntSyncPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(EbHuntSyncPacket::encode)
+            .decoder(EbHuntSyncPacket::decode)
+            .consumerMainThread(EbHuntSyncPacket::handle)
+            .add();
     }
 
-    public static void sendTo(net.minecraft.server.level.ServerPlayer player, Object msg) {
-        CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player), msg);
+    public static void sendTo(ServerPlayer player, Object msg) {
+        CHANNEL.send(msg, PacketDistributor.PLAYER.with(player));
+    }
+
+    public static void sendToServer(Object msg) {
+        CHANNEL.send(msg, PacketDistributor.SERVER.noArg());
     }
 }

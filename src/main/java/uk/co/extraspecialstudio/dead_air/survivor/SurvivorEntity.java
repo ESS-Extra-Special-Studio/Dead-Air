@@ -66,7 +66,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import uk.co.extraspecialstudio.dead_air.Config;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager;
@@ -1008,7 +1007,7 @@ public class SurvivorEntity extends PathfinderMob {
             }
             case SurvivorActionPacket.OPEN_EQUIPMENT -> {
                 if (!mine) return;
-                NetworkHooks.openScreen(player, new SurvivorEquipmentMenu.Provider(this), buf -> buf.writeVarInt(getId()));
+                player.openMenu(new SurvivorEquipmentMenu.Provider(this), buf -> buf.writeVarInt(getId()));
             }
             case SurvivorActionPacket.IDLE_CHAT -> {
                 if (!mine) return;

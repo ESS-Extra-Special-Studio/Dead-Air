@@ -93,11 +93,11 @@ public class ClientEvents {
         // Send packets + drive music once per tick from the single active listening radio.
         if (mc.getConnection() != null) {
             if (tick % 2 == 0) {
-                uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
+                uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
                     new uk.co.extraspecialstudio.dead_air.net.RadioSignalRequestPacket(station.getId()));
             }
             if (!uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache.hasCachedTowers() && tick % 10 == 0) {
-                uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
+                uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
                     new uk.co.extraspecialstudio.dead_air.net.RequestTowerSyncPacket());
             }
         }
@@ -192,7 +192,7 @@ public class ClientEvents {
         java.util.List<String> packs = uk.co.extraspecialstudio.dead_air.music.ExpansionPacks.installedKnownPacks();
         if (packs.isEmpty()) return;
         try {
-            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
                 new uk.co.extraspecialstudio.dead_air.net.ExpansionPacksAnnouncePacket(packs));
         } catch (Exception e) {
             Dead_air.LOGGER.debug("[Dead Air] Could not announce expansion packs: {}", e.toString());

@@ -3,12 +3,11 @@ package uk.co.extraspecialstudio.dead_air.net;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Server -> Client: sync known tower positions so client can compute signal locally (no per-tick packets needed). */
 public class KnownTowersSyncPacket {
@@ -82,8 +81,7 @@ public class KnownTowersSyncPacket {
         return new KnownTowersSyncPacket(list);
     }
 
-    public static void handle(KnownTowersSyncPacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(KnownTowersSyncPacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             KnownTowersClientCache.setTowers(msg.towers);
             boolean anyActivated = false;

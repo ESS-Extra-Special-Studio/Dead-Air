@@ -1,12 +1,11 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.music.ExpansionPacks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Client -> Server: studio soundtrack packs installed on this player's game. */
 public class ExpansionPacksAnnouncePacket {
@@ -31,8 +30,7 @@ public class ExpansionPacksAnnouncePacket {
         return new ExpansionPacksAnnouncePacket(list);
     }
 
-    public static void handle(ExpansionPacksAnnouncePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(ExpansionPacksAnnouncePacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> ExpansionPacks.acceptFromPlayer(ctx.getSender(), msg.namespaces));
         ctx.setPacketHandled(true);
     }

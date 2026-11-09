@@ -1,10 +1,9 @@
 package uk.co.extraspecialstudio.dead_air.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import uk.co.extraspecialstudio.dead_air.broadcast.EmergencyProximity;
 
-import java.util.function.Supplier;
 
 /** Client -> Server: player answered the Emergency Broadcast tune prompt. */
 public class EbTunePromptResponsePacket {
@@ -25,8 +24,7 @@ public class EbTunePromptResponsePacket {
         return new EbTunePromptResponsePacket(buf.readUtf(256), buf.readBoolean());
     }
 
-    public static void handle(EbTunePromptResponsePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(EbTunePromptResponsePacket msg, CustomPayloadEvent.Context ctx) {
         ctx.enqueueWork(() -> {
             if (ctx.getSender() == null) return;
             if (msg.accepted) EmergencyProximity.onTuneAccepted(ctx.getSender(), msg.siteKey);
