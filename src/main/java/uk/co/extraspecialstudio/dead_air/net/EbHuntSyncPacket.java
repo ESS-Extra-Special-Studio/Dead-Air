@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 /** Server â†’ client: nearest pending EB pin for compass / beep hunt (or clear when inactive). */
 public class EbHuntSyncPacket implements CustomPacketPayload {
     public static final Type<EbHuntSyncPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "eb_hunt_sync"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "eb_hunt_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, EbHuntSyncPacket> STREAM_CODEC =
         StreamCodec.of(EbHuntSyncPacket::encode, EbHuntSyncPacket::decode);
 

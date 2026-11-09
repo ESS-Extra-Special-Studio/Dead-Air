@@ -171,7 +171,7 @@ public class Dead_air {
                     Class<?> entryCl = Class.forName("net.mcreator.radiotowers.airdrop.AirdropCatalog$Entry");
                     java.lang.reflect.Constructor<?> entryCtor =
                         entryCl.getConstructor(ResourceLocation.class, int.class, int.class);
-                    addons.add(entryCtor.newInstance(ResourceLocation.fromNamespaceAndPath(MODID, "walkie_t1"), 5, 1));
+                    addons.add(entryCtor.newInstance(new ResourceLocation(MODID, "walkie_t1"), 5, 1));
                     // The catalog caches itself on first use; drop that cache in case it built before we registered.
                     catalog.getMethod("invalidate").invoke(null);
                     LOGGER.info("Dead Air: registered airdrop catalog entry (T1.Radio 1 / 5 points)");
@@ -285,17 +285,13 @@ public class Dead_air {
         /** Register walkie HUD overlay so it always renders (not dependent on CROSSHAIR/HOTBAR events). */
         @SubscribeEvent
         public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "walkie_hud"), (guiGraphics, deltaTracker) -> {
+            event.registerAboveAll(new ResourceLocation(MODID, "walkie_hud"), (guiGraphics, partialTick) -> {
                 uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.renderRadioPanelTooltip(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
                 uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
             });
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "listener_effects"), (guiGraphics, deltaTracker) ->
-                uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.renderOverlay(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(),
-                    deltaTracker.getGameTimeDeltaPartialTick(false)));
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "broadcast_hud"), (guiGraphics, deltaTracker) ->
-                uk.co.extraspecialstudio.dead_air.client.BroadcastHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "survivor_party_hud"), (guiGraphics, deltaTracker) ->
-                uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
+            event.registerAboveAll(new ResourceLocation(MODID, "listener_effects"), (guiGraphics, partialTick) -> uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.renderOverlay(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(), partialTick));
+            event.registerAboveAll(new ResourceLocation(MODID, "broadcast_hud"), (guiGraphics, partialTick) -> uk.co.extraspecialstudio.dead_air.client.BroadcastHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
+            event.registerAboveAll(new ResourceLocation(MODID, "survivor_party_hud"), (guiGraphics, partialTick) -> uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
         }
     }
 }

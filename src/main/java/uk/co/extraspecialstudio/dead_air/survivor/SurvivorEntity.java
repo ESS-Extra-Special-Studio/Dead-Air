@@ -711,7 +711,7 @@ public class SurvivorEntity extends PathfinderMob {
 
     private void giveSupplies(ServerPlayer player) {
         if (!(level() instanceof ServerLevel server)) return;
-        ResourceLocation tableId = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID,
+        ResourceLocation tableId = new ResourceLocation(Dead_air.MODID,
             "gameplay/survivor_supplies/" + getProfession().id);
         LootTable table = server.getServer().reloadableRegistries()
             .getLootTable(ResourceKey.create(Registries.LOOT_TABLE, tableId));

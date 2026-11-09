@@ -88,17 +88,17 @@ public class WalkieItem extends Item implements GeoItem {
      */
     public ResourceLocation getGeoModelResource() {
         String mesh = tier == Tier.T3 ? "walkie_t2" : defaultAssetName();
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "geo/item/" + mesh + ".geo.json");
+        return new ResourceLocation(Dead_air.MODID, "geo/item/" + mesh + ".geo.json");
     }
 
     /** Skin for this radio. See {@link #getGeoModelResource()}. */
     public ResourceLocation getGeoTextureResource() {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/" + defaultAssetName() + ".png");
+        return new ResourceLocation(Dead_air.MODID, "textures/item/" + defaultAssetName() + ".png");
     }
 
     /** Animation set for this radio. See {@link #getGeoModelResource()}. */
     public ResourceLocation getGeoAnimationResource() {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "animations/item/walkie.animation.json");
+        return new ResourceLocation(Dead_air.MODID, "animations/item/walkie.animation.json");
     }
 
     /**

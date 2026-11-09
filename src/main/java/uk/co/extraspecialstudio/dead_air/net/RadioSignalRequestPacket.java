@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class RadioSignalRequestPacket implements CustomPacketPayload {
     public static final Type<RadioSignalRequestPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "radio_signal_request"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "radio_signal_request"));
     public static final StreamCodec<RegistryFriendlyByteBuf, RadioSignalRequestPacket> STREAM_CODEC =
         StreamCodec.of(RadioSignalRequestPacket::encode, RadioSignalRequestPacket::decode);
 

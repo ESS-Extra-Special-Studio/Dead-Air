@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.damage.DeadAirDamageTypes;
 
@@ -18,12 +18,12 @@ import uk.co.extraspecialstudio.dead_air.damage.DeadAirDamageTypes;
 public final class SignalBreakerAcousticEvents {
 
     private static final ResourceLocation SIGNAL_BREAKER_ID =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "signal_breaker");
+        new ResourceLocation(Dead_air.MODID, "signal_breaker");
 
     private SignalBreakerAcousticEvents() {}
 
     @SubscribeEvent
-    public static void onIncoming(LivingIncomingDamageEvent event) {
+    public static void onIncoming(LivingHurtEvent event) {
         DamageSource source = event.getSource();
         if (DeadAirDamageTypes.isAcoustic(source)) return;
         if (!(source.getEntity() instanceof LivingEntity attacker)) return;

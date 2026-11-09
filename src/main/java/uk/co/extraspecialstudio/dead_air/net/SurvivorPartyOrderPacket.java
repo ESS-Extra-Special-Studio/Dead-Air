@@ -13,7 +13,7 @@ import uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyOrders;
 /** Client â†’ server: squad order for all FOLLOWING survivors owned by the sender. */
 public class SurvivorPartyOrderPacket implements CustomPacketPayload {
     public static final Type<SurvivorPartyOrderPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "survivor_party_order"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "survivor_party_order"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SurvivorPartyOrderPacket> STREAM_CODEC =
         StreamCodec.of(SurvivorPartyOrderPacket::encode, SurvivorPartyOrderPacket::decode);
 

@@ -26,17 +26,17 @@ import java.util.UUID;
  */
 public final class ExtraBroadcasts {
     public static final ResourceLocation DEAD_CHANNEL_AUCTION =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "dead_channel_auction");
+        new ResourceLocation(Dead_air.MODID, "dead_channel_auction");
     public static final ResourceLocation REFUGEE_CONVOY =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "refugee_convoy");
+        new ResourceLocation(Dead_air.MODID, "refugee_convoy");
     public static final ResourceLocation BASE_UNDER_ATTACK =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "base_under_attack");
+        new ResourceLocation(Dead_air.MODID, "base_under_attack");
     public static final ResourceLocation MISSING_RECRUIT =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "missing_recruit");
+        new ResourceLocation(Dead_air.MODID, "missing_recruit");
     public static final ResourceLocation PIRATE_FM =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "pirate_fm_interruption");
+        new ResourceLocation(Dead_air.MODID, "pirate_fm_interruption");
     public static final ResourceLocation DOWNED_PLANE =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "downed_plane");
+        new ResourceLocation(Dead_air.MODID, "downed_plane");
 
     public static void registerDefaults() {
         BroadcastEventRegistry.register(new DeadChannelAuction());

@@ -205,7 +205,7 @@ public class ListenerEntity extends Monster implements GeoEntity {
 
     /**
      * Admin remove via {@code /deadair listener kill} / {@code purge}.
-     * Does not go through {@link #die} â€” FINAL admin cleanup must not award victory loot
+     * Does not go through {@link #die} — FINAL admin cleanup must not award victory loot
      * or {@code finalDefeated}. Clears boss bar, aborts any linked encounter, then discards.
      */
     public void killFromCommand() {
@@ -230,7 +230,7 @@ public class ListenerEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public boolean canBeLeashed() {
+    public boolean canBeLeashed(Player player) {
         return false;
     }
 
@@ -251,7 +251,7 @@ public class ListenerEntity extends Monster implements GeoEntity {
         }
     }
 
-    /** Encounter Listeners must not vanish on Peaceful (Mob.checkDespawn â†’ discard). */
+    /** Encounter Listeners must not vanish on Peaceful (Mob.checkDespawn → discard). */
     @Override
     protected boolean shouldDespawnInPeaceful() {
         return mode == Mode.WILD;

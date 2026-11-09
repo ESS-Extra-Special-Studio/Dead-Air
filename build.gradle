@@ -98,13 +98,13 @@ tasks.register('copyToNeoForgeTestPack') {
     dependsOn 'jar'
     doLast {
         def jar = tasks.named('jar', Jar).get().archiveFile.get().asFile
-        def dest = file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/NEOFORGE 1.21.1 TESTS/mods")
+        def dest = file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/ESS SMK DA 1.20.6-neoforge/mods")
         if (dest.exists()) {
             dest.listFiles({ f -> f.name.startsWith('dead_air-') && f.name.endsWith('.jar') && !f.name.startsWith('dead_air_') } as FileFilter)?.each { it.delete() }
             copy { from jar; into dest }
             println "Copied ${jar.name} to ${dest}"
         } else {
-            println "NeoForge test pack mods folder not found: ${dest}"
+            println "Smoke pack mods folder not found: ${dest}"
         }
     }
 }

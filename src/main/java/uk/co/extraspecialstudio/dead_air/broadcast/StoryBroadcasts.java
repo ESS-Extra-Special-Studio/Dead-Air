@@ -10,9 +10,9 @@ import java.util.List;
 
 /** Dead Air's built-in story broadcasts leading to The Listener. */
 public final class StoryBroadcasts {
-    public static final ResourceLocation RELAY_TRANSMISSION = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "relay_transmission");
-    public static final ResourceLocation IT_HEARS_YOU = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "it_hears_you");
-    public static final ResourceLocation BREAKER_HINT = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "breaker_hint");
+    public static final ResourceLocation RELAY_TRANSMISSION = new ResourceLocation(Dead_air.MODID, "relay_transmission");
+    public static final ResourceLocation IT_HEARS_YOU = new ResourceLocation(Dead_air.MODID, "it_hears_you");
+    public static final ResourceLocation BREAKER_HINT = new ResourceLocation(Dead_air.MODID, "breaker_hint");
 
     private static final String[] RELAY_TEMPLATES = {"broken_relay/small", "broken_relay/medium", "broken_relay/large"};
 

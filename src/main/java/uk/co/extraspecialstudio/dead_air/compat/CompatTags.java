@@ -21,7 +21,7 @@ public final class CompatTags {
     public static final TagKey<Item> SCAVENGE_GEAR = tag("compat/scavenge_gear");
 
     private static TagKey<Item> tag(String path) {
-        return ItemTags.create(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, path));
+        return ItemTags.create(new ResourceLocation(Dead_air.MODID, path));
     }
 
     private CompatTags() {}

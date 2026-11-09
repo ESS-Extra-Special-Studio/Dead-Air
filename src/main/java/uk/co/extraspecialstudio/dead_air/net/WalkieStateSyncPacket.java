@@ -19,7 +19,7 @@ import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
 
 public class WalkieStateSyncPacket implements CustomPacketPayload {
     public static final Type<WalkieStateSyncPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "walkie_state_sync"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "walkie_state_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, WalkieStateSyncPacket> STREAM_CODEC =
         StreamCodec.of(WalkieStateSyncPacket::encode, WalkieStateSyncPacket::decode);
 

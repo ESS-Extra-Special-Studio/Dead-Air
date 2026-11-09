@@ -9,7 +9,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 
 public class OpenWalkieGuiPacket implements CustomPacketPayload {
     public static final Type<OpenWalkieGuiPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "open_walkie_gui"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "open_walkie_gui"));
     public static final StreamCodec<RegistryFriendlyByteBuf, OpenWalkieGuiPacket> STREAM_CODEC =
         StreamCodec.unit(new OpenWalkieGuiPacket());
 

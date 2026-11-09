@@ -189,7 +189,7 @@ public class RadioSoundInstance extends AbstractSoundInstance {
         
         for (String soundId : fallbackSounds) {
             try {
-                ResourceLocation placeholderId = ResourceLocation.parse(soundId);
+                ResourceLocation placeholderId = new ResourceLocation(soundId);
                 SoundEvent placeholder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(placeholderId);
                 if (placeholder != null) {
                     return placeholder;
@@ -211,7 +211,7 @@ public class RadioSoundInstance extends AbstractSoundInstance {
         }
         
         // Absolute last resort: try hardcoded fallback
-        SoundEvent fallback = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse("minecraft:block.note_block.pling"));
+        SoundEvent fallback = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation("minecraft:block.note_block.pling"));
         if (fallback != null) {
             return fallback;
         }

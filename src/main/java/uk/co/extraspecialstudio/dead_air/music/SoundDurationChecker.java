@@ -106,7 +106,7 @@ public class SoundDurationChecker {
 
             // Legacy fallback: direct path from event id (works for flat sound paths only)
             String soundPath = "sounds/" + soundId.getPath() + ".ogg";
-            ResourceLocation legacyResource = ResourceLocation.fromNamespaceAndPath(soundId.getNamespace(), soundPath);
+            ResourceLocation legacyResource = new ResourceLocation(soundId.getNamespace(), soundPath);
             return readDurationFromResource(mc, legacyResource);
         } catch (Throwable e) {
             return 0.0f;
@@ -128,7 +128,7 @@ public class SoundDurationChecker {
             if (path == null) {
                 return null;
             }
-            return ResourceLocation.fromNamespaceAndPath(path.getNamespace(), "sounds/" + path.getPath() + ".ogg");
+            return new ResourceLocation(path.getNamespace(), "sounds/" + path.getPath() + ".ogg");
         } catch (Exception e) {
             Dead_air.LOGGER.debug("Could not resolve OGG path for {}: {}", soundEventId, e.getMessage());
             return null;

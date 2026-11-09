@@ -16,7 +16,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
  * Uses registry lookup only â€” no hard compile dependency on RT classes.
  */
 public final class RadioTowersPlaneCompat {
-    private static final ResourceLocation PLANE_ID = ResourceLocation.fromNamespaceAndPath("radiotowers", "planeentity");
+    private static final ResourceLocation PLANE_ID = new ResourceLocation("radiotowers", "planeentity");
 
     private RadioTowersPlaneCompat() {}
 

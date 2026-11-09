@@ -55,7 +55,7 @@ public final class DeadAirSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LISTENER_DISSOLVE = register("listener.dissolve");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String path) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, path);
+        ResourceLocation id = new ResourceLocation(Dead_air.MODID, path);
         return REGISTER.register(path.replace(".", "_"), () -> SoundEvent.createVariableRangeEvent(id));
     }
 

@@ -66,7 +66,7 @@ public final class DeadAirAdvancements {
     private static final String CRITERION = "granted";
 
     public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, path);
+        return new ResourceLocation(Dead_air.MODID, path);
     }
 
     /** Award a code-granted advancement if present and incomplete. */

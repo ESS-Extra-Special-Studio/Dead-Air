@@ -58,7 +58,7 @@ public class UnlockedStationsStorage extends SavedData {
         Set<ResourceLocation> out = new HashSet<>();
         for (String id : ids) {
             try {
-                out.add(ResourceLocation.parse(id));
+                out.add(new ResourceLocation(id));
             } catch (Exception ignored) {}
         }
         return out;

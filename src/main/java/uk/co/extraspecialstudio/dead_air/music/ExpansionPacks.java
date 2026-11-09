@@ -52,7 +52,7 @@ public final class ExpansionPacks {
     private ExpansionPacks() {}
 
     public static ResourceLocation stationIdFor(String namespace) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "music_" + namespace);
+        return new ResourceLocation(Dead_air.MODID, "music_" + namespace);
     }
 
     public static boolean isKnown(String namespace) {
@@ -79,7 +79,7 @@ public final class ExpansionPacks {
         int range = Config.musicStationRange > 0 ? Config.musicStationRange : 375;
         int spacing = Config.minTowerSpacing > 0 ? Config.minTowerSpacing : 400;
         RadioStation station = new RadioStation(id, displayName(namespace), RadioStation.StationType.MUSIC,
-            MusicStationManager.determineGenre(ResourceLocation.fromNamespaceAndPath(namespace, "music")),
+            MusicStationManager.determineGenre(new ResourceLocation(namespace, "music")),
             frequency, range, spacing);
         StationRegistry.registerStation(station);
         return station;

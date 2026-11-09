@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 /** Server â†’ Client: create a temporary map-mod waypoint at EB / proximity coords. */
 public class CompatWaypointPacket implements CustomPacketPayload {
     public static final Type<CompatWaypointPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "compat_waypoint"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "compat_waypoint"));
     public static final StreamCodec<RegistryFriendlyByteBuf, CompatWaypointPacket> STREAM_CODEC =
         StreamCodec.of(CompatWaypointPacket::encode, CompatWaypointPacket::decode);
 

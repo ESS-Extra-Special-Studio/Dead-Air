@@ -58,7 +58,7 @@ public final class CustomMusicLoader {
                     name = name.substring(0, name.length() - 4);
                     String safe = sanitizeSoundPath(name);
                     if (safe.isEmpty()) return;
-                    ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, SOUND_PREFIX + safe);
+                    ResourceLocation id = new ResourceLocation(Dead_air.MODID, SOUND_PREFIX + safe);
                     event.register(Registries.SOUND_EVENT, id, () -> SoundEvent.createVariableRangeEvent(id));
                     REGISTERED_CUSTOM_IDS.add(id);
                 });

@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 
 public class RequestTowerSyncPacket implements CustomPacketPayload {
     public static final Type<RequestTowerSyncPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "request_tower_sync"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "request_tower_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, RequestTowerSyncPacket> STREAM_CODEC =
         StreamCodec.unit(new RequestTowerSyncPacket());
 

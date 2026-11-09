@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 /** Datapack damage types shipped by Dead Air. */
 public final class DeadAirDamageTypes {
     public static final ResourceKey<DamageType> ACOUSTIC = ResourceKey.create(
-        Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "acoustic"));
+        Registries.DAMAGE_TYPE, new ResourceLocation(Dead_air.MODID, "acoustic"));
 
     private DeadAirDamageTypes() {}
 

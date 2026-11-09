@@ -8,7 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.api.DeadAirAPI;
 import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
@@ -30,7 +30,7 @@ public final class SurvivorPartyRoleEvents {
     private static final double ASSIST_RANGE = 16.0;
 
     @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onIncomingDamage(LivingHurtEvent event) {
         if (event.getEntity().level().isClientSide) return;
         var source = event.getSource().getEntity();
         if (source instanceof ServerPlayer player) {

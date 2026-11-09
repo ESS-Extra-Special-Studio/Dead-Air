@@ -13,7 +13,7 @@ import java.util.List;
 /** Server -> Client: an emergency broadcast transmission (already scrambled if the player has no decoder). */
 public class BroadcastMessagePacket implements CustomPacketPayload {
     public static final Type<BroadcastMessagePacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "broadcast_message"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "broadcast_message"));
     public static final StreamCodec<RegistryFriendlyByteBuf, BroadcastMessagePacket> STREAM_CODEC =
         StreamCodec.of(BroadcastMessagePacket::encode, BroadcastMessagePacket::decode);
 

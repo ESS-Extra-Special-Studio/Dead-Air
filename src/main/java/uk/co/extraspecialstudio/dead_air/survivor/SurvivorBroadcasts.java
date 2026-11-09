@@ -14,7 +14,7 @@ import java.util.List;
 
 /** Distress Call: a survivor camp appears 150-350 blocks away with someone waiting to be recruited. */
 public final class SurvivorBroadcasts {
-    public static final ResourceLocation DISTRESS_CALL = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "distress_call");
+    public static final ResourceLocation DISTRESS_CALL = new ResourceLocation(Dead_air.MODID, "distress_call");
 
     public static void registerDefaults() {
         BroadcastEventRegistry.register(new DistressCall());

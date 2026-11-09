@@ -12,7 +12,7 @@ import uk.co.extraspecialstudio.dead_air.broadcast.EmergencyProximity;
 /** Client -> Server: player answered the Emergency Broadcast tune prompt. */
 public class EbTunePromptResponsePacket implements CustomPacketPayload {
     public static final Type<EbTunePromptResponsePacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "eb_tune_prompt_response"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "eb_tune_prompt_response"));
     public static final StreamCodec<RegistryFriendlyByteBuf, EbTunePromptResponsePacket> STREAM_CODEC =
         StreamCodec.of(EbTunePromptResponsePacket::encode, EbTunePromptResponsePacket::decode);
 

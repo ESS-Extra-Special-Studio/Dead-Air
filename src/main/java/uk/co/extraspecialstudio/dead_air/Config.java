@@ -198,7 +198,7 @@ public class Config {
                         "e.g. [\"my_music_pack\"]. Players without that pack see \"Requires ... pack\" instead of music.",
                         "Default: []."
                 )
-                .defineListAllowEmpty(java.util.List.of("expansionStations"), java.util.List::of, () -> "", o -> o instanceof String);
+                .defineListAllowEmpty("expansionStations", java.util.List.of(), o -> o instanceof String);
         BUILDER.pop();
 
         // ========== WALKIE HUD ==========

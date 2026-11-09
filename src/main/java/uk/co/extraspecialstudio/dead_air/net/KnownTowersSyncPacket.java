@@ -14,7 +14,7 @@ import java.util.List;
 
 public class KnownTowersSyncPacket implements CustomPacketPayload {
     public static final Type<KnownTowersSyncPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "known_towers_sync"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "known_towers_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, KnownTowersSyncPacket> STREAM_CODEC =
         StreamCodec.of(KnownTowersSyncPacket::encode, KnownTowersSyncPacket::decode);
 

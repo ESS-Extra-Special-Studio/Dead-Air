@@ -219,7 +219,7 @@ public class WalkieTalkieManager {
         // Explicit power-off only; missing key = on (legacy stacks)
         if (tag.contains(NBT_ON) && !tag.getBoolean(NBT_ON)) return false;
         try {
-            return StationRegistry.getStation(ResourceLocation.parse(idStr)) != null;
+            return StationRegistry.getStation(new ResourceLocation(idStr)) != null;
         } catch (Exception e) {
             return false;
         }
@@ -288,7 +288,7 @@ public class WalkieTalkieManager {
             try {
                 String idStr = tag.getString(NBT_STATION);
                 if (!idStr.isEmpty()) {
-                    ResourceLocation id = ResourceLocation.parse(idStr);
+                    ResourceLocation id = new ResourceLocation(idStr);
                     RadioStation station = StationRegistry.getStation(id);
                     if (station != null) {
                         // Always apply this stack's NBT so switching held walkies swaps tune state.

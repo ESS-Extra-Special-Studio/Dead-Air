@@ -11,7 +11,7 @@ import uk.co.extraspecialstudio.dead_air.station.StationUnlockManager;
 
 public class StationRemovedFromListPacket implements CustomPacketPayload {
     public static final Type<StationRemovedFromListPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "station_removed"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "station_removed"));
     public static final StreamCodec<RegistryFriendlyByteBuf, StationRemovedFromListPacket> STREAM_CODEC =
         StreamCodec.of(StationRemovedFromListPacket::encode, StationRemovedFromListPacket::decode);
 

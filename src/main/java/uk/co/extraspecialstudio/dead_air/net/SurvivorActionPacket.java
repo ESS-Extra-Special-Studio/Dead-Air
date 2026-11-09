@@ -12,7 +12,7 @@ import uk.co.extraspecialstudio.dead_air.survivor.SurvivorEntity;
 /** Client -> Server: a button in the survivor dialogue. */
 public class SurvivorActionPacket implements CustomPacketPayload {
     public static final Type<SurvivorActionPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "survivor_action"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "survivor_action"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SurvivorActionPacket> STREAM_CODEC =
         StreamCodec.of(SurvivorActionPacket::encode, SurvivorActionPacket::decode);
 

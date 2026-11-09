@@ -15,7 +15,7 @@ import java.util.List;
 /** Client -> Server: studio soundtrack packs installed on this player's game. */
 public class ExpansionPacksAnnouncePacket implements CustomPacketPayload {
     public static final Type<ExpansionPacksAnnouncePacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "expansion_packs"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "expansion_packs"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ExpansionPacksAnnouncePacket> STREAM_CODEC =
         StreamCodec.of(ExpansionPacksAnnouncePacket::encode, ExpansionPacksAnnouncePacket::decode);
 

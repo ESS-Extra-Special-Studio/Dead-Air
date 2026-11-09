@@ -39,7 +39,7 @@ public final class DeadAirEntityRenderers {
 
     static final class AnchorRenderer extends GeoEntityRenderer<SignalAnchorEntity> {
         AnchorRenderer(EntityRendererProvider.Context context) {
-            super(context, new DefaultedEntityGeoModel<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "signal_anchor")));
+            super(context, new DefaultedEntityGeoModel<>(new ResourceLocation(Dead_air.MODID, "signal_anchor")));
             shadowRadius = 0.5f;
             addRenderLayer(new AutoGlowingGeoLayer<>(this));
         }
@@ -52,7 +52,7 @@ public final class DeadAirEntityRenderers {
 
         @Override
         public ResourceLocation getTextureLocation(SurvivorEntity entity) {
-            return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/entity/survivor/" + entity.getProfession().id + ".png");
+            return new ResourceLocation(Dead_air.MODID, "textures/entity/survivor/" + entity.getProfession().id + ".png");
         }
     }
 
@@ -97,7 +97,7 @@ public final class DeadAirEntityRenderers {
     /** Looks at its target through the neck so the head keeps its own tilt and idle sway. */
     static final class ListenerModel extends DefaultedEntityGeoModel<ListenerEntity> {
         ListenerModel() {
-            super(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "the_listener"));
+            super(new ResourceLocation(Dead_air.MODID, "the_listener"));
         }
 
         @Override

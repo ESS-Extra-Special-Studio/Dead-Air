@@ -113,7 +113,7 @@ public final class DeadAirListenerCommand {
             + " finalDefeated=" + pr.finalDefeated + " breakerHinted=" + pr.breakerHinted);
         line(src, "hiddenFrequency=" + String.format("%.1f", data.getHiddenFrequency(p.getRandom()))
             + " hasT3=" + BroadcastScheduler.hasT3(p) + " canDecode=" + BroadcastScheduler.hasT3(p)
-            + " (Signal Decoder upgrades T2â†’T3)");
+            + " (Signal Decoder upgrades T2→T3)");
         SurvivorRoster roster = SurvivorRoster.get(p.server);
         line(src, "survivors=" + (roster == null ? 0 : roster.count(p.getUUID())));
         for (PendingSites.Site s : PendingSites.forOwner(p.server, p.getUUID())) {
@@ -167,7 +167,7 @@ public final class DeadAirListenerCommand {
             case "plane", "downed_plane", "crash" -> "downed_plane";
             default -> raw.contains(":") ? raw.substring(raw.indexOf(':') + 1) : raw;
         };
-        return ResourceLocation.fromNamespaceAndPath("dead_air", key);
+        return new ResourceLocation("dead_air", key);
     }
 
     /** Force-deliver a broadcast by id, bypassing canTrigger (debug). */
@@ -189,7 +189,7 @@ public final class DeadAirListenerCommand {
         BroadcastProgress.get(p.server).setDirty();
         boolean ok = BroadcastScheduler.deliver(p, event);
         line(src, (ok ? "Forced " : "Cancelled ") + id
-            + (ok ? "" : " (event returned no lines â€” check prerequisites: T3/base/settled survivor/expansion pack)"));
+            + (ok ? "" : " (event returned no lines — check prerequisites: T3/base/settled survivor/expansion pack)"));
         return ok ? 1 : 0;
     }
 

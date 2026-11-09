@@ -71,13 +71,13 @@ public class SpawnTowerCommand {
     private static final String NAMESPACE = "radiotowers";
 
     /** Structure template IDs used by getStructureManager().get() - from template_pool "location" (the .nbt files). */
-    private static final ResourceLocation STRUCTURE_STANDARD  = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "tower");
-    private static final ResourceLocation STRUCTURE_FENCED   = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "tower_2");
-    private static final ResourceLocation STRUCTURE_OVERRUN   = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "tower_overrun");
+    private static final ResourceLocation STRUCTURE_STANDARD  = new ResourceLocation(NAMESPACE, "tower");
+    private static final ResourceLocation STRUCTURE_FENCED   = new ResourceLocation(NAMESPACE, "tower_2");
+    private static final ResourceLocation STRUCTURE_OVERRUN   = new ResourceLocation(NAMESPACE, "tower_overrun");
     /** Fallback IDs (worldgen / MCreator build may ship .nbt under these paths). */
-    private static final ResourceLocation FALLBACK_STANDARD   = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "radiotower");
-    private static final ResourceLocation FALLBACK_FENCED     = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "radiotower_2");
-    private static final ResourceLocation FALLBACK_OVERRUN    = ResourceLocation.fromNamespaceAndPath(NAMESPACE, "radiotoweroverrun");
+    private static final ResourceLocation FALLBACK_STANDARD   = new ResourceLocation(NAMESPACE, "radiotower");
+    private static final ResourceLocation FALLBACK_FENCED     = new ResourceLocation(NAMESPACE, "radiotower_2");
+    private static final ResourceLocation FALLBACK_OVERRUN    = new ResourceLocation(NAMESPACE, "radiotoweroverrun");
 
     private static final int SCAN_DELAY_TICKS = 5;
     private static final int PANEL_SEARCH_RADIUS = 25;

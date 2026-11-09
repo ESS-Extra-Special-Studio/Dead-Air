@@ -387,7 +387,7 @@ public class PendingSites extends SavedData {
         }
 
         Optional<StructureTemplate> opt = level.getStructureManager().get(
-            ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, site.template));
+            new ResourceLocation(Dead_air.MODID, site.template));
         if (opt.isEmpty()) {
             // Fallback to procedural if NBT missing.
             BlockPos key = EventSitePlacer.place(level, site);

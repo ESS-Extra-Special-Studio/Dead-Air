@@ -8,16 +8,16 @@ import uk.co.extraspecialstudio.dead_air.item.DimensionalRelayItem;
 public class DimensionalRelayItemModel extends GeoModel<DimensionalRelayItem> {
     @Override
     public ResourceLocation getModelResource(DimensionalRelayItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "geo/item/dimensional_relay.geo.json");
+        return new ResourceLocation(Dead_air.MODID, "geo/item/dimensional_relay.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(DimensionalRelayItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/dimensional_relay.png");
+        return new ResourceLocation(Dead_air.MODID, "textures/item/dimensional_relay.png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(DimensionalRelayItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "animations/item/dimensional_relay.animation.json");
+        return new ResourceLocation(Dead_air.MODID, "animations/item/dimensional_relay.animation.json");
     }
 }

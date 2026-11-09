@@ -219,7 +219,7 @@ public final class SurvivorTaczCompat {
     private static ResourceLocation normalizeGunId(ResourceLocation id) {
         String path = id.getPath();
         if (path.startsWith("gun/")) {
-            return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path.substring(4));
+            return new ResourceLocation(id.getNamespace(), path.substring(4));
         }
         return id;
     }
@@ -228,9 +228,9 @@ public final class SurvivorTaczCompat {
     private static ResourceLocation alternateGunId(ResourceLocation id) {
         String path = id.getPath();
         if (path.startsWith("gun/")) {
-            return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path.substring(4));
+            return new ResourceLocation(id.getNamespace(), path.substring(4));
         }
-        return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "gun/" + path);
+        return new ResourceLocation(id.getNamespace(), "gun/" + path);
     }
 
     private static boolean gunExists(ResourceLocation id) {
@@ -258,9 +258,9 @@ public final class SurvivorTaczCompat {
 
     private static ItemStack buildViaSetGunId(ResourceLocation id) {
         try {
-            Item gunItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("tacz:modern_kinetic_gun"));
+            Item gunItem = BuiltInRegistries.ITEM.get(new ResourceLocation("tacz:modern_kinetic_gun"));
             if (gunItem == null || gunItem == Items.AIR) {
-                gunItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("tacz:gun"));
+                gunItem = BuiltInRegistries.ITEM.get(new ResourceLocation("tacz:gun"));
             }
             if (gunItem == null || gunItem == Items.AIR) return ItemStack.EMPTY;
             ItemStack stack = new ItemStack(gunItem, 1);

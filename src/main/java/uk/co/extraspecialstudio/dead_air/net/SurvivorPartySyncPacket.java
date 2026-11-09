@@ -14,7 +14,7 @@ import java.util.List;
 /** Server ? client: current FOLLOWING party snapshot for the HUD. */
 public class SurvivorPartySyncPacket implements CustomPacketPayload {
     public static final Type<SurvivorPartySyncPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "survivor_party_sync"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "survivor_party_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SurvivorPartySyncPacket> STREAM_CODEC =
         StreamCodec.of(SurvivorPartySyncPacket::encode, SurvivorPartySyncPacket::decode);
 

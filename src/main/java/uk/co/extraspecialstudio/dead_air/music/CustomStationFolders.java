@@ -41,11 +41,11 @@ public final class CustomStationFolders {
     }
 
     public static ResourceLocation stationIdForSlug(String slug) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, STATION_ID_PREFIX + slug);
+        return new ResourceLocation(Dead_air.MODID, STATION_ID_PREFIX + slug);
     }
 
     public static ResourceLocation trackSoundId(String stationSlug, String trackSlug) {
-        return ResourceLocation.fromNamespaceAndPath(
+        return new ResourceLocation(
             Dead_air.MODID, SOUND_PATH_PREFIX + stationSlug + "." + trackSlug);
     }
 

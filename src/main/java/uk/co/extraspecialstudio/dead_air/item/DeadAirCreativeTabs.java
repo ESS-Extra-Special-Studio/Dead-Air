@@ -47,7 +47,7 @@ public final class DeadAirCreativeTabs {
     /** Radio panel lives in radiotowers; show it in Dead Air's tab when that mod is loaded. */
     private static void acceptRadioPanelIfPresent(CreativeModeTab.Output output) {
         if (!ModList.get().isLoaded("radiotowers")) return;
-        Item panel = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("radiotowers", "radio_panel"));
+        Item panel = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(new ResourceLocation("radiotowers", "radio_panel"));
         if (panel != null && panel != Items.AIR) {
             output.accept(panel);
         }

@@ -438,7 +438,7 @@ public final class SurvivorPartyHud {
     }
 
     private static void blitPortrait(GuiGraphics g, SurvivorPartySyncPacket.Member m, int x, int y, boolean dim) {
-        ResourceLocation tex = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID,
+        ResourceLocation tex = new ResourceLocation(Dead_air.MODID,
             "textures/entity/survivor/" + m.skinTextureKey() + ".png");
         g.blit(tex, x, y, PORTRAIT, PORTRAIT, 8f, 8f, 8, 8, 64, 64);
         g.blit(tex, x, y, PORTRAIT, PORTRAIT, 40f, 8f, 8, 8, 64, 64);

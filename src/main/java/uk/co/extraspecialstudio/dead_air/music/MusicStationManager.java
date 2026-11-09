@@ -59,8 +59,8 @@ public class MusicStationManager {
         STATION_TRACKS.put(StationRegistry.JUKEBOX_FM_ID, jukeboxTracks);
 
         // Internet streams: single virtual "track" id for overlay / events (playback uses InternetStreamManager, not SoundEvents)
-        STATION_TRACKS.put(StationRegistry.INTERNET_CR1_ID, List.of(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "stream/internet_cr1")));
-        STATION_TRACKS.put(StationRegistry.INTERNET_AMBIANCE_FM_ID, List.of(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "stream/internet_ambiance_fm")));
+        STATION_TRACKS.put(StationRegistry.INTERNET_CR1_ID, List.of(new ResourceLocation(Dead_air.MODID, "stream/internet_cr1")));
+        STATION_TRACKS.put(StationRegistry.INTERNET_AMBIANCE_FM_ID, List.of(new ResourceLocation(Dead_air.MODID, "stream/internet_ambiance_fm")));
 
         registerCustomStationsFromFolders();
 
@@ -93,7 +93,7 @@ public class MusicStationManager {
                 }
             }
             if (FALLBACK_TRACKS.isEmpty()) {
-                FALLBACK_TRACKS.add(ResourceLocation.withDefaultNamespace("music_disc.13"));
+                FALLBACK_TRACKS.add(new ResourceLocation("minecraft", "music_disc.13"));
             }
         }
 
@@ -318,7 +318,7 @@ public class MusicStationManager {
             }
             
             // Create station for this mod with only that mod's tracks.
-            ResourceLocation stationId = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "music_" + modNamespace);
+            ResourceLocation stationId = new ResourceLocation(Dead_air.MODID, "music_" + modNamespace);
             STATION_TRACKS.put(stationId, new ArrayList<>(tracks));
             
             // Create or refresh station for this mod with only that mod's tracks.
@@ -332,7 +332,7 @@ public class MusicStationManager {
                     continue;
                 }
                 
-                String genre = determineGenre(ResourceLocation.fromNamespaceAndPath(modNamespace, "music"));
+                String genre = determineGenre(new ResourceLocation(modNamespace, "music"));
                 float frequency = generateFrequencyForStation(stationId);
                 
                 if (!StationRegistry.isFrequencyAvailable(frequency, StationRegistry.getMinFrequencySpacing())) {
@@ -654,7 +654,7 @@ public class MusicStationManager {
             return new ArrayList<>(FALLBACK_TRACKS);
         }
         // Last resort so dynamic/unknown stations always have one track
-        return List.of(ResourceLocation.withDefaultNamespace("music_disc.13"));
+        return List.of(new ResourceLocation("minecraft", "music_disc.13"));
     }
     
     /**

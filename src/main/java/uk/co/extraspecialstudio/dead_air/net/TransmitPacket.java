@@ -12,7 +12,7 @@ import uk.co.extraspecialstudio.dead_air.encounter.Transmissions;
 /** Client -> Server: the player pressed Transmit on a T3 radio at this frequency. */
 public class TransmitPacket implements CustomPacketPayload {
     public static final Type<TransmitPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "transmit"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "transmit"));
     public static final StreamCodec<RegistryFriendlyByteBuf, TransmitPacket> STREAM_CODEC =
         StreamCodec.of(TransmitPacket::encode, TransmitPacket::decode);
 

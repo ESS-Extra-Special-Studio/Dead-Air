@@ -15,18 +15,18 @@ public class StationRegistry {
     private static final List<RadioStation> STATION_LIST = new ArrayList<>();
     
     // Default stations
-    public static final ResourceLocation EMERGENCY_BROADCAST_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "emergency_broadcast");
-    public static final ResourceLocation BEDROCK_RADIO_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "bedrock_radio");
-    public static final ResourceLocation ZOMBIECRAFT_RADIO_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "zombiecraft_radio");
-    public static final ResourceLocation MEDIEVAL_FM_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "medieval_fm");
-    public static final ResourceLocation JUKEBOX_FM_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "jukebox_fm");
-    public static final ResourceLocation REMIX_RADIO_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "remix_radio");
+    public static final ResourceLocation EMERGENCY_BROADCAST_ID = new ResourceLocation(Dead_air.MODID, "emergency_broadcast");
+    public static final ResourceLocation BEDROCK_RADIO_ID = new ResourceLocation(Dead_air.MODID, "bedrock_radio");
+    public static final ResourceLocation ZOMBIECRAFT_RADIO_ID = new ResourceLocation(Dead_air.MODID, "zombiecraft_radio");
+    public static final ResourceLocation MEDIEVAL_FM_ID = new ResourceLocation(Dead_air.MODID, "medieval_fm");
+    public static final ResourceLocation JUKEBOX_FM_ID = new ResourceLocation(Dead_air.MODID, "jukebox_fm");
+    public static final ResourceLocation REMIX_RADIO_ID = new ResourceLocation(Dead_air.MODID, "remix_radio");
     /** Custom Creatopia tracks only; same tracks also play on Bedrock Radio and Remix Radio. */
-    public static final ResourceLocation CREATOPIA_RADIO_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "creatopia_radio");
+    public static final ResourceLocation CREATOPIA_RADIO_ID = new ResourceLocation(Dead_air.MODID, "creatopia_radio");
     /** Live 24/7 MP3 stream from music.creatopia.uk (CR1). */
-    public static final ResourceLocation INTERNET_CR1_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "internet_cr1");
+    public static final ResourceLocation INTERNET_CR1_ID = new ResourceLocation(Dead_air.MODID, "internet_cr1");
     /** Live 24/7 MP3 stream from music.creatopia.uk (Ambiance FM). */
-    public static final ResourceLocation INTERNET_AMBIANCE_FM_ID = ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "internet_ambiance_fm");
+    public static final ResourceLocation INTERNET_AMBIANCE_FM_ID = new ResourceLocation(Dead_air.MODID, "internet_ambiance_fm");
 
     public static void registerDefaultStations() {
         // Clear any old dynamic stations from previous sessions

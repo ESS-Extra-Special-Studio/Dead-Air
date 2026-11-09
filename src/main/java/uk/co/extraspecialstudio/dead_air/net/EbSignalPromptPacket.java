@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 /** Server -> Client: "EB signal detected â€” Tune now?" near a story/distress site. */
 public class EbSignalPromptPacket implements CustomPacketPayload {
     public static final Type<EbSignalPromptPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "eb_signal_prompt"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "eb_signal_prompt"));
     public static final StreamCodec<RegistryFriendlyByteBuf, EbSignalPromptPacket> STREAM_CODEC =
         StreamCodec.of(EbSignalPromptPacket::encode, EbSignalPromptPacket::decode);
 

@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 /** Server -> Client: switch the active walkie to the Emergency Broadcast, or jam / unjam radios. */
 public class ForceEmergencyTunePacket implements CustomPacketPayload {
     public static final Type<ForceEmergencyTunePacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "force_emergency_tune"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "force_emergency_tune"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ForceEmergencyTunePacket> STREAM_CODEC =
         StreamCodec.of(ForceEmergencyTunePacket::encode, ForceEmergencyTunePacket::decode);
 

@@ -22,6 +22,6 @@ public final class DeadAirTags {
     private DeadAirTags() {}
 
     private static TagKey<Item> tag(String path) {
-        return ItemTags.create(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, path));
+        return ItemTags.create(new ResourceLocation(Dead_air.MODID, path));
     }
 }

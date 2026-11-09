@@ -15,7 +15,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
  */
 public class ConfigSyncPacket implements CustomPacketPayload {
     public static final Type<ConfigSyncPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "config_sync"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "config_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ConfigSyncPacket> STREAM_CODEC =
         StreamCodec.of(ConfigSyncPacket::encode, ConfigSyncPacket::decode);
 

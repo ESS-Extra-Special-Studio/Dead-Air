@@ -8,16 +8,16 @@ import uk.co.extraspecialstudio.dead_air.item.SignalBreakerItem;
 public class SignalBreakerItemModel extends GeoModel<SignalBreakerItem> {
     @Override
     public ResourceLocation getModelResource(SignalBreakerItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "geo/item/signal_breaker.geo.json");
+        return new ResourceLocation(Dead_air.MODID, "geo/item/signal_breaker.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SignalBreakerItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/signal_breaker_3d.png");
+        return new ResourceLocation(Dead_air.MODID, "textures/item/signal_breaker_3d.png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(SignalBreakerItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "animations/item/signal_breaker.animation.json");
+        return new ResourceLocation(Dead_air.MODID, "animations/item/signal_breaker.animation.json");
     }
 }

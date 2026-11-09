@@ -106,7 +106,7 @@ public final class CrashSitePlacer {
         BlockEntity be = level.getBlockEntity(chestPos);
         if (be instanceof ChestBlockEntity chest) {
             chest.setLootTable(ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "chests/downed_plane")));
+                new ResourceLocation(Dead_air.MODID, "chests/downed_plane")));
         }
         try {
             uk.co.extraspecialstudio.dead_air.compat.GunLootCompat.injectCrashChest(level, chestPos);

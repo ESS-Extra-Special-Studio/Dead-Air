@@ -14,9 +14,9 @@ import uk.co.extraspecialstudio.dead_air.item.DeadAirItems;
 @EventBusSubscriber(modid = Dead_air.MODID)
 public final class LootTableInjection {
     private static final ResourceLocation TOWER_STRUCTURE =
-        ResourceLocation.fromNamespaceAndPath("radiotowers", "radio_tower_overrun_loot");
+        new ResourceLocation("radiotowers", "radio_tower_overrun_loot");
     private static final ResourceLocation ZOMBIE =
-        ResourceLocation.fromNamespaceAndPath("minecraft", "entities/zombie");
+        new ResourceLocation("minecraft", "entities/zombie");
 
     /** Slight chance â€” about 1 in 40 zombie kills. */
     private static final float ZOMBIE_T1_CHANCE = 0.025f;

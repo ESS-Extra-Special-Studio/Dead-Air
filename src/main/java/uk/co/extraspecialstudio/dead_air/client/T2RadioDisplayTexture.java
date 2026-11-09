@@ -9,9 +9,9 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
  */
 public final class T2RadioDisplayTexture {
     private static final ResourceLocation BASE_TEXTURE =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/walkie_t2.png");
+        new ResourceLocation(Dead_air.MODID, "textures/item/walkie_t2.png");
     private static final ResourceLocation LIVE_ID =
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "dynamic/walkie_t2_live");
+        new ResourceLocation(Dead_air.MODID, "dynamic/walkie_t2_live");
 
     /**
      * Live LCD paint rect on walkie_t2 / walkie_t3 atlas (1024).
@@ -31,8 +31,8 @@ public final class T2RadioDisplayTexture {
 
     /** T3 shares the T2 mesh and LCD rect. */
     public static final RadioLiveDisplay.Spec T3_SPEC = new RadioLiveDisplay.Spec(
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/walkie_t3.png"),
-        ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "dynamic/walkie_t3_live"),
+        new ResourceLocation(Dead_air.MODID, "textures/item/walkie_t3.png"),
+        new ResourceLocation(Dead_air.MODID, "dynamic/walkie_t3_live"),
         LCD,
         1024,
         true,

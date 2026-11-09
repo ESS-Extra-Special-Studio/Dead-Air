@@ -13,7 +13,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
  */
 public class EncounterStatePacket implements CustomPacketPayload {
     public static final Type<EncounterStatePacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "encounter_state"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "encounter_state"));
     public static final StreamCodec<RegistryFriendlyByteBuf, EncounterStatePacket> STREAM_CODEC =
         StreamCodec.of(EncounterStatePacket::encode, EncounterStatePacket::decode);
 

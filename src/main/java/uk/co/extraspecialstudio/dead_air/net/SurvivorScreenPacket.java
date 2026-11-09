@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 /** Server -> Client: open the survivor dialogue for this entity. */
 public class SurvivorScreenPacket implements CustomPacketPayload {
     public static final Type<SurvivorScreenPacket> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "survivor_screen"));
+        new Type<>(new ResourceLocation(Dead_air.MODID, "survivor_screen"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SurvivorScreenPacket> STREAM_CODEC =
         StreamCodec.of(SurvivorScreenPacket::encode, SurvivorScreenPacket::decode);
 

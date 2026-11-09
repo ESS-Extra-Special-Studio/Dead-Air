@@ -344,7 +344,7 @@ public final class EventSitePlacer {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof ChestBlockEntity chest) {
             chest.setLootTable(ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, lootPath)));
+                new ResourceLocation(Dead_air.MODID, lootPath)));
             chest.setChanged();
         }
         // Soft-compat food/med/gear comes from loot-table tag pools — do not also inject
