@@ -144,6 +144,37 @@
       }
     ]
   },
+  "listener.fade_pulse": {
+    "category": "ambient",
+    "subtitle": "subtitles.dead_air.listener.fade_pulse",
+    "sounds": [
+      {
+        "name": "dead_air:listener/fade_pulse",
+        "stream": true
+      }
+    ]
+  },
+  "listener.agro": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.agro",
+    "sounds": [
+      "dead_air:listener/agro"
+    ]
+  },
+  "listener.spawn": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.spawn",
+    "sounds": [
+      "dead_air:listener/spawn"
+    ]
+  },
+  "listener.dissolve": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.listener.dissolve",
+    "sounds": [
+      "dead_air:listener/dissolve"
+    ]
+  },
   "anchor.hum": {
     "category": "hostile",
     "subtitle": "subtitles.dead_air.anchor.hum",
@@ -175,6 +206,13 @@
       "dead_air:broadcast/voice4"
     ]
   },
+  "broadcast.distress_call": {
+    "category": "record",
+    "subtitle": "subtitles.dead_air.broadcast.distress_call",
+    "sounds": [
+      "dead_air:broadcast/distress_call"
+    ]
+  },
   "broadcast.decoded": {
     "category": "record",
     "subtitle": "subtitles.dead_air.broadcast.decoded",
@@ -187,6 +225,41 @@
     "subtitle": "subtitles.dead_air.relay.ping",
     "sounds": [
       "dead_air:broadcast/relay_ping"
+    ]
+  },
+  "base.under_attack": {
+    "category": "hostile",
+    "subtitle": "subtitles.dead_air.base.under_attack",
+    "sounds": [
+      "dead_air:base/under_attack"
+    ]
+  },
+  "breaker.swing": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.breaker.swing",
+    "sounds": [
+      "dead_air:breaker/swing"
+    ]
+  },
+  "breaker.hit": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.breaker.hit",
+    "sounds": [
+      "dead_air:breaker/hit"
+    ]
+  },
+  "acoustic.hit": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.acoustic.hit",
+    "sounds": [
+      "dead_air:acoustic/hit"
+    ]
+  },
+  "chord.merge": {
+    "category": "player",
+    "subtitle": "subtitles.dead_air.chord.merge",
+    "sounds": [
+      "dead_air:chord/merge"
     ]
   }
 }

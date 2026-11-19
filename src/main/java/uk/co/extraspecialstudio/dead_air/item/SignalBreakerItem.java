@@ -45,6 +45,12 @@ public class SignalBreakerItem extends SwordItem implements GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new software.bernie.geckolib.animation.AnimationController<>(this, "idle", 0, state -> {
+            state.getController().setAnimation(
+                software.bernie.geckolib.animation.RawAnimation.begin()
+                    .thenLoop("animation.signal_breaker.idle"));
+            return software.bernie.geckolib.animation.PlayState.CONTINUE;
+        }));
     }
 
     @Override

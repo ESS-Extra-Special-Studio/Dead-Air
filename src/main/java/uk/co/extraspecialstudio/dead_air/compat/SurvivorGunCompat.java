@@ -1,11 +1,15 @@
 package uk.co.extraspecialstudio.dead_air.compat;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import uk.co.extraspecialstudio.dead_air.Config;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorEntity;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorIdentity;
@@ -38,6 +42,16 @@ public final class SurvivorGunCompat {
 
     public static boolean holdingGun(LivingEntity entity) {
         return isGun(entity.getMainHandItem());
+    }
+
+    /**
+     * True when the survivor can actually fire (TaCZ NPC shoot path).
+     * Point Blank stacks count as guns for equip/loot but have no NPC shoot AI —
+     * treat them as non-ranged so melee is not blocked forever.
+     */
+    public static boolean holdingUsableGun(LivingEntity entity) {
+        if (!Config.compatTacz) return false;
+        return SurvivorTaczCompat.isGun(entity.getMainHandItem());
     }
 
     public static void prepareGunForNpc(ItemStack gun) {
@@ -90,15 +104,11 @@ public final class SurvivorGunCompat {
                                            SurvivorIdentity.CombatOrientation orientation) {
         SurvivorTaczCompat.StarterTier tier = tierFor(profession, orientation);
 
+        // Survivors only shoot via TaCZ. Do not equip unusable Point Blank starters
+        // (they would block melee through holdingGun without ever firing).
         if (Config.compatTacz && SurvivorTaczCompat.isLoaded()) {
-            ItemStack tacz = SurvivorTaczCompat.pickStarterGun(random, tier);
-            if (!tacz.isEmpty()) return tacz;
+            return SurvivorTaczCompat.pickStarterGun(random, tier);
         }
-
-        if (Config.compatPointBlank && PointBlankCompat.isLoaded()) {
-            return PointBlankCompat.pickStarterGun(random, POINT_BLANK_STARTERS);
-        }
-
         return ItemStack.EMPTY;
     }
 
@@ -115,13 +125,8 @@ public final class SurvivorGunCompat {
 
     private static SurvivorTaczCompat.StarterTier tierFor(SurvivorEntity.Profession profession,
                                                           SurvivorIdentity.CombatOrientation orientation) {
-        if (orientation == SurvivorIdentity.CombatOrientation.AGGRESSIVE) {
+        if (profession == SurvivorEntity.Profession.MILITARY) {
             return SurvivorTaczCompat.StarterTier.PRIMARY;
-        }
-        if (orientation == SurvivorIdentity.CombatOrientation.CAUTIOUS
-            || orientation == SurvivorIdentity.CombatOrientation.SUPPORT
-            || profession == SurvivorEntity.Profession.MEDIC) {
-            return SurvivorTaczCompat.StarterTier.SIDEARM;
         }
         if (profession == SurvivorEntity.Profession.SCAVENGER) {
             return SurvivorTaczCompat.StarterTier.MIXED;
@@ -138,17 +143,26 @@ public final class SurvivorGunCompat {
         int pieces = 1 + random.nextInt(3);
         for (int i = 0; i < pieces; i++) {
             String id = COLD_SWEAT_ARMOR[random.nextInt(COLD_SWEAT_ARMOR.length)];
-            ItemStack stack = CompatLoot.pickFromIds(new String[]{id}, random, 1)
-                .stream().findFirst().orElse(ItemStack.EMPTY);
+            // Resolve inline — do not touch CompatLoot (ModuleClassLoader CNF on spawn).
+            ItemStack stack = stackFromId(id);
             if (stack.isEmpty()) continue;
             if (stack.getItem() instanceof ArmorItem armor) {
                 EquipmentSlot slot = armor.getEquipmentSlot();
-                // Don't overwrite already-filled slots every time â€” prefer empty, else 50% replace
+                // Don't overwrite already-filled slots every time — prefer empty, else 50% replace
                 ItemStack existing = survivor.getItemBySlot(slot);
                 if (existing.isEmpty() || random.nextBoolean()) {
                     survivor.setItemSlot(slot, stack);
                 }
             }
         }
+    }
+
+    private static ItemStack stackFromId(String id) {
+        if (id == null || id.isEmpty()) return ItemStack.EMPTY;
+        ResourceLocation rl = ResourceLocation.tryParse(id);
+        if (rl == null) return ItemStack.EMPTY;
+        Item item = BuiltInRegistries.ITEM.get(rl);
+        if (item == null || item == Items.AIR) return ItemStack.EMPTY;
+        return new ItemStack(item);
     }
 }

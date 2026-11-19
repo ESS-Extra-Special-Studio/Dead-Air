@@ -19,14 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Survivor dialogue â€” EscScreen shell matching Dead Air / ESC stack look
+ * Survivor dialogue — EscScreen shell matching Dead Air / ESC stack look
  * (theme-aware panel + EscButtons), same action grid as before.
  */
 public class SurvivorDialogueScreen extends EscScreen {
-    private static final int BOX_W = 300;
-    private static final int BOX_H = 232;
+    private static final int BOX_W = 340;
+    private static final int BOX_H_MIN = 140;
+    private static final int BTN_H = 20;
+    private static final int BTN_GAP = 2;
+    private static final int ROW_STEP = BTN_H + BTN_GAP;
 
-    /** Compact dialogue chrome â€” olive radio aesthetic, still theme-linked accents. */
+    /** Compact dialogue chrome — olive radio aesthetic, still theme-linked accents. */
     private static final EscUiStyle DIALOGUE_STYLE = new EscUiStyle(
         0, 0, 22,
         0xE0101418, 0xFF6B8F6B, 1,
@@ -40,7 +43,10 @@ public class SurvivorDialogueScreen extends EscScreen {
 
     private final SurvivorScreenPacket data;
     private List<FormattedCharSequence> lines = List.of();
-    private EscRect boxRect = new EscRect(0, 0, BOX_W, BOX_H);
+    private EscRect boxRect = new EscRect(0, 0, BOX_W, BOX_H_MIN);
+    private int boxH = BOX_H_MIN;
+    /** Opening equipment keeps the survivor facing you until that menu closes. */
+    private boolean keepTalkingAfterClose;
 
     public SurvivorDialogueScreen(SurvivorScreenPacket data) {
         super(Component.literal(data.name), DIALOGUE_STYLE);
@@ -49,39 +55,88 @@ public class SurvivorDialogueScreen extends EscScreen {
 
     @Override
     protected void buildLayout() {
-        int x = (width - BOX_W) / 2;
-        int y = (height - BOX_H) / 2;
-        boxRect = new EscRect(x, y, BOX_W, BOX_H);
         lines = font.split(Component.translatable(data.line), BOX_W - 20);
+        int lineBlock = Math.max(10, lines.size() * 10);
+        int header = 34 + lineBlock + 6;
+
+        List<Btn> buttons = collectButtons();
+        int simpleRows = buttons.isEmpty()
+            ? (data.missing && data.ownedByYou ? 1
+                : (data.state == SurvivorEntity.STRANDED && !data.ownedByYou ? 2 : 1))
+            : 0;
+
+        // Fit all action buttons: more columns + tighter rows on short screens (no off-panel buttons).
+        int maxBox = Math.max(BOX_H_MIN, height - 16);
+        int cols = 3;
+        int rows;
+        int rowStep = ROW_STEP;
+        if (buttons.isEmpty()) {
+            rows = simpleRows;
+        } else {
+            rows = (buttons.size() + cols - 1) / cols;
+            if (header + rows * rowStep + 12 > maxBox) {
+                cols = 4;
+                rows = (buttons.size() + cols - 1) / cols;
+            }
+            if (header + rows * rowStep + 12 > maxBox) {
+                cols = Math.min(5, Math.max(3, buttons.size()));
+                rows = (buttons.size() + cols - 1) / cols;
+            }
+            int budget = maxBox - header - 12;
+            if (rows > 0 && rows * rowStep > budget) {
+                rowStep = Math.max(BTN_H, budget / rows);
+            }
+        }
+
+        boxH = Math.min(maxBox, Math.max(BOX_H_MIN, header + rows * rowStep + 12));
+        int x = (width - BOX_W) / 2;
+        int y = (height - boxH) / 2;
+        boxRect = new EscRect(x, y, BOX_W, boxH);
+
         int bw = (BOX_W - 30) / 2;
-        int tw = (BOX_W - 40) / 3;
-        int row = y + BOX_H - 72;
+        int gap = 8;
+        int tw = Math.max(48, (BOX_W - 20 - gap * (cols - 1)) / cols);
+        int btnTop = y + header;
 
         if (data.missing && data.ownedByYou) {
             addButton(Component.translatable("screen.dead_air.survivor.follow"),
-                new EscRect(x + 10, row + 24, bw, 20), b -> act(SurvivorActionPacket.FOLLOW));
+                new EscRect(x + 10, btnTop, bw, BTN_H), b -> act(SurvivorActionPacket.FOLLOW));
             addButton(Component.translatable("screen.dead_air.survivor.who"),
-                new EscRect(x + 20 + bw, row + 24, bw, 20), b -> act(SurvivorActionPacket.WHO_ARE_YOU));
+                new EscRect(x + 20 + bw, btnTop, bw, BTN_H), b -> act(SurvivorActionPacket.WHO_ARE_YOU));
             return;
         }
 
         if (data.state == SurvivorEntity.STRANDED && !data.ownedByYou) {
-            addButton(Component.translatable("screen.dead_air.survivor.recruit"),
-                new EscRect(x + 10, row + 24, bw, 20), b -> act(SurvivorActionPacket.RECRUIT));
-            addButton(Component.translatable("screen.dead_air.survivor.not_now"),
-                new EscRect(x + 20 + bw, row + 24, bw, 20), b -> onClose());
             addButton(Component.translatable("screen.dead_air.survivor.who"),
-                new EscRect(x + 10, row, BOX_W - 20, 20), b -> act(SurvivorActionPacket.WHO_ARE_YOU));
+                new EscRect(x + 10, btnTop, BOX_W - 20, BTN_H), b -> act(SurvivorActionPacket.WHO_ARE_YOU));
+            addButton(Component.translatable("screen.dead_air.survivor.recruit"),
+                new EscRect(x + 10, btnTop + rowStep, bw, BTN_H), b -> act(SurvivorActionPacket.RECRUIT));
+            addButton(Component.translatable("screen.dead_air.survivor.not_now"),
+                new EscRect(x + 20 + bw, btnTop + rowStep, bw, BTN_H), b -> onClose());
             return;
         }
 
         if (!data.ownedByYou) {
             addButton(Component.translatable("gui.done"),
-                new EscRect(x + (BOX_W - bw) / 2, row + 24, bw, 20), b -> onClose());
+                new EscRect(x + (BOX_W - bw) / 2, btnTop, bw, BTN_H), b -> onClose());
             return;
         }
 
+        int i = 0;
+        for (Btn b : buttons) {
+            int col = i % cols;
+            int r = i / cols;
+            int bx = x + 10 + col * (tw + gap);
+            int by = btnTop + r * rowStep;
+            addButton(Component.translatable(b.key), new EscRect(bx, by, tw, BTN_H), btn -> act(b.action));
+            i++;
+        }
+    }
+
+    private List<Btn> collectButtons() {
         List<Btn> buttons = new ArrayList<>();
+        if (!data.ownedByYou || data.missing) return buttons;
+
         if (data.state == SurvivorEntity.FOLLOWING) {
             if (data.hasBase) {
                 buttons.add(new Btn("screen.dead_air.survivor.send_base", SurvivorActionPacket.SEND_TO_BASE));
@@ -89,13 +144,27 @@ public class SurvivorDialogueScreen extends EscScreen {
             buttons.add(new Btn("screen.dead_air.survivor.settle", SurvivorActionPacket.SETTLE));
             buttons.add(new Btn("screen.dead_air.survivor.equipment", SurvivorActionPacket.OPEN_EQUIPMENT));
             buttons.add(new Btn("screen.dead_air.survivor.chat", SurvivorActionPacket.IDLE_CHAT));
+            if ("medic".equals(data.profession)) {
+                buttons.add(new Btn("screen.dead_air.survivor.heal", SurvivorActionPacket.HEAL));
+            }
             buttons.add(new Btn("screen.dead_air.survivor.defend", SurvivorActionPacket.DEFEND_HERE));
             buttons.add(new Btn("screen.dead_air.survivor.dismiss", SurvivorActionPacket.DISMISS));
         } else if (data.state == SurvivorEntity.SETTLED) {
-            buttons.add(new Btn("screen.dead_air.survivor.follow", SurvivorActionPacket.FOLLOW));
+            if (!"pilot".equals(data.profession)) {
+                buttons.add(new Btn("screen.dead_air.survivor.follow", SurvivorActionPacket.FOLLOW));
+            }
             buttons.add(new Btn("screen.dead_air.survivor.equipment", SurvivorActionPacket.OPEN_EQUIPMENT));
             buttons.add(new Btn("screen.dead_air.survivor.chat", SurvivorActionPacket.IDLE_CHAT));
-            buttons.add(new Btn("screen.dead_air.survivor.job", SurvivorActionPacket.CYCLE_JOB));
+            if ("medic".equals(data.profession)) {
+                buttons.add(new Btn("screen.dead_air.survivor.heal", SurvivorActionPacket.HEAL));
+            }
+            if ("civilian".equals(data.profession)) {
+                buttons.add(new Btn("screen.dead_air.survivor.train_scavenger", SurvivorActionPacket.TRAIN_SCAVENGER));
+                buttons.add(new Btn("screen.dead_air.survivor.train_medic", SurvivorActionPacket.TRAIN_MEDIC));
+                buttons.add(new Btn("screen.dead_air.survivor.train_radio", SurvivorActionPacket.TRAIN_RADIO));
+                buttons.add(new Btn("screen.dead_air.survivor.train_military", SurvivorActionPacket.TRAIN_MILITARY));
+                buttons.add(new Btn("screen.dead_air.survivor.train_pilot", SurvivorActionPacket.TRAIN_PILOT));
+            }
             buttons.add(new Btn("screen.dead_air.survivor.defend", SurvivorActionPacket.DEFEND_HERE));
             buttons.add(new Btn("screen.dead_air.survivor.patrol_add", SurvivorActionPacket.PATROL_ADD));
             buttons.add(new Btn("screen.dead_air.survivor.patrol_start", SurvivorActionPacket.PATROL_START));
@@ -110,23 +179,22 @@ public class SurvivorDialogueScreen extends EscScreen {
         }
 
         buttons.add(new Btn("screen.dead_air.survivor.who", SurvivorActionPacket.WHO_ARE_YOU));
-
-        int i = 0;
-        int startY = y + 54;
-        for (Btn b : buttons) {
-            int col = i % 3;
-            int r = i / 3;
-            int bx = x + 10 + col * (tw + 10);
-            int by = startY + r * 22;
-            if (by + 20 > y + BOX_H - 8) break;
-            addButton(Component.translatable(b.key), new EscRect(bx, by, tw, 20), btn -> act(b.action));
-            i++;
-        }
+        return buttons;
     }
 
     private void act(int action) {
+        keepTalkingAfterClose = action == SurvivorActionPacket.OPEN_EQUIPMENT;
         DeadAirNet.sendToServer(new SurvivorActionPacket(data.entityId, action));
         onClose();
+    }
+
+    @Override
+    public void onClose() {
+        if (!keepTalkingAfterClose) {
+            DeadAirNet.sendToServer(
+                new SurvivorActionPacket(data.entityId, SurvivorActionPacket.END_DIALOGUE));
+        }
+        super.onClose();
     }
 
     @Override
@@ -139,8 +207,8 @@ public class SurvivorDialogueScreen extends EscScreen {
         g.drawString(font, prof, boxRect.x() + BOX_W - 10 - font.width(prof), boxRect.y() + 8,
             opaque(style.mutedColor()), false);
         Component meta = Component.translatable("survivor.dead_air.personality." + data.personality)
-            .append(" Â· ")
-            .append(Component.translatable("survivor.dead_air.job." + data.jobId));
+            .append(" · ")
+            .append(Component.translatable("survivor.dead_air.duty." + data.jobId));
         g.drawString(font, meta, boxRect.x() + 10, boxRect.y() + 20,
             opaque(style.secondaryColor()), false);
         int ly = boxRect.y() + 34;

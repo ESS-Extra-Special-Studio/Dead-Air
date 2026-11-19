@@ -760,4 +760,26 @@ public class Config {
         OVERLAY_OFFSET_Y.set(overlayOffsetY);
         OVERLAY_OFFSET_Y.save();
     }
+
+    public static void setPartyHudEnabled(boolean v) {
+        partyHudEnabled = v;
+        PARTY_HUD_ENABLED.set(v);
+        PARTY_HUD_ENABLED.save();
+    }
+    public static void setPartyHudCorner(String v) {
+        if (v == null || (!v.equals("top_left") && !v.equals("top_right") && !v.equals("bottom_left") && !v.equals("bottom_right"))) return;
+        partyHudCorner = v;
+        PARTY_HUD_CORNER.set(v);
+        PARTY_HUD_CORNER.save();
+    }
+    public static void setPartyHudOffsetX(int v) {
+        partyHudOffsetX = Math.max(-200, Math.min(200, v));
+        PARTY_HUD_OFFSET_X.set(partyHudOffsetX);
+        PARTY_HUD_OFFSET_X.save();
+    }
+    public static void setPartyHudOffsetY(int v) {
+        partyHudOffsetY = Math.max(-200, Math.min(200, v));
+        PARTY_HUD_OFFSET_Y.set(partyHudOffsetY);
+        PARTY_HUD_OFFSET_Y.save();
+    }
 }

@@ -1,3 +1,14 @@
+## 3.0.3
+
+Changed:
+Loader ports (Forge 1.20.4, NeoForge 1.20.6 / 1.21.1) brought to full Dead Air 3.0 content parity with the Forge 1.20.1 source (survivors, Listener, broadcasts/sites, Signal Breaker, party HUD, structures, gun loadout rules).
+
+Fixed:
+NeoForge crash when rendering walkie items in the hotbar (missing walkie Geo renderer).
+Forge 1.20.4 radio_panel recipe no longer fails to parse (conditional recipe format for 1.20.2+).
+EscScreen GUIs on 1.20.2+ use renderWorldDim so panel chrome is not double-dimmed.
+NeoForge 1.20.6 no longer hangs on load from unsupported GeckoLib geo format_version on walkie / signal breaker models.
+
 ## 3.0.2
 
 Fixed:

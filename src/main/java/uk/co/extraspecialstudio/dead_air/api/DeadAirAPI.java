@@ -30,11 +30,11 @@ import java.util.function.Predicate;
 @SuppressWarnings("null")
 public class DeadAirAPI {
 
-    private static final CopyOnWriteArrayList<RegisteredWalkieGuiOpener> WALKIE_GUI_OPENERS =
+    private static final CopyOnWriteArrayList<RegisteredWalkieGuiOpener> RADIO_GUI_OPENERS =
         new CopyOnWriteArrayList<>();
 
     /**
-     * Register a client-side walkie GUI opener for companion radios that are not
+     * Register a client-side radio GUI opener for companion radios that are not
      * {@link uk.co.extraspecialstudio.dead_air.item.WalkieItem} subclasses.
      * Call from the companion's client setup when Dead Air is present.
      */
@@ -42,23 +42,33 @@ public class DeadAirAPI {
         if (match == null || opener == null) {
             return;
         }
-        WALKIE_GUI_OPENERS.add(new RegisteredWalkieGuiOpener(match, opener));
+        RADIO_GUI_OPENERS.add(new RegisteredWalkieGuiOpener(match, opener));
     }
 
+
+
     /**
-     * Try companion openers for the held walkie. Used by Dead Air's tune keybind.
+     * Try companion openers for the held radio. Used by Dead Air's tune keybind.
      * @return true if a companion handled the open
      */
-    public static boolean tryOpenCompanionWalkieGui(InteractionHand hand, ItemStack stack) {
+    public static boolean tryOpenCompanionRadioGui(InteractionHand hand, ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
             return false;
         }
-        for (RegisteredWalkieGuiOpener entry : WALKIE_GUI_OPENERS) {
+        for (RegisteredWalkieGuiOpener entry : RADIO_GUI_OPENERS) {
             if (entry.match.test(stack) && entry.opener.tryOpen(hand, stack)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * @deprecated Use {@link #tryOpenCompanionRadioGui(InteractionHand, ItemStack)}.
+     */
+    @Deprecated
+    public static boolean tryOpenCompanionWalkieGui(InteractionHand hand, ItemStack stack) {
+        return tryOpenCompanionRadioGui(hand, stack);
     }
 
     private record RegisteredWalkieGuiOpener(Predicate<ItemStack> match, WalkieGuiOpener opener) {}
@@ -277,10 +287,10 @@ public class DeadAirAPI {
     /**
      * Same as {@link #activatePanelAt(ServerLevel, BlockPos, ResourceLocation)} but also:
      * - If the player is in broadcast range and has not yet unlocked the new station, they get "New station discovered!".
-     * - <strong>Optional walkie follow:</strong> if the player is actively set up to hear radio ({@link WalkieTalkieManager#shouldPlayRadio},
-     * walkie radio on) and their tuned station matches what <em>this panel was already broadcasting</em> before the change,
+     * - <strong>Optional radio follow:</strong> if the player is actively set up to hear radio ({@link RadioManager#shouldPlayRadio},
+     * radio on) and their tuned station matches what <em>this panel was already broadcasting</em> before the change,
      * they are retuned to the new station so the same tower does not leave them on a dead frequency. No retune if they have
-     * no walkie, radio off, or were listening to a different station (panel change does not hijack unrelated tuning).
+     * no radio, radio off, or were listening to a different station (panel change does not hijack unrelated tuning).
      */
     public static void activatePanelAt(ServerLevel level, BlockPos pos, ResourceLocation stationId, ServerPlayer triggerPlayer) {
         if (level != null && !level.isClientSide() && StationRegistry.JUKEBOX_FM_ID.equals(stationId)
@@ -340,7 +350,7 @@ public class DeadAirAPI {
     }
 
     /**
-     * Tune the player's walkie-talkie to the Emergency Broadcast station (e.g. when calling an airdrop).
+     * Tune the player's radio to the Emergency Broadcast station (e.g. when calling an airdrop).
      * Call from other mods on the server after the player triggers an airdrop so they are on the tower's emergency frequency.
      */
     public static void tunePlayerToEmergencyBroadcast(ServerPlayer player) {
@@ -362,7 +372,7 @@ public class DeadAirAPI {
     }
 
     /**
-     * Returns true if the player has their walkie on and tuned to a music station (not Emergency Broadcast).
+     * Returns true if the player has their radio on and tuned to a music station (not Emergency Broadcast).
      * Used by other mods for zombie attraction to players playing music.
      */
     public static boolean isPlayerPlayingMusic(net.minecraft.world.entity.player.Player player) {
@@ -382,7 +392,7 @@ public class DeadAirAPI {
      * (pick a {@link uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent.Category}, gate with
      * {@code canTrigger}, return transmission lines from {@code start}) and register here.
      * Use a low {@code priority()} (negative) so Listener story progression is not blocked.
-     * Soft-detect your pack with {@code ModList.get().isLoaded("your_mod_id")} â€” no hard dep required.
+     * Soft-detect your pack with {@code ModList.get().isLoaded("your_mod_id")} — no hard dep required.
      * Built-in example: {@code dead_air:pirate_fm_interruption} when a known FM pack is installed.
      * Debug: {@code /deadair listener broadcast <id>} or {@code /deadair listener piratefm}.
      */
@@ -407,6 +417,46 @@ public class DeadAirAPI {
             ids.add(e.id());
         }
         return ids;
+    }
+
+    /**
+     * Claim the radio panel at {@code panelPos} as this player's base.
+     * Used by RadioTowers Base tab (soft-compat).
+     */
+    public static boolean setPlayerBase(ServerPlayer player, BlockPos panelPos) {
+        return player != null && panelPos != null
+            && uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.setBase(player, panelPos);
+    }
+
+    /** Clear the player's radio-panel base. */
+    public static boolean unsetPlayerBase(ServerPlayer player) {
+        return player != null
+            && uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.unsetBase(player);
+    }
+
+    /**
+     * GUI info for the RadioTowers Base tab.
+     * @return {@code Object[]{ statusLine (String), isThisPanel (Boolean) }}
+     */
+    public static Object[] getPlayerBaseGuiInfo(ServerPlayer player, BlockPos panelPos) {
+        if (player == null) {
+            return new Object[]{"No player", false};
+        }
+        var base = uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.getBase(player.server, player.getUUID());
+        if (base == null) {
+            return new Object[]{"No base set. Claim this panel to make it your home.", false};
+        }
+        var level = player.server.getLevel(base.dimension);
+        int range = level != null
+            ? uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager.signalRange(level, base.panelPos)
+            : -1;
+        boolean isThis = panelPos != null
+            && base.dimension.equals(player.level().dimension())
+            && base.panelPos.equals(panelPos);
+        String line = "Base @ " + base.panelPos.toShortString()
+            + " (" + base.dimension.location() + "), range " + range
+            + (isThis ? " — this panel" : " — different panel");
+        return new Object[]{line, isThis};
     }
 
     /** True once this player has survived the first encounter (Zombie Waves Boss Mode gate). */

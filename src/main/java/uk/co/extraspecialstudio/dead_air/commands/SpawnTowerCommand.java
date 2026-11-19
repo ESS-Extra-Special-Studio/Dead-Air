@@ -1,6 +1,7 @@
 package uk.co.extraspecialstudio.dead_air.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -91,6 +92,22 @@ public class SpawnTowerCommand {
             ConcurrentHashMap<BlockPos, Map.Entry<Integer, String>>> PENDING_SCANS = new ConcurrentHashMap<>();
 
     // ---------- Command registration ----------
+
+    /**
+     * Tower branch under {@code /dead_air structures tower ...}.
+     * Literal type names so the client always suggests standard / fenced / overrun.
+     */
+    public static LiteralArgumentBuilder<CommandSourceStack> towerBranch() {
+        var tower = Commands.literal("tower");
+        for (String type : new String[] { "standard", "fenced", "overrun" }) {
+            tower = tower
+                .then(Commands.literal(type)
+                    .executes(ctx -> runSpawn(ctx, type, null))
+                    .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> runSpawn(ctx, type, BlockPosArgument.getLoadedBlockPos(ctx, "pos")))));
+        }
+        return tower;
+    }
 
     /**
      * Use literal subcommands (standard, fenced, overrun) so the client always shows them as suggestions

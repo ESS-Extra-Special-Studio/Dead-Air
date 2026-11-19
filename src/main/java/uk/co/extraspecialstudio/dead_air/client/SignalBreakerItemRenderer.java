@@ -10,6 +10,11 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import uk.co.extraspecialstudio.dead_air.item.SignalBreakerItem;
 
+/**
+ * Hand / GUI poses from {@code models/item/signal_breaker.json}.
+ * Blade fragments ({@code frag_*} / {@code core_glow}) pulse translucency like The Listener;
+ * hilt / guard stay solid so depth sorting stays clean.
+ */
 public class SignalBreakerItemRenderer extends GeoItemRenderer<SignalBreakerItem> {
     private static final float PULSE_SPEED = 0.045f;
     private static final float ALPHA_MIN = 0.38f;
@@ -19,5 +24,35 @@ public class SignalBreakerItemRenderer extends GeoItemRenderer<SignalBreakerItem
         super(new SignalBreakerItemModel());
     }
 
-    // GeckoLib 4.x renderRecursively signature varies — pulse via model/texture for now.
+    @Override
+    public void renderRecursively(PoseStack poseStack, SignalBreakerItem animatable, GeoBone bone,
+                                  RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer,
+                                  boolean isReRender, float partialTick, int packedLight, int packedOverlay,
+                                  int colour) {
+        if (isBladeBone(bone.getName())) {
+            RenderType translucent = RenderType.entityTranslucent(
+                getGeoModel().getTextureResource(animatable));
+            VertexConsumer bladeBuffer = bufferSource.getBuffer(translucent);
+            int a = Mth.clamp((int) (pulseAlpha(partialTick) * 255f), 0, 255);
+            int pulsed = (colour & 0x00FFFFFF) | (a << 24);
+            super.renderRecursively(poseStack, animatable, bone, translucent, bufferSource, bladeBuffer,
+                isReRender, partialTick, packedLight, packedOverlay, pulsed);
+            return;
+        }
+        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer,
+            isReRender, partialTick, packedLight, packedOverlay, colour);
+    }
+
+    private static boolean isBladeBone(String name) {
+        return name != null && (name.startsWith("frag_") || "core_glow".equals(name));
+    }
+
+    private static float pulseAlpha(float partialTick) {
+        Minecraft mc = Minecraft.getInstance();
+        float tick = (mc.level != null ? mc.level.getGameTime() : 0L) + partialTick;
+        float t = tick * PULSE_SPEED;
+        float wave = 0.5f + 0.5f * Mth.sin(t);
+        wave = 0.85f * wave + 0.15f * (0.5f + 0.5f * Mth.sin(t * 1.7f + 1.1f));
+        return Mth.lerp(wave, ALPHA_MIN, ALPHA_MAX);
+    }
 }

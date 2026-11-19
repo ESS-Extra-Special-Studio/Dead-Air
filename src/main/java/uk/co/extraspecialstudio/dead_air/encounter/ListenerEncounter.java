@@ -2,6 +2,7 @@ package uk.co.extraspecialstudio.dead_air.encounter;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -36,6 +37,7 @@ import uk.co.extraspecialstudio.dead_air.net.DeadAirNet;
 import uk.co.extraspecialstudio.dead_air.net.EncounterStatePacket;
 import uk.co.extraspecialstudio.dead_air.net.ForceEmergencyTunePacket;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,6 +57,8 @@ public final class ListenerEncounter {
     public enum EndReason { SURVIVED, DEFEATED, FAILED, ABORTED }
 
     private static final double PARTICIPANT_RADIUS = 48;
+    /** Leave farther than join radius so edge jitter does not bounce in/out. */
+    private static final double LEAVE_RADIUS = 64;
     private static final Map<UUID, Encounter> ACTIVE = new HashMap<>();
     private static final Map<UUID, Integer> BRIEF_JAMS = new HashMap<>();
 
@@ -65,11 +69,19 @@ public final class ListenerEncounter {
         public final BlockPos center;
         public final UUID summoner;
         public final Set<UUID> participants = new LinkedHashSet<>();
+        /** Died or fled — cannot rejoin this encounter for survive/defeat credit. */
+        public final Set<UUID> lockedOut = new LinkedHashSet<>();
         public final List<UUID> anchors = new ArrayList<>();
         public UUID listenerId;
+        /** Direct ref — UUID lookup can miss on the spawn tick and falsely ABORT. */
+        public ListenerEntity listenerRef;
+        /** Ticks spent waiting for the Listener entity to appear in the level. */
+        public int spawnGrace;
         public int ticksLeft;
         public final int totalTicks;
         public int anchorsBroken;
+        /** True once a player swings at / damages The Listener (blocks Radio Silence). */
+        public boolean playerAttackedListener;
         private boolean ended;
 
         Encounter(Mode mode, ServerLevel level, BlockPos center, UUID summoner, int totalTicks) {
@@ -82,6 +94,12 @@ public final class ListenerEncounter {
         }
     }
 
+    /** Mark that a player attacked The Listener during this encounter. */
+    public static void markPlayerAttacked(UUID encounterId) {
+        Encounter enc = ACTIVE.get(encounterId);
+        if (enc != null) enc.playerAttackedListener = true;
+    }
+
     public static boolean isActive(UUID encounterId) {
         return encounterId != null && ACTIVE.containsKey(encounterId);
     }
@@ -91,11 +109,11 @@ public final class ListenerEncounter {
         return false;
     }
 
-    /** True if this player is still tied to any live fight (active participant or summoner). */
+    /** True if this player is still tied to any live fight (active, fled/dead lockout, or summoner). */
     public static boolean isInvolved(ServerPlayer player) {
         UUID id = player.getUUID();
         for (Encounter e : ACTIVE.values()) {
-            if (e.participants.contains(id) || id.equals(e.summoner)) {
+            if (e.participants.contains(id) || e.lockedOut.contains(id) || id.equals(e.summoner)) {
                 return true;
             }
         }
@@ -108,7 +126,9 @@ public final class ListenerEncounter {
 
     /** Start a fight next to the player. Returns null (with a message) if one is already running for them. */
     public static Encounter start(ServerPlayer player, Mode mode) {
-        if (isParticipant(player)) {
+        // Block active fighters, deserters/dead lockouts, and summoners of any live encounter
+        // (prevents a second Listener while friends finish the first).
+        if (isInvolved(player)) {
             player.sendSystemMessage(Component.translatable("message.dead_air.listener.already").withStyle(ChatFormatting.RED));
             return null;
         }
@@ -117,16 +137,29 @@ public final class ListenerEncounter {
         Encounter enc = new Encounter(mode, level, player.blockPosition(), player.getUUID(), total);
 
         ListenerEntity listener = DeadAirEntities.THE_LISTENER.get().create(level);
-        if (listener == null) return null;
-        Vec3 look = Vec3.directionFromRotation(0, player.getYRot());
-        BlockPos spawn = ground(level, player.blockPosition().offset((int) (look.x * 14), 0, (int) (look.z * 14)));
+        if (listener == null) {
+            Dead_air.LOGGER.warn("[Dead Air] Listener create() returned null — encounter cancelled");
+            player.sendSystemMessage(Component.literal("Listener failed to spawn here — try open flat ground.")
+                .withStyle(ChatFormatting.RED));
+            return null;
+        }
+        // Prefer a clear spot near the player (heightmap+look can land inside trees / off a pad).
+        BlockPos spawn = findOpenSpawn(level, player);
         listener.moveTo(spawn.getX() + 0.5, spawn.getY(), spawn.getZ() + 0.5, player.getYRot() + 180f, 0);
         listener.setMode(mode == Mode.FIRST ? ListenerEntity.Mode.FIRST : ListenerEntity.Mode.FINAL, enc.id);
         listener.setTarget(player);
-        ACTIVE.put(enc.id, enc);
-        level.addFreshEntity(listener);
-        listener.triggerAnim("action", "jump_in");
         enc.listenerId = listener.getUUID();
+        enc.listenerRef = listener;
+        ACTIVE.put(enc.id, enc);
+        if (!level.addFreshEntity(listener)) {
+            ACTIVE.remove(enc.id);
+            Dead_air.LOGGER.warn("[Dead Air] Listener addFreshEntity failed at {} — encounter cancelled", spawn);
+            player.sendSystemMessage(Component.literal("Listener failed to spawn here — try open flat ground.")
+                .withStyle(ChatFormatting.RED));
+            return null;
+        }
+        listener.triggerAnim("action", "jump_in");
+        Dead_air.LOGGER.info("[Dead Air] Listener spawned at {} uuid={}", spawn, listener.getUUID());
 
         if (mode == Mode.FIRST) {
             for (int i = 0; i < 3; i++) {
@@ -137,9 +170,16 @@ public final class ListenerEncounter {
             }
         }
 
-        refreshParticipants(enc);
+        // Summoner joins once; refreshParticipants onJoins any nearby helpers (no double titles).
         enc.participants.add(player.getUUID());
-        for (ServerPlayer p : players(enc)) onJoin(enc, p);
+        onJoin(enc, player);
+        refreshParticipants(enc);
+        if (mode == Mode.FIRST) {
+            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(player,
+                uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.STORY_SUMMON);
+            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(player,
+                uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.HIDDEN_WRONG_NUMBER);
+        }
         Dead_air.LOGGER.info("[Dead Air] Listener encounter {} started ({}) by {}", enc.id, mode, player.getGameProfile().getName());
         return enc;
     }
@@ -160,15 +200,52 @@ public final class ListenerEncounter {
         return new BlockPos(pos.getX(), y, pos.getZ());
     }
 
+    /** Open ground near the player so the Listener is not buried in foliage / solid blocks. */
+    private static BlockPos findOpenSpawn(ServerLevel level, ServerPlayer player) {
+        BlockPos base = player.blockPosition();
+        int[][] offsets = {
+            {0, 4}, {4, 0}, {0, -4}, {-4, 0}, {6, 6}, {-6, 6}, {6, -6}, {-6, -6}, {0, 8},
+            {0, 12}, {10, 0}, {0, -12}, {-10, 0}, {3, 3}, {-3, 3}
+        };
+        for (int[] o : offsets) {
+            BlockPos stand = tryStandAt(level, ground(level, base.offset(o[0], 0, o[1])));
+            if (stand != null) return stand;
+        }
+        BlockPos nearPlayer = tryStandAt(level, ground(level, base));
+        if (nearPlayer != null) return nearPlayer;
+        // Last resort: player feet (already occupied space is better than buried in leaves).
+        return base;
+    }
+
+    @Nullable
+    private static BlockPos tryStandAt(ServerLevel level, BlockPos feet) {
+        BlockPos below = feet.below();
+        BlockPos head = feet.above();
+        if (level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()
+            && level.getBlockState(head).getCollisionShape(level, head).isEmpty()
+            && level.getBlockState(below).isFaceSturdy(level, below, Direction.UP)) {
+            return feet;
+        }
+        // Heightmap landed inside a solid — stand on top of it.
+        if (level.getBlockState(feet).isFaceSturdy(level, feet, Direction.UP)
+            && level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty()
+            && level.getBlockState(feet.above(2)).getCollisionShape(level, feet.above(2)).isEmpty()) {
+            return feet.above();
+        }
+        return null;
+    }
+
     private static void onJoin(Encounter enc, ServerPlayer p) {
-        DeadAirNet.sendTo(p, new EncounterStatePacket(true, 0, 0));
+        ListenerEntity l = listener(enc);
+        // Preserve Listening Silence HUD if they walk in mid-cue.
+        int silenceCue = l != null ? l.listeningSilenceCueTicksRemaining() : 0;
+        DeadAirNet.sendTo(p, new EncounterStatePacket(true, silenceCue, 0));
         DeadAirNet.sendTo(p, new ForceEmergencyTunePacket(ForceEmergencyTunePacket.JAM_ON));
         p.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 20));
         p.connection.send(new ClientboundSetTitleTextPacket(Component.translatable("title.dead_air.listener.arrives")
             .withStyle(ChatFormatting.DARK_PURPLE)));
         p.connection.send(new ClientboundSetSubtitleTextPacket(Component.translatable(enc.mode == Mode.FIRST
             ? "title.dead_air.listener.first_sub" : "title.dead_air.listener.final_sub").withStyle(ChatFormatting.GRAY)));
-        ListenerEntity l = listener(enc);
         if (l != null) {
             if (enc.mode == Mode.FIRST) refreshTimerHud(enc, l, true);
             l.getBossEvent().addPlayer(p);
@@ -199,15 +276,23 @@ public final class ListenerEncounter {
     }
 
     private static ListenerEntity listener(Encounter enc) {
+        if (enc.listenerRef != null && !enc.listenerRef.isRemoved()) {
+            return enc.listenerRef;
+        }
         if (enc.listenerId == null) return null;
         Entity e = enc.level.getEntity(enc.listenerId);
-        return e instanceof ListenerEntity l ? l : null;
+        if (e instanceof ListenerEntity l) {
+            enc.listenerRef = l;
+            return l;
+        }
+        return null;
     }
 
     private static void refreshParticipants(Encounter enc) {
         Vec3 c = listener(enc) != null ? listener(enc).position() : Vec3.atCenterOf(enc.center);
         for (ServerPlayer p : enc.level.players()) {
             if (p.isSpectator() || !p.isAlive()) continue;
+            if (enc.lockedOut.contains(p.getUUID())) continue;
             if (p.position().distanceTo(c) <= PARTICIPANT_RADIUS && enc.participants.add(p.getUUID())) {
                 onJoin(enc, p);
             }
@@ -242,17 +327,43 @@ public final class ListenerEncounter {
         if (enc.ended) return;
         ListenerEntity listener = listener(enc);
         if (listener == null) {
+            // Newly spawned entities can miss UUID lookup for a tick or two — do not ABORT instantly.
+            if (enc.spawnGrace++ < 40) {
+                if (enc.spawnGrace == 1 || enc.spawnGrace % 20 == 0) {
+                    Dead_air.LOGGER.warn("[Dead Air] Listener missing for encounter {} grace={}/40 refNull={} removed={}",
+                        enc.id, enc.spawnGrace, enc.listenerRef == null,
+                        enc.listenerRef != null && enc.listenerRef.isRemoved());
+                }
+                return;
+            }
             end(enc, EndReason.ABORTED);
             return;
         }
-        if (!listener.isAlive()) return;
+        enc.spawnGrace = 0;
+        if (!listener.isAlive()) {
+            // die() should have ended us; if the entity vanished without that callback, don't soft-lock.
+            onListenerDied(listener, listener.damageSources().genericKill());
+            if (!enc.ended) end(enc, EndReason.ABORTED);
+            return;
+        }
         if (enc.level.getGameTime() % 20 == 0) refreshParticipants(enc);
 
+        Vec3 arena = listener.position();
         for (UUID id : new ArrayList<>(enc.participants)) {
             ServerPlayer p = enc.level.getServer().getPlayerList().getPlayer(id);
-            if (p == null || !p.isAlive() || p.level() != enc.level) {
+            if (p == null || !p.isAlive() || p.isSpectator() || p.level() != enc.level) {
                 enc.participants.remove(id);
+                enc.lockedOut.add(id);
                 if (p != null) onLeave(enc, p);
+                continue;
+            }
+            // Briefing: die or run and you fail — fleeing the arena drops you from the fight.
+            if (p.position().distanceTo(arena) > LEAVE_RADIUS) {
+                enc.participants.remove(id);
+                enc.lockedOut.add(id);
+                onLeave(enc, p);
+                p.sendSystemMessage(Component.translatable("message.dead_air.listener.fled")
+                    .withStyle(ChatFormatting.GRAY));
             }
         }
         if (enc.participants.isEmpty()) {
@@ -316,12 +427,18 @@ public final class ListenerEncounter {
             p.displayClientMessage(Component.translatable("message.dead_air.listener.anchor_broken", Math.max(0, left))
                 .withStyle(ChatFormatting.AQUA), true);
         }
-        if (left <= 0 && enc.mode == Mode.FIRST) end(enc, EndReason.SURVIVED);
+        if (left <= 0 && enc.mode == Mode.FIRST) {
+            for (ServerPlayer p : players(enc)) {
+                uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(p,
+                    uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.STORY_ANCHORS);
+            }
+            end(enc, EndReason.SURVIVED);
+        }
     }
 
     public static void onListenerDied(ListenerEntity listener, DamageSource source) {
         for (Encounter enc : new ArrayList<>(ACTIVE.values())) {
-            if (listener.getUUID().equals(enc.listenerId)) {
+            if (listener.getUUID().equals(enc.listenerId) || enc.listenerRef == listener) {
                 if (enc.mode == Mode.FINAL) {
                     dropVictoryLoot(enc, listener);
                     end(enc, EndReason.DEFEATED);
@@ -333,11 +450,14 @@ public final class ListenerEncounter {
         }
     }
 
-    /** Admin / recovery: abort without victory credit or loot. */
+    /**
+     * Admin / recovery: abort the encounter linked to this Listener without victory credit or loot.
+     * Safe to call when no encounter is active.
+     */
     public static void abortForListener(ListenerEntity listener) {
         if (listener == null) return;
         for (Encounter enc : new ArrayList<>(ACTIVE.values())) {
-            if (listener.getUUID().equals(enc.listenerId)) {
+            if (listener.getUUID().equals(enc.listenerId) || enc.listenerRef == listener) {
                 end(enc, EndReason.ABORTED);
                 return;
             }
@@ -362,6 +482,7 @@ public final class ListenerEncounter {
     public static void onPlayerGone(ServerPlayer player) {
         for (Encounter enc : new ArrayList<>(ACTIVE.values())) {
             if (enc.participants.remove(player.getUUID())) {
+                enc.lockedOut.add(player.getUUID());
                 onLeave(enc, player);
                 if (enc.participants.isEmpty()) end(enc, EndReason.FAILED);
             }
@@ -374,7 +495,7 @@ public final class ListenerEncounter {
         List<ServerPlayer> players = players(enc);
         ListenerEntity listener = listener(enc);
         if (listener != null) {
-            // Always clear the boss bar â€” abort/death paths previously left it sticky when dissolve was skipped.
+            // Always clear the boss bar — abort/death paths previously left it sticky when dissolve was skipped.
             listener.getBossEvent().removeAllPlayers();
             if (listener.isAlive()) listener.dissolve();
         }
@@ -395,6 +516,15 @@ public final class ListenerEncounter {
                 p.sendSystemMessage(Component.translatable("message.dead_air.listener.survived").withStyle(ChatFormatting.AQUA));
                 p.sendSystemMessage(Component.translatable("message.dead_air.listener.boss_mode").withStyle(ChatFormatting.GOLD));
                 DeadAirEvents.post(new ListenerFirstEncounterSurvivedEvent(p));
+                // Three Minutes = outlast the clock. Anchor clears already grant Cut the Cord.
+                if (enc.ticksLeft <= 0) {
+                    uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(p,
+                        uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.STORY_SURVIVE_TIMER);
+                }
+                if (!enc.playerAttackedListener) {
+                    uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(p,
+                        uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.HIDDEN_RADIO_SILENCE);
+                }
             }
             data.setDirty();
         } else if (reason == EndReason.DEFEATED && data != null) {
@@ -404,6 +534,8 @@ public final class ListenerEncounter {
                 prog.stage = StoryStage.DEFEATED;
                 p.sendSystemMessage(Component.translatable("message.dead_air.listener.defeated").withStyle(ChatFormatting.GOLD));
                 DeadAirEvents.post(new ListenerDefeatedEvent(p, true));
+                uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(p,
+                    uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.STORY_FINAL);
             }
             data.setDirty();
         } else if (reason == EndReason.FAILED) {
@@ -426,7 +558,8 @@ public final class ListenerEncounter {
 
     /**
      * Dedicated-server recovery: abort every encounter, discard every Listener and Signal Anchor
-     * in loaded chunks, clear boss bars, and reset encounter fog/jam on every online player.
+     * in all dimensions, clear boss bars, and reset encounter fog/jam on every online player.
+     * Does not award FIRST survive / FINAL defeat progress.
      */
     public static PurgeResult adminPurge(MinecraftServer server) {
         int encounters = stopAll();
@@ -457,6 +590,7 @@ public final class ListenerEncounter {
         return new PurgeResult(encounters, listeners, anchors);
     }
 
+    /** Reset fog / jam packets for every online player (bystanders included). */
     public static void clearClientFx(MinecraftServer server) {
         if (server == null) return;
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
@@ -482,18 +616,35 @@ public final class ListenerEncounter {
     static final class LivingTargetKeeper {
         static void keepTarget(ListenerEntity listener, List<ServerPlayer> players) {
             var current = listener.getTarget();
-            if (current != null && current.isAlive() && players.contains(current)) return;
+            // Don't re-lock a quiet croucher during Listening Silence / locate-blind
+            // (Acoustic revealers are not "hidden").
+            if (current instanceof ServerPlayer cur
+                && cur.isAlive()
+                && !cur.isCreative()
+                && !cur.isSpectator()
+                && players.contains(cur)
+                && !listener.isStealthHidden(cur)) {
+                return;
+            }
             ServerPlayer nearest = null;
             double best = Double.MAX_VALUE;
             for (ServerPlayer p : players) {
                 if (p.isCreative() || p.isSpectator()) continue;
+                if (listener.isStealthHidden(p)) continue;
                 double d = p.distanceToSqr(listener);
                 if (d < best) {
                     best = d;
                     nearest = p;
                 }
             }
-            if (nearest != null) listener.setTarget(nearest);
+            if (nearest != null) {
+                listener.setTarget(nearest);
+                return;
+            }
+            // No visible participant — drop fleers, dead, hidden, and ally SB revealers.
+            if (current != null) {
+                listener.setTarget(null);
+            }
         }
     }
 

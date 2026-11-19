@@ -25,7 +25,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /** Signal firepit — campfire-scale light; Cold Sweat heat via soft block_temp datapack when lit. */
 public class SignalFirepitBlock extends Block {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 6, 14);
+    /** Matches stone-ring firepit model. */
+    private static final VoxelShape SHAPE = Block.box(1.5, 0, 1.5, 14.5, 4.5, 14.5);
 
     public SignalFirepitBlock(Properties properties) {
         super(properties);
@@ -75,17 +76,33 @@ public class SignalFirepitBlock extends Block {
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (!state.getValue(LIT)) return;
-        if (random.nextInt(8) == 0) {
-            level.addParticle(ParticleTypes.LAVA,
-                pos.getX() + 0.5, pos.getY() + 0.4, pos.getZ() + 0.5,
+        if (random.nextInt(6) == 0) {
+            level.playLocalSound(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
+                SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS, 0.45f + random.nextFloat() * 0.25f,
+                0.85f + random.nextFloat() * 0.25f, false);
+        }
+        double cx = pos.getX() + 0.5;
+        double cy = pos.getY() + 0.35;
+        double cz = pos.getZ() + 0.5;
+        level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+            cx + (random.nextDouble() - 0.5) * 0.2, cy + 0.25, cz + (random.nextDouble() - 0.5) * 0.2,
+            0, 0.045 + random.nextDouble() * 0.02, 0);
+        if (random.nextInt(3) == 0) {
+            level.addParticle(ParticleTypes.LARGE_SMOKE,
+                cx + (random.nextDouble() - 0.5) * 0.15, cy + 0.3, cz + (random.nextDouble() - 0.5) * 0.15,
                 0, 0.02, 0);
         }
-        if (random.nextInt(4) == 0) {
-            level.addParticle(ParticleTypes.SMOKE,
-                pos.getX() + 0.3 + random.nextDouble() * 0.4,
-                pos.getY() + 0.5,
-                pos.getZ() + 0.3 + random.nextDouble() * 0.4,
-                0, 0.02, 0);
+        for (int i = 0; i < 2; i++) {
+            level.addParticle(ParticleTypes.FLAME,
+                cx + (random.nextDouble() - 0.5) * 0.35,
+                cy + random.nextDouble() * 0.15,
+                cz + (random.nextDouble() - 0.5) * 0.35,
+                0, 0.012, 0);
+        }
+        if (random.nextBoolean()) {
+            level.addParticle(ParticleTypes.LAVA,
+                cx + (random.nextDouble() - 0.5) * 0.25, cy, cz + (random.nextDouble() - 0.5) * 0.25,
+                0, 0, 0);
         }
     }
 }

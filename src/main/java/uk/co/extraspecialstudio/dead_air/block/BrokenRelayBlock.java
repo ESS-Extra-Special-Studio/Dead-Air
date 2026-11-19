@@ -17,16 +17,29 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import uk.co.extraspecialstudio.dead_air.broadcast.RelayInvestigation;
 
 /** Glowing relay cabinet at a Broken Relay site. Right-click to recover its log. */
 public class BrokenRelayBlock extends HorizontalDirectionalBlock {
     public static final MapCodec<BrokenRelayBlock> CODEC = simpleCodec(BrokenRelayBlock::new);
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+    /** Cabinet body + stub mast — matches multi-element block model. */
+    private static final VoxelShape SHAPE = Shapes.or(
+        Block.box(2, 0, 3, 14, 12, 13),
+        Block.box(7, 12, 7, 9, 25, 9)
+    );
 
     public BrokenRelayBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, true));
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPE;
     }
 
     @Override

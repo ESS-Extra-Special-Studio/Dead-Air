@@ -2,8 +2,10 @@ package uk.co.extraspecialstudio.dead_air.broadcast;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.fml.ModList;
 import uk.co.extraspecialstudio.dead_air.Config;
@@ -12,12 +14,12 @@ import uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager;
 import uk.co.extraspecialstudio.dead_air.base.PlayerBaseStorage;
 import uk.co.extraspecialstudio.dead_air.music.ExpansionPacks;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
-import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorEntity;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorRoster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -58,7 +60,7 @@ public final class ExtraBroadcasts {
 
     /**
      * True when a high-priority story EB can fire. Must not call {@link BroadcastEventRegistry#eligible}
-     * â€” side events (incl. Pirate FM, which is STORY) call this from {@code canTrigger}, which would recurse.
+     * — side events (incl. Pirate FM, which is STORY) call this from {@code canTrigger}, which would recurse.
      */
     private static boolean hasCriticalStory(ServerPlayer player, BroadcastProgress.PlayerProgress progress) {
         for (BroadcastEvent e : BroadcastEventRegistry.all()) {
@@ -73,7 +75,12 @@ public final class ExtraBroadcasts {
         return false;
     }
 
-    /** Dead channel auction â€” temporary scrap trader camp. */
+    /** True when a high-priority story EB is ready — side events should yield. */
+    public static boolean hasBlockingStory(ServerPlayer player, BroadcastProgress.PlayerProgress progress) {
+        return hasCriticalStory(player, progress);
+    }
+
+    /** Dead channel auction — temporary scrap trader camp. */
     static final class DeadChannelAuction implements BroadcastEvent {
         @Override public ResourceLocation id() { return DEAD_CHANNEL_AUCTION; }
         @Override public Category category() { return Category.TRADERS; }
@@ -100,7 +107,7 @@ public final class ExtraBroadcasts {
         }
     }
 
-    /** Refugee convoy â€” 2â€“3 stranded survivors at one camp. */
+    /** Refugee convoy — 2–3 stranded survivors at one camp. */
     static final class RefugeeConvoy implements BroadcastEvent {
         @Override public ResourceLocation id() { return REFUGEE_CONVOY; }
         @Override public Category category() { return Category.SURVIVOR; }
@@ -132,7 +139,7 @@ public final class ExtraBroadcasts {
         }
     }
 
-    /** Base under attack â€” only with a set panel base. */
+    /** Base under attack — only with a set panel base. */
     static final class BaseUnderAttack implements BroadcastEvent {
         @Override public ResourceLocation id() { return BASE_UNDER_ATTACK; }
         @Override public Category category() { return Category.DEFENSE; }
@@ -154,17 +161,19 @@ public final class ExtraBroadcasts {
         public List<String> start(ServerPlayer player, BroadcastProgress.PlayerProgress progress) {
             PlayerBaseStorage.Base base = PlayerBaseManager.getBase(player.server, player.getUUID());
             if (base == null) return List.of();
+            if (player.server.getLevel(base.dimension) == null) return List.of();
+            if (BaseAttackManager.hasActive(player.getUUID())) return List.of();
+            if (!BaseAttackManager.startWave(player, base)) return List.of();
             progress.lastBaseAttackDay = today(player);
-            BaseAttackManager.startWave(player, base);
             BlockPos p = base.panelPos;
             return List.of(
                 "YOUR PANEL IS SCREAMING. HOSTILES ON THE GRID.",
-                "SETTLED SURVIVORS â€” IF ANY â€” ARE MOVING TO DEFEND.",
+                "SETTLED SURVIVORS — IF ANY — ARE MOVING TO DEFEND.",
                 "BASE AT X " + p.getX() + "  Z " + p.getZ() + ". HOLD THE LINE.");
         }
     }
 
-    /** Missing recruit â€” needs â‰¥1 SETTLED owned survivor. */
+    /** Missing recruit — needs ≥1 SETTLED owned survivor. */
     static final class MissingRecruit implements BroadcastEvent {
         @Override public ResourceLocation id() { return MISSING_RECRUIT; }
         @Override public Category category() { return Category.SURVIVOR; }
@@ -209,22 +218,22 @@ public final class ExtraBroadcasts {
         private static List<SurvivorEntity> findSettled(ServerPlayer player) {
             List<SurvivorEntity> out = new ArrayList<>();
             UUID id = player.getUUID();
-            for (ServerLevel level : player.server.getAllLevels()) {
-                // Prefer base area, then a wide box around the player in overworld
-                PlayerBaseStorage.Base base = PlayerBaseManager.getBase(player.server, id);
-                AABB box;
-                if (base != null && level.dimension() == base.dimension) {
-                    int r = PlayerBaseManager.signalRange(level, base.panelPos) + 32;
-                    box = new AABB(base.panelPos).inflate(r);
-                } else if (level == player.serverLevel()) {
-                    box = player.getBoundingBox().inflate(256);
-                } else {
-                    continue;
-                }
-                out.addAll(level.getEntitiesOfClass(SurvivorEntity.class, box,
-                    s -> s.isOwnedBy(player) && s.getSurvivorState() == SurvivorEntity.SETTLED
-                        && !s.isMissing()));
+            // Missing pings + teleport are overworld-only — never yank Nether/End recruits.
+            ServerLevel overworld = player.server.overworld();
+            PlayerBaseStorage.Base base = PlayerBaseManager.getBase(player.server, id);
+            AABB box;
+            if (base != null && base.dimension == overworld.dimension()) {
+                int r = PlayerBaseManager.signalRange(overworld, base.panelPos) + 32;
+                box = new AABB(base.panelPos).inflate(r);
+            } else if (player.level() == overworld) {
+                box = player.getBoundingBox().inflate(256);
+            } else {
+                return out;
             }
+            out.addAll(overworld.getEntitiesOfClass(SurvivorEntity.class, box,
+                s -> s.isOwnedBy(player) && s.getSurvivorState() == SurvivorEntity.SETTLED
+                    && !s.isMissing()
+                    && s.getProfession() != SurvivorEntity.Profession.PILOT));
             return out;
         }
     }
@@ -244,20 +253,20 @@ public final class ExtraBroadcasts {
             if (progress.pirateFmHeard) return false;
             if (hasCriticalStory(player, progress)) return false;
             if (!BroadcastScheduler.hasT3(player)) return false;
-            List<String> packs = ExpansionPacks.installedKnownPacks();
-            if (!packs.isEmpty()) return true;
-            // Also accept config-listed expansion stations present in the registry
+            // Must be able to register/tune a station — otherwise we starve other night EBs
+            // by staying eligible while start() keeps returning empty.
+            for (String packNs : ExpansionPacks.installedKnownPacks()) {
+                if (ExpansionPacks.ensureStation(packNs) != null) return true;
+            }
             for (String ns : Config.expansionStations) {
                 if (ns == null || ns.isBlank()) continue;
-                RadioStation s = StationRegistry.getStation(ExpansionPacks.stationIdFor(ns.trim()));
-                if (s != null) return true;
+                if (ExpansionPacks.ensureStation(ns.trim()) != null) return true;
             }
             return false;
         }
 
         @Override
         public List<String> start(ServerPlayer player, BroadcastProgress.PlayerProgress progress) {
-            progress.pirateFmHeard = true;
             String packNs = null;
             String packName = null;
             List<String> installed = ExpansionPacks.installedKnownPacks();
@@ -272,11 +281,12 @@ public final class ExtraBroadcasts {
                     break;
                 }
             }
+            // Do not burn the one-shot if we cannot build a tuneable station.
             if (packNs == null) return List.of();
             RadioStation station = ExpansionPacks.ensureStation(packNs);
-            String freq = station != null
-                ? String.format("%.1f", station.getFrequency())
-                : "??.?";
+            if (station == null) return List.of();
+            progress.pirateFmHeard = true;
+            String freq = String.format("%.1f", station.getFrequency());
             return List.of(
                 "UNAUTHORIZED TRANSMISSION CUTTING THROUGH THE STATIC.",
                 "PIRATE TAG: " + (packName != null ? packName.toUpperCase() : packNs.toUpperCase()) + ".",
@@ -284,7 +294,7 @@ public final class ExtraBroadcasts {
         }
     }
 
-    /** Downed plane crash site â€” RT plane soft dep, debris fallback. */
+    /** Downed plane crash site — RT plane soft dep, debris fallback. */
     static final class DownedPlane implements BroadcastEvent {
         @Override public ResourceLocation id() { return DOWNED_PLANE; }
         @Override public Category category() { return Category.SURVIVOR; }
@@ -313,6 +323,60 @@ public final class ExtraBroadcasts {
                     : "METAL AND SMOKE ON THE HORIZON. LOOT IF YOU DARE.",
                 "CRASH FIX: X " + site.center.getX() + "  Z " + site.center.getZ() + ".");
         }
+    }
+
+    /**
+     * Drop orphaned {@code missingSurvivorId} soft-locks: recovered survivors, dead entities,
+     * or UUIDs no longer on the owner's roster (gone while unloaded).
+     */
+    public static void reconcileMissingRecruits(MinecraftServer server) {
+        if (server == null || server.getTickCount() % 100 != 0) return;
+        BroadcastProgress data = BroadcastProgress.get(server);
+        if (data == null) return;
+        SurvivorRoster roster = SurvivorRoster.get(server);
+        boolean dirty = false;
+        for (Map.Entry<UUID, BroadcastProgress.PlayerProgress> e : data.entries()) {
+            BroadcastProgress.PlayerProgress progress = e.getValue();
+            UUID missingId = progress.missingSurvivorId;
+            if (missingId == null) continue;
+            UUID ownerId = e.getKey();
+            Entity found = null;
+            for (ServerLevel level : server.getAllLevels()) {
+                Entity ent = level.getEntity(missingId);
+                if (ent != null) {
+                    found = ent;
+                    break;
+                }
+            }
+            if (found instanceof SurvivorEntity s) {
+                boolean orphan = !s.isAlive() || s.isRemoved() || !s.isMissing()
+                    || s.getOwnerUuid() == null || !ownerId.equals(s.getOwnerUuid());
+                if (orphan) {
+                    progress.missingSurvivorId = null;
+                    dirty = true;
+                    PendingSites.clearMissingFor(server, ownerId);
+                    if (s.isAlive() && !s.isRemoved() && s.isMissing()
+                        && ownerId.equals(s.getOwnerUuid())) {
+                        s.clearMissing();
+                    }
+                }
+                continue;
+            }
+            if (found != null) {
+                // Wrong entity type under that UUID — clear.
+                progress.missingSurvivorId = null;
+                dirty = true;
+                PendingSites.clearMissingFor(server, ownerId);
+                continue;
+            }
+            // Unloaded: if no longer owned, the recruit is gone and the EB would soft-lock forever.
+            if (roster == null || !roster.contains(ownerId, missingId)) {
+                progress.missingSurvivorId = null;
+                dirty = true;
+                PendingSites.clearMissingFor(server, ownerId);
+            }
+        }
+        if (dirty) data.setDirty();
     }
 
     private ExtraBroadcasts() {}

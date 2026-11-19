@@ -26,23 +26,33 @@ public final class T2RadioDisplayTexture {
         LCD,
         1024,
         true,
-        0
+        0,
+        RadioLiveDisplay.LcdPalette.GREEN
     );
 
-    /** T3 shares the T2 mesh and LCD rect. */
+    /** T3 shares the T2 mesh and LCD rect with a blue screen palette. */
     public static final RadioLiveDisplay.Spec T3_SPEC = new RadioLiveDisplay.Spec(
         ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "textures/item/walkie_t3.png"),
         ResourceLocation.fromNamespaceAndPath(Dead_air.MODID, "dynamic/walkie_t3_live"),
         LCD,
         1024,
         true,
-        0
+        0,
+        RadioLiveDisplay.LcdPalette.BLUE
     );
 
     private T2RadioDisplayTexture() {}
 
     public static boolean isLiveLcdSupported() {
         return RadioLiveDisplay.get(SPEC).isSupported();
+    }
+
+    public static void reset() {
+        RadioLiveDisplay.get(SPEC).reset();
+    }
+
+    public static ResourceLocation getTexture(ItemStack stack) {
+        return RadioLiveDisplay.get(SPEC).getTexture(stack);
     }
 
     public static ResourceLocation resolveTexture(ItemStack stack, boolean listening) {
