@@ -95,9 +95,17 @@ public class AirdropLootConfigScreen extends Screen {
             .toList();
     }
 
+    /** Avoid vanilla dimming again inside {@code super.render} after custom chrome is drawn. */
+    @Override
+    public void renderBackground(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
+    }
+
     @Override
     public void render(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
-        renderBackground(gui, mouseX, mouseY, partialTick);
+        // Plain Screen (not EscScreen): dim once here before custom chrome.
+        if (this.minecraft != null && this.minecraft.level != null) {
+            this.renderTransparentBackground(gui);
+        }
         refreshFilter();
         totalSlots = filteredEntries.size();
 

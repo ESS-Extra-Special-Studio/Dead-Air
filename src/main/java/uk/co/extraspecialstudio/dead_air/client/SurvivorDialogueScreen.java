@@ -199,7 +199,7 @@ public class SurvivorDialogueScreen extends EscScreen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g, mouseX, mouseY, partialTick);
+        renderWorldDim(g);
         EscPanel.renderPanel(g, boxRect, style);
         EscText.drawString(g, font, data.name, boxRect.x() + 10, boxRect.y() + 8,
             opaque(style.textColorTitle()), false, uk.co.extraspecialstudio.extraspecial.esc.ui.EscFonts.DEFAULT);

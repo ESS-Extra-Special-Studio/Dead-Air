@@ -55,7 +55,7 @@ public class SurvivorEquipmentScreen extends AbstractContainerScreen<SurvivorEqu
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g, mouseX, mouseY, partialTick);
+        // AbstractContainerScreen.render already calls renderBackground once.
         super.render(g, mouseX, mouseY, partialTick);
         renderTooltip(g, mouseX, mouseY);
     }

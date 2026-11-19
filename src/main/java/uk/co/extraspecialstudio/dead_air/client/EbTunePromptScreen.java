@@ -60,7 +60,7 @@ public class EbTunePromptScreen extends EscScreen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g, mouseX, mouseY, partialTick);
+        renderWorldDim(g);
         EscPanel.renderPanel(g, boxRect, style);
         EscText.drawCentered(g, font, Component.translatable("screen.dead_air.eb_prompt.title"),
             width / 2, boxRect.y() + 12, opaque(style.textColorTitle()), EscFonts.DEFAULT);
