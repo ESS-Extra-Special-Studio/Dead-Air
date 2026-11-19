@@ -195,8 +195,26 @@ public class ModEvents {
                 uk.co.extraspecialstudio.dead_air.net.ConfigSyncPacket.fromConfig());
             grantFieldGuideIfFirstJoin(serverPlayer);
             uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.catchUpOnLogin(serverPlayer);
-            // Immediate party HUD â€” don't wait up to 1s for the periodic sync tick.
+            // Immediate party HUD — don't wait up to 1s for the periodic sync tick.
             uk.co.extraspecialstudio.dead_air.survivor.SurvivorPartyEvents.syncPlayerNow(serverPlayer);
+            maybeRunDownedAbandonFlagTest(serverPlayer);
+        }
+    }
+
+    /**
+     * One-shot SP harness: if {@code config/dead_air/run_downed_abandon_test.flag} exists on login,
+     * delete it and run {@code /deadair survivor testdownedabandon}.
+     */
+    private static void maybeRunDownedAbandonFlagTest(ServerPlayer player) {
+        try {
+            java.nio.file.Path flag = player.server.getServerDirectory().toPath()
+                .resolve("config").resolve("dead_air").resolve("run_downed_abandon_test.flag");
+            if (!java.nio.file.Files.isRegularFile(flag)) return;
+            java.nio.file.Files.deleteIfExists(flag);
+            Dead_air.LOGGER.info("[Dead Air] TEST downed-abandon: flag consumed — starting now");
+            uk.co.extraspecialstudio.dead_air.commands.DeadAirSurvivorCommand.runDownedAbandonTest(player);
+        } catch (Throwable t) {
+            Dead_air.LOGGER.warn("[Dead Air] TEST downed-abandon flag hook failed: {}", t.toString());
         }
     }
 

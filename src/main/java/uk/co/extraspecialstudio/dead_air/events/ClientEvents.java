@@ -10,6 +10,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,6 +19,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.audio.AudioManager;
 import uk.co.extraspecialstudio.dead_air.client.KeyBindings;
+import uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud;
 import uk.co.extraspecialstudio.dead_air.client.WalkieTalkieTuningScreen;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
@@ -31,6 +33,25 @@ public class ClientEvents {
 
     // Set during world exit / disconnect to avoid any client-side work during teardown.
     private static volatile boolean DISCONNECTING = false;
+
+    @SubscribeEvent
+    public static void onMouseButton(InputEvent.MouseButton.Pre event) {
+        if (event.getButton() != 0 || event.getAction() != 1) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.screen != null) return;
+        // Wheel LMB/RMB/scroll swallow lives in ESC EscActionWheelClient.
+        if (uk.co.extraspecialstudio.extraspecial.esc.ui.EscActionWheel.anyOpen()) return;
+        int guiW = mc.getWindow().getGuiScaledWidth();
+        int guiH = mc.getWindow().getGuiScaledHeight();
+        int screenW = mc.getWindow().getScreenWidth();
+        int screenH = mc.getWindow().getScreenHeight();
+        if (screenW <= 0 || screenH <= 0) return;
+        double mx = mc.mouseHandler.xpos() * guiW / (double) screenW;
+        double my = mc.mouseHandler.ypos() * guiH / (double) screenH;
+        if (SurvivorPartyHud.click(mx, my)) {
+            event.setCanceled(true);
+        }
+    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {

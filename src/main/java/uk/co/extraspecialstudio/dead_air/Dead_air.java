@@ -285,13 +285,17 @@ public class Dead_air {
         /** Register walkie HUD overlay so it always renders (not dependent on CROSSHAIR/HOTBAR events). */
         @SubscribeEvent
         public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-            event.registerAboveAll(new ResourceLocation(MODID, "walkie_hud"), (guiGraphics, partialTick) -> {
+            event.registerAboveAll(new ResourceLocation(MODID, "walkie_hud"), (guiGraphics, deltaTracker) -> {
                 uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.renderRadioPanelTooltip(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
                 uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
             });
-            event.registerAboveAll(new ResourceLocation(MODID, "listener_effects"), (guiGraphics, partialTick) -> uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.renderOverlay(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(), partialTick));
-            event.registerAboveAll(new ResourceLocation(MODID, "broadcast_hud"), (guiGraphics, partialTick) -> uk.co.extraspecialstudio.dead_air.client.BroadcastHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
-            event.registerAboveAll(new ResourceLocation(MODID, "survivor_party_hud"), (guiGraphics, partialTick) -> uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
+            event.registerAboveAll(new ResourceLocation(MODID, "listener_effects"), (guiGraphics, partialTick) ->
+                uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.renderOverlay(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(),
+                    partialTick));
+            event.registerAboveAll(new ResourceLocation(MODID, "broadcast_hud"), (guiGraphics, deltaTracker) ->
+                uk.co.extraspecialstudio.dead_air.client.BroadcastHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
+            event.registerAboveAll(new ResourceLocation(MODID, "survivor_party_hud"), (guiGraphics, deltaTracker) ->
+                uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight()));
         }
     }
 }

@@ -160,6 +160,10 @@ public class BroadcastProgress extends SavedData {
         setDirty();
     }
 
+    public java.util.Set<java.util.Map.Entry<UUID, PlayerProgress>> entries() {
+        return players.entrySet();
+    }
+
     /** Hidden frequency for this world, picked once so it never sits on a real station. */
     public float getHiddenFrequency(RandomSource random) {
         if (hiddenFrequency < 88f) {

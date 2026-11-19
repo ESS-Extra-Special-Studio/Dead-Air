@@ -25,6 +25,7 @@ public final class DeadAirStructuresCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> structures = Commands.literal("structures")
             .requires(src -> src.hasPermission(2))
+            .then(SpawnTowerCommand.towerBranch())
             .then(Commands.literal("list").executes(ctx -> listSites(ctx.getSource())))
             .then(Commands.literal("camp").executes(ctx -> placeCamp(ctx.getSource())))
             .then(Commands.literal("auction")

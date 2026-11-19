@@ -1,12 +1,14 @@
 package uk.co.extraspecialstudio.dead_air.item;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.block.DeadAirBlocks;
+import uk.co.extraspecialstudio.dead_air.entity.DeadAirEntities;
 
 /**
  * Items for Dead Air.
@@ -14,6 +16,16 @@ import uk.co.extraspecialstudio.dead_air.block.DeadAirBlocks;
 public final class DeadAirItems {
 
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(net.minecraft.core.registries.Registries.ITEM, Dead_air.MODID);
+
+    static {
+        // Forge 1.20.1 ships radio_t*; Neo canonical IDs are walkie_t*. Remap legacy radio_* stacks.
+        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "radio_t1"),
+            new ResourceLocation(Dead_air.MODID, "walkie_t1"));
+        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "radio_t2"),
+            new ResourceLocation(Dead_air.MODID, "walkie_t2"));
+        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "radio_t3"),
+            new ResourceLocation(Dead_air.MODID, "walkie_t3"));
+    }
 
     @SuppressWarnings("null")
     public static final DeferredHolder<Item, Item> DISC_COMPENDIUM_A = REGISTER.register(
@@ -173,6 +185,27 @@ public final class DeadAirItems {
     public static final DeferredHolder<Item, Item> TRAFFIC_CONE = REGISTER.register(
         "traffic_cone",
         () -> new BlockItem(DeadAirBlocks.TRAFFIC_CONE.get(), new Item.Properties())
+    );
+
+    public static final DeferredHolder<Item, Item> THE_LISTENER_SPAWN_EGG = REGISTER.register(
+        "the_listener_spawn_egg",
+        () -> new DeferredSpawnEggItem(
+            DeadAirEntities.THE_LISTENER,
+            0x4A1E7A, 0x2FA8FF, new Item.Properties())
+    );
+
+    public static final DeferredHolder<Item, Item> SIGNAL_ANCHOR_SPAWN_EGG = REGISTER.register(
+        "signal_anchor_spawn_egg",
+        () -> new DeferredSpawnEggItem(
+            DeadAirEntities.SIGNAL_ANCHOR,
+            0x1B2A33, 0x2FA8FF, new Item.Properties())
+    );
+
+    public static final DeferredHolder<Item, Item> SURVIVOR_SPAWN_EGG = REGISTER.register(
+        "survivor_spawn_egg",
+        () -> new DeferredSpawnEggItem(
+            DeadAirEntities.SURVIVOR,
+            0x6B5A3A, 0xC9B28A, new Item.Properties())
     );
 
     private DeadAirItems() {}

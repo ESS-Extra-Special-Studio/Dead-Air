@@ -161,12 +161,7 @@ public class WalkieItem extends Item implements GeoItem {
             @Override
             public BlockEntityWithoutLevelRenderer getGeoItemRenderer() {
                 if (renderer == null) {
-                    try {
-                        Class<?> c = Class.forName("uk.co.extraspecialstudio.dead_air.client.ClientItemRenderers");
-                        renderer = (BlockEntityWithoutLevelRenderer) c.getMethod("getWalkieRenderer").invoke(null);
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException("Failed to create walkie renderer", e);
-                    }
+                    renderer = ClientGeoRenderers.load("getWalkieRenderer");
                 }
                 return renderer;
             }

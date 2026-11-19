@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import uk.co.extraspecialstudio.dead_air.entity.DeadAirEntities;
 import uk.co.extraspecialstudio.dead_air.entity.ListenerEntity;
 import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEvent;
 import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastEventRegistry;
@@ -81,6 +82,8 @@ public final class DeadAirListenerCommand {
             .then(Commands.literal("start")
                 .then(Commands.literal("first").executes(ctx -> start(ctx.getSource(), ListenerEncounter.Mode.FIRST)))
                 .then(Commands.literal("final").executes(ctx -> start(ctx.getSource(), ListenerEncounter.Mode.FINAL))))
+            // Wild boss at the player — works in Peaceful; egg /summon use same entity type.
+            .then(Commands.literal("summon").executes(ctx -> summonWild(ctx.getSource())))
             .then(Commands.literal("kill")
                 .executes(ctx -> killListeners(ctx.getSource(), false))
                 .then(Commands.literal("all").executes(ctx -> killListeners(ctx.getSource(), true))))
@@ -113,7 +116,7 @@ public final class DeadAirListenerCommand {
             + " finalDefeated=" + pr.finalDefeated + " breakerHinted=" + pr.breakerHinted);
         line(src, "hiddenFrequency=" + String.format("%.1f", data.getHiddenFrequency(p.getRandom()))
             + " hasT3=" + BroadcastScheduler.hasT3(p) + " canDecode=" + BroadcastScheduler.hasT3(p)
-            + " (Signal Decoder upgrades T2→T3)");
+            + " (Signal Decoder upgrades T2â†’T3)");
         SurvivorRoster roster = SurvivorRoster.get(p.server);
         line(src, "survivors=" + (roster == null ? 0 : roster.count(p.getUUID())));
         for (PendingSites.Site s : PendingSites.forOwner(p.server, p.getUUID())) {
@@ -189,7 +192,7 @@ public final class DeadAirListenerCommand {
         BroadcastProgress.get(p.server).setDirty();
         boolean ok = BroadcastScheduler.deliver(p, event);
         line(src, (ok ? "Forced " : "Cancelled ") + id
-            + (ok ? "" : " (event returned no lines — check prerequisites: T3/base/settled survivor/expansion pack)"));
+            + (ok ? "" : " (event returned no lines â€” check prerequisites: T3/base/settled survivor/expansion pack)"));
         return ok ? 1 : 0;
     }
 
@@ -242,6 +245,27 @@ public final class DeadAirListenerCommand {
     private static int start(CommandSourceStack src, ListenerEncounter.Mode mode) throws CommandSyntaxException {
         ServerPlayer p = src.getPlayerOrException();
         return ListenerEncounter.start(p, mode) != null ? 1 : 0;
+    }
+
+    /** Spawn a persistent WILD Listener at the player (debug / creative egg alternative). */
+    private static int summonWild(CommandSourceStack src) throws CommandSyntaxException {
+        ServerPlayer p = src.getPlayerOrException();
+        ServerLevel level = p.serverLevel();
+        ListenerEntity listener = DeadAirEntities.THE_LISTENER.get().create(level);
+        if (listener == null) {
+            line(src, "Failed to create The Listener entity type.");
+            return 0;
+        }
+        listener.moveTo(p.getX(), p.getY(), p.getZ(), p.getYRot(), 0.0f);
+        listener.setPersistenceRequired();
+        listener.setMode(ListenerEntity.Mode.WILD, null);
+        if (!level.addFreshEntity(listener)) {
+            line(src, "addFreshEntity failed for Listener.");
+            return 0;
+        }
+        line(src, "Summoned The Listener (WILD) at " + listener.blockPosition().toShortString()
+            + " id=" + listener.getId());
+        return 1;
     }
 
     /** Force-remove Listeners (not vanilla {@code /kill}). Console / {@code all}: full purge. */

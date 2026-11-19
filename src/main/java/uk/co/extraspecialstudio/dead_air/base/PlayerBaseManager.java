@@ -67,6 +67,8 @@ public final class PlayerBaseManager {
         int range = signalRange(level, at);
         player.sendSystemMessage(Component.translatable("message.dead_air.base.set",
             at.toShortString(), range).withStyle(ChatFormatting.GREEN));
+        uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.award(player,
+            uk.co.extraspecialstudio.dead_air.advancement.DeadAirAdvancements.SURVIVOR_BASE);
         return true;
     }
 
@@ -86,6 +88,48 @@ public final class PlayerBaseManager {
         player.sendSystemMessage(Component.translatable("message.dead_air.base.unset")
             .withStyle(ChatFormatting.GRAY));
         return true;
+    }
+
+    /** Clear every player base pinned to this panel (e.g. panel broken). */
+    public static void clearBasesAt(MinecraftServer server, ResourceKey<Level> dimension, BlockPos panelPos) {
+        if (server == null || dimension == null || panelPos == null) return;
+        PlayerBaseStorage storage = PlayerBaseStorage.get(server);
+        BlockPos at = panelPos.immutable();
+        for (var e : new java.util.ArrayList<>(storage.all().entrySet())) {
+            PlayerBaseStorage.Base base = e.getValue();
+            if (base == null || !base.dimension.equals(dimension) || !base.panelPos.equals(at)) continue;
+            clearOne(server, storage, e.getKey(), base, true);
+        }
+    }
+
+    /**
+     * Drop ghost bases when the panel is gone (explosions / fill / other non-BreakEvent paths).
+     * Only inspects loaded chunks so unloaded panels are left alone.
+     */
+    public static void validateBases(MinecraftServer server) {
+        if (server == null || server.getTickCount() % 100 != 0) return;
+        PlayerBaseStorage storage = PlayerBaseStorage.get(server);
+        for (var e : new java.util.ArrayList<>(storage.all().entrySet())) {
+            PlayerBaseStorage.Base base = e.getValue();
+            if (base == null) continue;
+            ServerLevel level = server.getLevel(base.dimension);
+            if (level == null || !level.hasChunk(base.panelPos.getX() >> 4, base.panelPos.getZ() >> 4)) continue;
+            if (ApocalypseTowerDetector.isRadioPanel(level, base.panelPos)) continue;
+            clearOne(server, storage, e.getKey(), base, true);
+        }
+    }
+
+    private static void clearOne(MinecraftServer server, PlayerBaseStorage storage, UUID id,
+                                 PlayerBaseStorage.Base base, boolean notify) {
+        storage.clear(id);
+        EslForceLoadRegistry.clear(server, FORCE_LOAD_MOD, id.toString());
+        SurvivorMapCompat.removeBaseMarker(base);
+        if (!notify) return;
+        ServerPlayer owner = server.getPlayerList().getPlayer(id);
+        if (owner != null) {
+            owner.sendSystemMessage(Component.translatable("message.dead_air.base.panel_gone")
+                .withStyle(ChatFormatting.GOLD));
+        }
     }
 
     /** Broadcast / music range for this panel's tower, else config musicStationRange. */

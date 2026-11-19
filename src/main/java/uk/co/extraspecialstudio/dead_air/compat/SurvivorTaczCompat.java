@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 /**
  * Soft-optional TaCZ integration for survivors.
- * LivingEntity already implements IGunOperator via TaCZ mixin â€” we call it through reflection
+ * LivingEntity already implements IGunOperator via TaCZ mixin — we call it through reflection
  * so Dead Air has no hard compile dependency on TaCZ.
  *
  * Landed: create GunId stacks, equip on spawn, draw + shoot + reload + dummy ammo for NPCs.
@@ -34,36 +34,44 @@ public final class SurvivorTaczCompat {
     @Nullable private static Method fromLivingEntity;
     @Nullable private static Method shoot;
     @Nullable private static Method reload;
+    @Nullable private static Method bolt;
     @Nullable private static Method draw;
     @Nullable private static Method aim;
+    @Nullable private static Method initialData;
     @Nullable private static Method setDummyAmmoAmount;
+    @Nullable private static Method setMaxDummyAmmoAmount;
     @Nullable private static Method getCurrentAmmoCount;
-    @Nullable private static Method setGunId;
     @Nullable private static Method setCurrentAmmoCount;
+    @Nullable private static Method setBulletInBarrel;
+    @Nullable private static Method setGunId;
     @Nullable private static Method gunBuilderCreate;
     @Nullable private static Method gunBuilderSetId;
     @Nullable private static Method gunBuilderSetAmmo;
     @Nullable private static Method gunBuilderBuild;
     @Nullable private static Method getCommonGunIndex;
 
-    /** Sidearms / pistols â€” default for medics & cautious survivors. */
+    /** NPC mag + dummy pool — high enough to count as infinite for combat. */
+    private static final int NPC_MAG_AMMO = 64;
+    private static final int NPC_DUMMY_AMMO = 9999;
+
+    /** Sidearms / pistols — default for medics & cautious survivors. */
     private static final String[] SIDEARMS = {
         "tacz:m1911", "tacz:glock_17", "tacz:cz75", "tacz:p320", "tacz:b93r",
         "tacz:m9a4", "tacz:hk_mk23", "tacz:deagle", "tacz:taurus943", "tacz:rhino357"
     };
 
-    /** SMGs â€” radio ops / mid scavengers. */
+    /** SMGs — radio ops / mid scavengers. */
     private static final String[] SMGS = {
         "tacz:ump45", "tacz:vector45", "tacz:hk_mp5a5", "tacz:uzi", "tacz:p90"
     };
 
-    /** Assault / battle rifles â€” scavengers & aggressive. */
+    /** Assault / battle rifles — scavengers & aggressive. */
     private static final String[] RIFLES = {
         "tacz:ak47", "tacz:m4a1", "tacz:m16a1", "tacz:m16a4", "tacz:type_81",
         "tacz:sks_tactical", "tacz:g36k", "tacz:scar_l", "tacz:hk416d", "tacz:qbz_95"
     };
 
-    /** Close-range shotguns â€” scavengers. */
+    /** Close-range shotguns — scavengers. */
     private static final String[] SHOTGUNS = {
         "tacz:m870", "tacz:db_short", "tacz:m1014", "tacz:spas_12", "tacz:db_long"
     };
@@ -98,6 +106,22 @@ public final class SurvivorTaczCompat {
             getCurrentAmmoCount = iGun.getMethod("getCurrentAmmoCount", ItemStack.class);
             setGunId = iGun.getMethod("setGunId", ItemStack.class, ResourceLocation.class);
             setCurrentAmmoCount = iGun.getMethod("setCurrentAmmoCount", ItemStack.class, int.class);
+            try {
+                bolt = iOp.getMethod("bolt");
+            } catch (Throwable ignored) {
+            }
+            try {
+                initialData = iOp.getMethod("initialData");
+            } catch (Throwable ignored) {
+            }
+            try {
+                setBulletInBarrel = iGun.getMethod("setBulletInBarrel", ItemStack.class, boolean.class);
+            } catch (Throwable ignored) {
+            }
+            try {
+                setMaxDummyAmmoAmount = iGun.getMethod("setMaxDummyAmmoAmount", ItemStack.class, int.class);
+            } catch (Throwable ignored) {
+            }
 
             try {
                 Class<?> builder = Class.forName("com.tacz.guns.api.item.builder.GunItemBuilder");
@@ -132,59 +156,112 @@ public final class SurvivorTaczCompat {
         }
     }
 
-    /** Give NPC guns infinite-ish dummy ammo so they can fire without player inventory ammo. */
+    /**
+     * Infinite NPC ammo: always top up magazine + dummy reserve (enables useDummyAmmo)
+     * and chamber a round so bolt-action / closed-bolt guns can fire.
+     */
     public static void prepareGunForNpc(ItemStack gun) {
         if (!isGun(gun)) return;
         try {
             Object igun = getIGunOrNull.invoke(null, gun);
             if (igun == null) return;
-            int ammo = (Integer) getCurrentAmmoCount.invoke(igun, gun);
-            if (ammo <= 0 && setCurrentAmmoCount != null) {
-                setCurrentAmmoCount.invoke(igun, gun, 24);
+            if (setCurrentAmmoCount != null) {
+                setCurrentAmmoCount.invoke(igun, gun, NPC_MAG_AMMO);
             }
-            // Writing DummyAmmo enables useDummyAmmo() â€” NPC pool so they keep firing
-            setDummyAmmoAmount.invoke(igun, gun, 96);
+            if (setMaxDummyAmmoAmount != null) {
+                setMaxDummyAmmoAmount.invoke(igun, gun, NPC_DUMMY_AMMO);
+            }
+            setDummyAmmoAmount.invoke(igun, gun, NPC_DUMMY_AMMO);
+            if (setBulletInBarrel != null) {
+                setBulletInBarrel.invoke(igun, gun, true);
+            }
         } catch (Throwable ignored) {
         }
     }
 
+    /** Draw once when combat starts — do not call every shot (causes IS_DRAWING / NOT_DRAW). */
     public static void draw(LivingEntity entity, ItemStack gun) {
         if (!isLoaded() || !isGun(gun)) return;
         try {
             Object op = fromLivingEntity.invoke(null, entity);
-            draw.invoke(op, (Supplier<ItemStack>) () -> gun);
+            if (initialData != null) {
+                initialData.invoke(op);
+            }
+            prepareGunForNpc(gun);
+            draw.invoke(op, (Supplier<ItemStack>) entity::getMainHandItem);
         } catch (Throwable ignored) {
         }
     }
 
     /**
-     * Aim at target and shoot. Returns true if a shot was attempted successfully (SUCCESS).
+     * Aim at target and shoot. Returns true if a shot fired (SUCCESS).
+     * Does not re-draw every attempt — callers should {@link #draw} when combat begins.
      */
     public static boolean tryShoot(Mob shooter, LivingEntity target) {
-        if (!isLoaded()) return false;
+        if (!isLoaded() || target == null || !target.isAlive()) return false;
         ItemStack gun = shooter.getMainHandItem();
         if (!isGun(gun)) return false;
         try {
             Object op = fromLivingEntity.invoke(null, shooter);
             prepareGunForNpc(gun);
-            draw.invoke(op, (Supplier<ItemStack>) shooter::getMainHandItem);
+            shooter.setSprinting(false);
             aim.invoke(op, true);
 
+            float[] aim = aimAt(shooter, target);
+            float pitch = aim[0];
+            float yaw = aim[1];
+            shooter.setXRot(pitch);
+            shooter.setYRot(yaw);
+            shooter.yHeadRot = yaw;
+            shooter.yBodyRot = yaw;
             shooter.getLookControl().setLookAt(target, 30f, 30f);
-            float pitch = shooter.getXRot();
-            float yaw = shooter.getYRot();
-            Object result = shoot.invoke(op, (Supplier<Float>) () -> pitch, (Supplier<Float>) () -> yaw);
-            String name = result != null ? result.toString() : "";
-            if ("NO_AMMO".equals(name) || "NEED_BOLT".equals(name)) {
-                reload.invoke(op);
-                prepareGunForNpc(gun);
+
+            String name = shootResultName(shoot.invoke(op,
+                (Supplier<Float>) () -> pitch, (Supplier<Float>) () -> yaw));
+
+            if ("SUCCESS".equals(name)) {
+                return true;
+            }
+            if ("NOT_DRAW".equals(name) || "IS_DRAWING".equals(name)) {
+                draw.invoke(op, (Supplier<ItemStack>) shooter::getMainHandItem);
                 return false;
             }
-            return "SUCCESS".equals(name);
+            if ("NO_AMMO".equals(name) || "NEED_BOLT".equals(name)) {
+                if ("NEED_BOLT".equals(name) && bolt != null) {
+                    bolt.invoke(op);
+                } else {
+                    reload.invoke(op);
+                }
+                prepareGunForNpc(gun);
+                name = shootResultName(shoot.invoke(op,
+                    (Supplier<Float>) () -> pitch, (Supplier<Float>) () -> yaw));
+                return "SUCCESS".equals(name);
+            }
+            // COOL_DOWN / IS_RELOADING / IS_BOLTING / IS_SPRINTING — wait next tick
+            return false;
         } catch (Throwable t) {
             Dead_air.LOGGER.debug("[Dead Air] TaCZ shoot failed: {}", t.toString());
             return false;
         }
+    }
+
+    private static String shootResultName(@Nullable Object result) {
+        if (result == null) return "";
+        if (result instanceof Enum<?> e) return e.name();
+        String s = result.toString();
+        int dot = s.lastIndexOf('.');
+        return dot >= 0 ? s.substring(dot + 1) : s;
+    }
+
+    /** Pitch / yaw toward the target's eyes. */
+    private static float[] aimAt(Mob shooter, LivingEntity target) {
+        double dx = target.getX() - shooter.getX();
+        double dy = target.getEyeY() - shooter.getEyeY();
+        double dz = target.getZ() - shooter.getZ();
+        double horiz = Math.sqrt(dx * dx + dz * dz);
+        float yaw = (float) (Math.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
+        float pitch = (float) (-(Math.atan2(dy, horiz) * (180.0 / Math.PI)));
+        return new float[]{pitch, yaw};
     }
 
     public static boolean holdingGun(LivingEntity entity) {
@@ -258,9 +335,9 @@ public final class SurvivorTaczCompat {
 
     private static ItemStack buildViaSetGunId(ResourceLocation id) {
         try {
-            Item gunItem = BuiltInRegistries.ITEM.get(new ResourceLocation("tacz:modern_kinetic_gun"));
+            Item gunItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse("tacz:modern_kinetic_gun"));
             if (gunItem == null || gunItem == Items.AIR) {
-                gunItem = BuiltInRegistries.ITEM.get(new ResourceLocation("tacz:gun"));
+                gunItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse("tacz:gun"));
             }
             if (gunItem == null || gunItem == Items.AIR) return ItemStack.EMPTY;
             ItemStack stack = new ItemStack(gunItem, 1);

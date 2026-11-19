@@ -34,7 +34,7 @@ public class ApocalypseTowerDetector {
         };
         
         for (String id : radioPanelIds) {
-            ResourceLocation loc = new ResourceLocation(id);
+            ResourceLocation loc = ResourceLocation.tryParse(id);
             Block block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(loc);
             if (block != null) {
                 RADIO_PANEL_BLOCKS.add(loc);
