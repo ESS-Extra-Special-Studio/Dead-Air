@@ -168,13 +168,21 @@ public class AudioManager {
             if (noSignal) {
                 if (signalForStart < 0.1f) SERVER_SIGNAL_CACHE.remove(station.getId());
                 PENDING_NEXT_TRACK.remove(station.getId());
-                RESTART_SAME_STATION.remove(station.getId());
-                RESUME_OFFSET_MS.remove(station.getId());
+                // Dimension change clears the tower cache (0 signal) before Linked / new-dim sync returns.
+                // Keep the durable resume arm so the same track restarts when signal comes back.
+                boolean dimResumePending = RESUME_ARMED.contains(station.getId());
+                if (!dimResumePending) {
+                    RESTART_SAME_STATION.remove(station.getId());
+                    RESUME_OFFSET_MS.remove(station.getId());
+                }
                 LAST_PLAY_TIME_MS.remove(station.getId()); // allow immediate restart when back in range
                 lastBarLevel = -1;
                 stopStation(station);
                 ACTIVE_SOUNDS.remove(station.getId());
-                currentStation = null;
+                // Keep currentStation while a dim resume is armed so the next in-range tick can resume.
+                if (!dimResumePending) {
+                    currentStation = null;
+                }
                 currentSignalStrength = 0.0f;
                 stopAllOtherStations(null);
                 return;
@@ -744,29 +752,35 @@ public class AudioManager {
      * callback runs for that, so drop our playing state here and arm a resume from the last recorded position.
      */
     public static void onSoundEngineWiped() {
+        // Drop channel bindings first so the audio thread cannot call into dying OpenAL sources
+        // while stopAll tears the engine down (common on modded dimension portals).
+        RadioChannelTracker.clearAll();
         if (ACTIVE_SOUNDS.isEmpty()) {
             return;
         }
         for (var entry : new ArrayList<>(ACTIVE_SOUNDS.entrySet())) {
-            ResourceLocation stationId = entry.getKey();
-            RadioSoundInstance sound = entry.getValue();
-            long playedMs = System.currentTimeMillis() - LAST_PLAY_TIME_MS.getOrDefault(stationId, 0L);
-            RadioChannelTracker.unregister(sound);
-            ACTIVE_SOUNDS.remove(stationId);
-            LAST_PLAY_TIME_MS.remove(stationId);
-            LAST_PLAY_ISSUED_MS.remove(stationId);
-            PENDING_NEXT_TRACK.remove(stationId);
-            NATURAL_FINISH.remove(stationId);
-            FAILED_START_RETRIES.remove(stationId);
-            if (LOG_PLAYBACK) {
-                Dead_air.LOGGER.info("[radio] sound engine wiped station={} track={} played={}ms",
-                    stationId, sound.getLocation(), playedMs);
+            try {
+                ResourceLocation stationId = entry.getKey();
+                RadioSoundInstance sound = entry.getValue();
+                long playedMs = System.currentTimeMillis() - LAST_PLAY_TIME_MS.getOrDefault(stationId, 0L);
+                ACTIVE_SOUNDS.remove(stationId);
+                LAST_PLAY_TIME_MS.remove(stationId);
+                LAST_PLAY_ISSUED_MS.remove(stationId);
+                PENDING_NEXT_TRACK.remove(stationId);
+                NATURAL_FINISH.remove(stationId);
+                FAILED_START_RETRIES.remove(stationId);
+                if (LOG_PLAYBACK) {
+                    Dead_air.LOGGER.info("[radio] sound engine wiped station={} track={} played={}ms",
+                        stationId, sound != null ? sound.getLocation() : null, playedMs);
+                }
+                if (EXPLICIT_STOP_IN_PROGRESS || playedMs < 250L || sound == null) {
+                    continue;
+                }
+                snapshotResumePoint(stationId, playedMs, sound.getLocation());
+                armResume(stationId, "sound engine wiped");
+            } catch (Throwable t) {
+                Dead_air.LOGGER.warn("[radio] sound engine wipe handler failed: {}", t.toString());
             }
-            if (EXPLICIT_STOP_IN_PROGRESS || playedMs < 250L) {
-                continue;
-            }
-            snapshotResumePoint(stationId, playedMs, sound.getLocation());
-            armResume(stationId, "sound engine wiped");
         }
     }
 

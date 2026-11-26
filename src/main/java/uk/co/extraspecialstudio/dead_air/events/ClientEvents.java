@@ -70,6 +70,13 @@ public class ClientEvents {
         uk.co.extraspecialstudio.dead_air.client.EbHuntClient.clientTick();
         // stopAnyVanillaMusic removed - empty; MusicManagerMixin disables vanilla music
 
+        // Mid dimension change: level/player can be half-torn; do not drive audio or send packets.
+        if (mc.getOverlay() != null || mc.screen instanceof net.minecraft.client.gui.screens.ReceivingLevelScreen
+            || mc.screen instanceof net.minecraft.client.gui.screens.ProgressScreen
+            || mc.player.isDeadOrDying()) {
+            return;
+        }
+
         // Sole music driver (was overlay-only; tick keeps inventory radio alive when HUD hidden).
         RadioManager.ensureSingleActiveListening(mc.player);
         RadioManager.refreshLinkedStation(mc.player);
@@ -91,7 +98,7 @@ public class ClientEvents {
             return;
         }
         // Send packets + drive music once per tick from the single active listening radio.
-        if (mc.getConnection() != null) {
+        if (mc.getConnection() != null && mc.player.connection != null) {
             if (tick % 2 == 0) {
                 uk.co.extraspecialstudio.dead_air.net.DeadAirNet.CHANNEL.sendToServer(
                     new uk.co.extraspecialstudio.dead_air.net.RadioSignalRequestPacket(station.getId()));

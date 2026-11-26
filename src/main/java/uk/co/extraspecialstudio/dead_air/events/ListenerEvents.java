@@ -69,6 +69,20 @@ public final class ListenerEvents {
         }
     }
 
+    /**
+     * Dim change is not death/logout — encounter tick already drops {@code p.level() != enc.level}
+     * and ends empty fights as FAILED (no defeat credit). Clear any wild Listener targeting them.
+     */
+    @SubscribeEvent
+    public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        // Encounter participants are handled every tick via level mismatch; nothing extra here.
+        // Wild Listeners targeting this player despawn in ListenerEntity.dropCrossDimensionTarget.
+        EmergencyProximity.clearPending(player.getUUID());
+    }
+
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
         ListenerEncounter.stopAll();
