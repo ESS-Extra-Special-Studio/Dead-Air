@@ -46,14 +46,6 @@ public class DeadAirAPI {
     }
 
     /**
-     * @deprecated Use {@link #registerRadioGuiOpener(Predicate, RadioGuiOpener)}.
-     */
-    @Deprecated
-    public static void registerWalkieGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {
-        registerRadioGuiOpener(match, opener);
-    }
-
-    /**
      * Try companion openers for the held radio. Used by Dead Air's tune keybind.
      * @return true if a companion handled the open
      */
@@ -67,14 +59,6 @@ public class DeadAirAPI {
             }
         }
         return false;
-    }
-
-    /**
-     * @deprecated Use {@link #tryOpenCompanionRadioGui(InteractionHand, ItemStack)}.
-     */
-    @Deprecated
-    public static boolean tryOpenCompanionWalkieGui(InteractionHand hand, ItemStack stack) {
-        return tryOpenCompanionRadioGui(hand, stack);
     }
 
     private record RegisteredRadioGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {}

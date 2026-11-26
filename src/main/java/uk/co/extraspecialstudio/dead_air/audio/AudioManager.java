@@ -744,6 +744,9 @@ public class AudioManager {
      * callback runs for that, so drop our playing state here and arm a resume from the last recorded position.
      */
     public static void onSoundEngineWiped() {
+        // Drop channel bindings first so the audio thread cannot call into dying OpenAL sources
+        // while stopAll tears the engine down (common on modded dimension portals).
+        RadioChannelTracker.clearAll();
         if (ACTIVE_SOUNDS.isEmpty()) {
             return;
         }
@@ -751,7 +754,6 @@ public class AudioManager {
             ResourceLocation stationId = entry.getKey();
             RadioSoundInstance sound = entry.getValue();
             long playedMs = System.currentTimeMillis() - LAST_PLAY_TIME_MS.getOrDefault(stationId, 0L);
-            RadioChannelTracker.unregister(sound);
             ACTIVE_SOUNDS.remove(stationId);
             LAST_PLAY_TIME_MS.remove(stationId);
             LAST_PLAY_ISSUED_MS.remove(stationId);

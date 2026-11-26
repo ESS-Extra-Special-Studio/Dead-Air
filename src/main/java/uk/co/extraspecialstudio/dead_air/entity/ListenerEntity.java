@@ -456,6 +456,15 @@ public class ListenerEntity extends Monster implements GeoEntity {
         return false;
     }
 
+    /**
+     * Never ride nether/end/modded portals with the player.
+     * Encounters already drop dim-leavers and end as {@code FAILED}; this blocks hitchhiking.
+     */
+    @Override
+    public boolean canChangeDimensions() {
+        return false;
+    }
+
     // ---------- tick ----------
 
     @Override
@@ -469,12 +478,34 @@ public class ListenerEntity extends Monster implements GeoEntity {
         if (!level().isClientSide) {
             maybeBeginSpawnAssemble();
             maybeAnnounceAgro();
+            dropCrossDimensionTarget();
         }
         // Delay orphan cleanup a few ticks so spawn-tick race with encounter registry cannot self-discard.
         // Use killFromCommand so boss bars / linked encounter state cannot stick on dedicated.
         if (!level().isClientSide && mode != Mode.WILD && tickCount > 40
             && !ListenerEncounter.isActive(encounterId)) {
             killFromCommand();
+        }
+    }
+
+    /**
+     * If the current target left this dimension, drop lock immediately.
+     * WILD: soft-despawn (discard, no defeat credit). Encounter: stay put — tick already ends empty fights as FAILED.
+     */
+    private void dropCrossDimensionTarget() {
+        LivingEntity target = getTarget();
+        if (!(target instanceof ServerPlayer sp)) {
+            return;
+        }
+        if (sp.level() == level()) {
+            return;
+        }
+        setTarget(null);
+        getNavigation().stop();
+        if (mode == Mode.WILD && !isRemoved()) {
+            Dead_air.LOGGER.info("[Dead Air] Wild Listener despawned — target left dimension {}",
+                sp.level().dimension().location());
+            discard();
         }
     }
 
@@ -827,10 +858,11 @@ public class ListenerEntity extends Monster implements GeoEntity {
                 finish();
                 return;
             }
-            Vec3 dest = target != null ? findSpotBehind(target) : null;
+            // Same-dimension only — never Signal Jump into another level if target somehow left.
+            Vec3 dest = (target != null && target.level() == level()) ? findSpotBehind(target) : null;
             if (dest != null) {
                 teleportTo(dest.x, dest.y, dest.z);
-                if (target != null) lookAt(target, 10f, 10f);
+                lookAt(target, 10f, 10f);
             }
             playSound(DeadAirSounds.LISTENER_JUMP_IN.get(), 2.0f, 1.0f);
             begin(State.JUMP_IN, "jump_in");

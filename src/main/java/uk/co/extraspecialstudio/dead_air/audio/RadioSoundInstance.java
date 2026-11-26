@@ -248,16 +248,35 @@ public class RadioSoundInstance extends AbstractSoundInstance {
 
     @Override
     public float getVolume() {
+        // Live signal lookup touches Level/player — main thread only. Audio-thread ChannelMixin
+        // must use getCachedVolume(); world access during dimension teardown crashes the JVM.
         Minecraft mc = Minecraft.getInstance();
         if (mc != null && mc.level != null && mc.player != null && mc.level.isClientSide && station != null) {
-            float live = uk.co.extraspecialstudio.dead_air.client.RadioOverlay.calculateSignalStrengthForStation(mc, station);
-            this.signalStrength = live;
+            try {
+                float live = uk.co.extraspecialstudio.dead_air.client.RadioOverlay.calculateSignalStrengthForStation(mc, station);
+                this.signalStrength = live;
+            } catch (Throwable ignored) {
+                // Mid-dimension teardown: keep last known strength.
+            }
         }
         updateVolume();
         // Never return 0: engine may stop sounds it considers "silent", causing ~47ms cut-off. We stop ourselves in AudioManager when no signal.
         return this.volume <= 0f ? MIN_VOLUME_FOR_ENGINE : this.volume;
     }
-    
+
+    /**
+     * Volume for the OpenAL audio thread. Never touches Level/player — only the last signal
+     * written by the main thread. Safe during dimension change / SoundEngine.stopAll.
+     */
+    public float getCachedVolume() {
+        try {
+            updateVolume();
+        } catch (Throwable ignored) {
+            return MIN_VOLUME_FOR_ENGINE;
+        }
+        return this.volume <= 0f ? MIN_VOLUME_FOR_ENGINE : this.volume;
+    }
+
     public void updateSignalStrength(float newStrength) {
         this.signalStrength = newStrength;
         updateVolume();

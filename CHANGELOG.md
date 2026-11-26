@@ -1,3 +1,10 @@
+Dead Air 3.0.4
+Changed:
+Handheld radios and companion APIs use radio naming end-to-end (RadioItem, RadioTuningScreen, registerRadioGuiOpener); legacy walkie_t* item IDs and tags remap to radio_t* / radios.
+Fixed:
+Changing dimensions while radio music is playing no longer crashes (audio thread uses cached volume; sound-engine wipe clears channel bindings first).
+The Listener cannot follow players through dimension portals; wild Listeners soft-despawn if their target leaves the dimension (no defeat credit).
+
 ## 3.0.3
 
 Changed:
