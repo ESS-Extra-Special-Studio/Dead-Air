@@ -10,7 +10,7 @@ import uk.co.extraspecialstudio.dead_air.net.ForceEmergencyTunePacket;
 import uk.co.extraspecialstudio.dead_air.net.SurvivorScreenPacket;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 /** Client handlers for Dead Air 3.0 packets; only loaded on the physical client. */
 public final class DeadAirClientPackets {
@@ -37,9 +37,9 @@ public final class DeadAirClientPackets {
         switch (mode) {
             case ForceEmergencyTunePacket.TUNE_EMERGENCY -> {
                 RadioStation emergency = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
-                ItemStack walkie = WalkieTalkieManager.getPrimaryWalkieStack(mc.player);
-                if (emergency != null && walkie != null && !walkie.isEmpty()) {
-                    WalkieTalkieManager.tuneToStation(mc.player, emergency, walkie);
+                ItemStack radio = RadioManager.getPrimaryRadioStack(mc.player);
+                if (emergency != null && radio != null && !radio.isEmpty()) {
+                    RadioManager.tuneToStation(mc.player, emergency, radio);
                 }
             }
             case ForceEmergencyTunePacket.JAM_ON -> ListenerClientEffects.setJammed(true);

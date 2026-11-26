@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastScheduler;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -95,7 +95,7 @@ public class StationUnlockManager {
             available.add(s);
         }
         
-        RadioStation tuned = WalkieTalkieManager.getState(player).getCurrentStation();
+        RadioStation tuned = RadioManager.getState(player).getCurrentStation();
         if (tuned != null
             && !(tuned.getId().equals(emergencyId) && !BroadcastScheduler.hasT3(player))
             && available.stream().noneMatch(s -> s.getId().equals(tuned.getId()))) {

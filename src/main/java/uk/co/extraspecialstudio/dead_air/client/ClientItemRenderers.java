@@ -38,18 +38,13 @@ public final class ClientItemRenderers {
     public static BlockEntityWithoutLevelRenderer getRadioRenderer() {
         if (radioRenderer == null) {
             try {
-                radioRenderer = new WalkieItemRenderer();
+                radioRenderer = new RadioItemRenderer();
             } catch (Throwable t) {
                 Dead_air.LOGGER.error("Failed to create radio GeoItem renderer; using no-op", t);
                 radioRenderer = getNoopRenderer();
             }
         }
         return radioRenderer;
-    }
-
-    /** Alias for walkie items (Neo registry id walkie_t*). */
-    public static BlockEntityWithoutLevelRenderer getWalkieRenderer() {
-        return getRadioRenderer();
     }
 
     public static BlockEntityWithoutLevelRenderer getResonantChordRenderer() {

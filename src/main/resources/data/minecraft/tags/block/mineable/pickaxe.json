@@ -1,0 +1,11 @@
+﻿{
+  "replace": false,
+  "values": [
+    "dead_air:camp_lantern",
+    "dead_air:jerrycan",
+    "dead_air:cooking_pot",
+    "dead_air:traffic_cone",
+    "dead_air:signal_firepit",
+    "dead_air:broken_relay"
+  ]
+}

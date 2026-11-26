@@ -1,19 +1,27 @@
+Dead Air 3.0.4
+Changed:
+Handheld radios and companion APIs use radio naming end-to-end (RadioItem, RadioTuningScreen, registerRadioGuiOpener); legacy walkie_t* item IDs and tags remap to radio_t* / radios.
+Fixed:
+Changing dimensions while radio music is playing no longer crashes (audio thread uses cached volume; sound-engine wipe clears channel bindings first).
+NeoForge: changing dimensions with the radio on no longer disconnects (empty tower-sync packet encoding).
+The Listener cannot follow players through dimension portals; wild Listeners soft-despawn if their target leaves the dimension (no defeat credit).
+
 ## 3.0.3
 
 Changed:
 Loader ports (Forge 1.20.4, NeoForge 1.20.6 / 1.21.1) brought to full Dead Air 3.0 content parity with the Forge 1.20.1 source (survivors, Listener, broadcasts/sites, Signal Breaker, party HUD, structures, gun loadout rules).
 
 Fixed:
-NeoForge crash when rendering walkie items in the hotbar (missing walkie Geo renderer).
+NeoForge crash when rendering radio items in the hotbar (missing radio Geo renderer).
 Forge 1.20.4 radio_panel recipe no longer fails to parse (conditional recipe format for 1.20.2+).
 EscScreen GUIs on 1.20.2+ use renderWorldDim so panel chrome is not double-dimmed.
-NeoForge 1.20.6 no longer hangs on load from unsupported GeckoLib geo format_version on walkie / signal breaker models.
+NeoForge 1.20.6 no longer hangs on load from unsupported GeckoLib geo format_version on radio / signal breaker models.
 
 ## 3.0.2
 
 Fixed:
 
-- NeoForge client crash on launch from a duplicate Open Radio Tuner key binding (`key.dead_air.tune_walkie` twice in options). Tuner key now matches Forge as `key.dead_air.tune_radio`; stray GAME-bus key register removed.
+- NeoForge client crash on launch from a duplicate Open Radio Tuner key binding (`key.dead_air.tune_radio` twice in options). Tuner key now matches Forge as `key.dead_air.tune_radio`; stray GAME-bus key register removed.
 
 ## 3.0.1
 
@@ -110,11 +118,11 @@ Update by: Extra_Special_K
 
 Added:
 
-- Detected-tower memory: chunk scans persist tower positions so the walkie can point within station range even when the chunk is unloaded (music/unlock still require panel activation).
+- Detected-tower memory: chunk scans persist tower positions so the radio can point within station range even when the chunk is unloaded (music/unlock still require panel activation).
 
 Changed:
 
-- Deactivating a panel keeps its detected position for walkie direction (no longer clears known-tower coords).
+- Deactivating a panel keeps its detected position for radio direction (no longer clears known-tower coords).
 
 2.1.0
 
@@ -122,15 +130,15 @@ Update by: Extra_Special_K
 
 Added:
 
-- Companion radio support: shared `RadioLiveDisplay`, `WalkieItem` GUI/LCD hooks, tune-screen chrome hooks, and `DeadAirAPI.registerWalkieGuiOpener` for non-`WalkieItem` shells (e.g. Pip-Boy).
-- Item tags `dead_air:walkie_radios` / `walkie_t1` / `walkie_t2` so tagged companion radios count as walkies.
+- Companion radio support: shared `RadioLiveDisplay`, `RadioItem` GUI/LCD hooks, tune-screen chrome hooks, and `DeadAirAPI.registerRadioGuiOpener` for non-`RadioItem` shells (e.g. Pip-Boy).
+- Item tags `dead_air:radios` / `radio_t1` / `radio_t2` so tagged companion radios count as radios.
 - Resource-pack compatibility for alternate T1/T2 models; T2 LCD falls back to the corner HUD on incompatible small atlases.
 
 Changed:
 
 - **ESS domain swap** â€” Java packages moved from `uk.creatopia.unbound.dead_airâ€¦` to `uk.co.extraspecialstudio.dead_airâ€¦`.
 - Depends on Extra Special Core **1.3.0+** (`EscTabBar` and related UI helpers).
-- Tune key (N) prefers an off-hand walkie when the main hand is not a radio.
+- Tune key (N) prefers an off-hand radio when the main hand is not a radio.
 - Static Notes removed from the RadioTowers Call Airdrop catalog; delivery crates only contain selected loot (tower structure crates still guarantee a T1.Radio).
 - Live LCD rotation/scale options for companion wrist screens (degrees + wide-atlas glyph scaling).
 
@@ -140,28 +148,28 @@ Update by: Extra_Special_K
 
 Added:
 
--Built-in Dead Air Walkie (T1.Radio) and Walkie Link (T2.Radio) with GeckoLib models â€” Flaton Walkie-Talkie mod no longer required.
+-Built-in Dead Air Radio (T1.Radio) and Radio Link (T2.Radio) with GeckoLib models â€” Flaton Radio-Talkie mod no longer required.
 -Craft recipes for the full progression chain: Static Note â†’ T1, nine Notes â†’ Resonant Chord (floor merge), Chord â†’ Dimensional Relay / Radio Panel, Relay â†’ T2 + Signal Upgrade, Disc Compendiums â†’ Jukebox Upgrade.
 -Static Note: drops from mob kills while listening (T1 15% / T2 30% from the one active radio only); glowing pickup; placeable; RadioTowers airdrop catalog entry when present.
 -T1.Radio in RadioTowers airdrops: Call Airdrop catalog (5 points), guaranteed in tower structure crates, ~10% in standard airdrop loot.
 -Signal Upgrade (Tower Boost): craftable; install on a radio panel like Jukebox Upgrade to enable T2 Link to that tower.
--T2 Link: link to any Signal-Upgraded station in walkie range (no need to stand at the panel). Link button toggles link/unlink; T1 GUI has no Link controls.
--Linked walkies follow their panel: re-assigning the panelâ€™s station retunes the linked walkie automatically.
+-T2 Link: link to any Signal-Upgraded station in radio range (no need to stand at the panel). Link button toggles link/unlink; T1 GUI has no Link controls.
+-Linked radios follow their panel: re-assigning the panelâ€™s station retunes the linked radio automatically.
 -Cross-dimension music resume: changing dimensions keeps the same track near the same playback position instead of restarting or skipping.
--One active tuned walkie per player: tuning, powering on a tuned walkie, or linking untunes every other walkie so stations cannot overlap.
--Clientâ†”server walkie state sync so Static Note drops and server logic match the clientâ€™s active radio.
+-One active tuned radio per player: tuning, powering on a tuned radio, or linking untunes every other radio so stations cannot overlap.
+-Clientâ†”server radio state sync so Static Note drops and server logic match the clientâ€™s active radio.
 -Field Guide reorganised: Intro, How To Play, Materials (per-item recipes), Current Expansions, Planned Material.
 
 Changed:
 
--Requires GeckoLib 4.x; ExtraSpecialCore; voicechat optional. Flaton Walkie-Talkie no longer required.
+-Requires GeckoLib 4.x; ExtraSpecialCore; voicechat optional. Flaton Radio-Talkie no longer required.
 -Music is driven every client tick (not HUD-only): keeps playing from inventory when tuned/on; dropped radios do not play.
 -Static Note drop chance is based only on the playerâ€™s single active radio (multiple radios in inventory no longer stack chance).
 -Version bump to 2.0.0 (Cross-Dim Radio).
 
 Fixed:
 
--Overlapping stations when swapping walkies, opening ESC, or dropping radios.
+-Overlapping stations when swapping radios, opening ESC, or dropping radios.
 -Music stopping when scrolling the active radio off the hotbar while it remained tuned in inventory.
 -Music restarting on a new track (or going silent for a long pause) after Nether/portal dimension changes.
 -Phantom â€œstill playingâ€ state after the sound engine wiped all sources on dimension change.
@@ -174,7 +182,7 @@ Changed:
 
 -Field Guide **Current Expansions** page updated: removed inaccurate Breakline FM future-expansion note.
 -In-development expansions now listed as Pop Paradise Radio, Frequency X, and Parallel Horizons FM.
--Walkie display-name and genre overrides pre-registered for those three expansion mod IDs.
+-Radio display-name and genre overrides pre-registered for those three expansion mod IDs.
 
 1.4.5
 
@@ -182,8 +190,8 @@ Update by: Extra_Special_K
 
 Changed:
 
--Walkie tuning and in-mod config screens finished on ESC anchor layout (title bar, footer, and panel insets).
--Walkie config gear button aligned flush with the right edge of the signal panel.
+-Radio tuning and in-mod config screens finished on ESC anchor layout (title bar, footer, and panel insets).
+-Radio config gear button aligned flush with the right edge of the signal panel.
 -Config screen title and Done button spaced inside the panel border instead of overlapping it.
 
 1.4.4
@@ -192,7 +200,7 @@ Update by: Extra_Special_K
 
 Added:
 
--Zero Gravity soundtrack expansion support: walkie shows the station as "Zero Gravity" (no Dead Air prefix) with genre Pop Rock / Indie Pop.
+-Zero Gravity soundtrack expansion support: radio shows the station as "Zero Gravity" (no Dead Air prefix) with genre Pop Rock / Indie Pop.
 -Field Guide Current Expansions list updated to include Zero Gravity (and existing Broken Youth / Iron Rain entries).
 
 1.4.3
@@ -202,12 +210,12 @@ Update by: Extra_Special_K
 Fixed:
 
 -Radio playlists now advance to the next track when a song finishes, instead of repeating the same track on all stations.
--Walkie tuning screen tab bar (Radio / Walkie) is centred correctly on all screen sizes.
+-Radio tuning screen tab bar (Radio / Radio) is centred correctly on all screen sizes.
 -Expansion station display names (e.g. Broken Youth Radio, Iron Rain FM) show correctly instead of auto-generated labels.
 
 Changed:
 
--Requires ExtraSpecialCore 1.2.1+ for updated walkie screen layout helpers.
+-Requires ExtraSpecialCore 1.2.1+ for updated radio screen layout helpers.
 
 1.4.2
 
@@ -256,9 +264,9 @@ Update by: Extra_Special_K
 
 Added:
 
--Version 1.0.3 â€“ Same core radio / walkie / API behaviour as 1.2 hotfix; packaging/version label update (replaces prior 1.3 string).
+-Version 1.0.3 â€“ Same core radio / radio / API behaviour as 1.2 hotfix; packaging/version label update (replaces prior 1.3 string).
 
--Use with RadioTowers 1.0.6 for tower panels, walkie integration, and Berezka airdrop waves (defense-wave + NMS fixes, reconnect sweeps not killing active waves, cooldown enforcement).
+-Use with RadioTowers 1.0.6 for tower panels, radio integration, and Berezka airdrop waves (defense-wave + NMS fixes, reconnect sweeps not killing active waves, cooldown enforcement).
 
 1.2 hotfix
 
@@ -266,7 +274,7 @@ Update by: Extra_Special_K
 
 Added:
 
--Walkie station list matches live tower broadcasts; turn-off gives real no-signal (no quiet fallback); tower/panel identity deduped so the walkie UI doesnâ€™t accumulate stale stations.
+-Radio station list matches live tower broadcasts; turn-off gives real no-signal (no quiet fallback); tower/panel identity deduped so the radio UI doesnâ€™t accumulate stale stations.
 
 1.2
 
@@ -280,7 +288,7 @@ Added:
 
 -Dynamic stations and custom folders â€“ Better addon discovery; config/dead_air/custom stations folder flow; Wayfarer / Frontline display names.
 
--Walkie and playback â€“ Persistence and retune fixes; Creatopia Radio in default set.
+-Radio and playback â€“ Persistence and retune fixes; Creatopia Radio in default set.
 
 Fixed:
 
@@ -304,5 +312,5 @@ Update by: Extra_Special_K
 
 Added:
 
--Radio network (towers broadcast, walkie tunes stations); music when walkie carried; 75-block signal steps. Requires Apocalypse Structures + Walkie-Talkie.
+-Radio network (towers broadcast, radio tunes stations); music when radio carried; 75-block signal steps. Requires Apocalypse Structures + Radio-Talkie.
 

@@ -13,7 +13,7 @@ import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
 import uk.co.extraspecialstudio.dead_air.radio.SignalStrength;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
 import uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -588,11 +588,11 @@ public final class RadioLiveDisplay {
     }
 
     private HudState describe(ItemStack stack, Minecraft mc) {
-        boolean on = mc.player != null && WalkieTalkieManager.getState(mc.player, stack).isOn();
-        ResourceLocation stationId = WalkieTalkieManager.getTunedStationId(stack);
+        boolean on = mc.player != null && RadioManager.getState(mc.player, stack).isOn();
+        ResourceLocation stationId = RadioManager.getTunedStationId(stack);
         RadioStation station = stationId != null ? StationRegistry.getStation(stationId) : null;
-        boolean linked = WalkieTalkieManager.hasLinkedTower(stack)
-            && WalkieTalkieManager.getLinkMode(stack) == WalkieTalkieManager.LinkMode.LINKED;
+        boolean linked = RadioManager.hasLinkedTower(stack)
+            && RadioManager.getLinkMode(stack) == RadioManager.LinkMode.LINKED;
 
         float signal = 0f;
         int bars = 0;
@@ -600,10 +600,10 @@ public final class RadioLiveDisplay {
         boolean facingTower = false;
         if (on && mc.player != null && mc.level != null) {
             float yaw = mc.player.getYRot();
-            compass = WalkieTalkieOverlay.compassDirectionFromYaw(yaw);
+            compass = RadioOverlay.compassDirectionFromYaw(yaw);
             if (station != null) {
                 try {
-                    signal = WalkieTalkieOverlay.calculateSignalStrengthForStation(mc, station);
+                    signal = RadioOverlay.calculateSignalStrengthForStation(mc, station);
                     bars = SignalStrength.getSignalBars(signal);
                     facingTower = isFacingTower(mc, station, signal, yaw);
                 } catch (Exception ignored) {

@@ -42,13 +42,20 @@ public final class RadioChannelTracker {
         return sound != null && SOUND_TO_CHANNEL.containsKey(sound);
     }
 
-    /** Called from ChannelMixin.updateStream - returns volume to set, or -1 if not our channel. */
+    /**
+     * Called from ChannelMixin.updateStream on the OpenAL audio thread.
+     * Uses cached volume only — never Level/player (dimension teardowns race this thread).
+     * Returns volume to set, or -1 if not our channel.
+     */
     public static float getVolumeForChannel(Channel channel) {
         RadioSoundInstance sound = CHANNEL_TO_SOUND.get(channel);
         if (sound == null) return -1f;
-        float baseVol = sound.getVolume();
-        float finalVol = baseVol;
-        return finalVol <= 0f ? 0.01f : finalVol;
+        try {
+            float baseVol = sound.getCachedVolume();
+            return baseVol <= 0f ? 0.01f : baseVol;
+        } catch (Throwable ignored) {
+            return 0.01f;
+        }
     }
 
     public static boolean isRadioChannel(Channel channel) {

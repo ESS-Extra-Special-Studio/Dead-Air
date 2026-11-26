@@ -12,7 +12,7 @@ import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastProgress;
 import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastScheduler;
 import uk.co.extraspecialstudio.dead_air.broadcast.StoryStage;
 import uk.co.extraspecialstudio.dead_air.item.DeadAirItems;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 import uk.co.extraspecialstudio.dead_air.survivor.SurvivorRoster;
 
 /**
@@ -152,12 +152,12 @@ public final class DeadAirAdvancements {
 
     private static boolean hasTunedRadio(ServerPlayer player) {
         for (ItemStack stack : player.getInventory().items) {
-            if (WalkieTalkieManager.isWalkieTalkieItem(stack) && WalkieTalkieManager.getTunedStationId(stack) != null) {
+            if (RadioManager.isRadioItem(stack) && RadioManager.getTunedStationId(stack) != null) {
                 return true;
             }
         }
         for (ItemStack stack : player.getInventory().offhand) {
-            if (WalkieTalkieManager.isWalkieTalkieItem(stack) && WalkieTalkieManager.getTunedStationId(stack) != null) {
+            if (RadioManager.isRadioItem(stack) && RadioManager.getTunedStationId(stack) != null) {
                 return true;
             }
         }

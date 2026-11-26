@@ -25,7 +25,7 @@ import uk.co.extraspecialstudio.dead_air.radio.TowerManager;
 import uk.co.extraspecialstudio.dead_air.station.FieldGuideGrantStorage;
 import uk.co.extraspecialstudio.dead_air.station.StationUnlockManager;
 import uk.co.extraspecialstudio.dead_air.tower.modules.TowerModuleStorage;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +44,7 @@ public class ModEvents {
         return uk.co.extraspecialstudio.dead_air.Dead_air.isShutdownRequested();
     }
 
-    // Walkie GUI opens from WalkieItem.use() on the client (Dead Air owns the items now).
+    // Radio GUI opens from RadioItem.use() on the client (Dead Air owns the items now).
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -109,15 +109,15 @@ public class ModEvents {
     }
     
     /**
-     * Check if player with powered-on walkie-talkie has entered range of a new tower.
+     * Check if player with powered-on radio has entered range of a new tower.
      */
     private static void checkForNewTowers(ServerPlayer player) {
-        // Only check if player is holding walkie-talkie and it's powered on
-        if (!WalkieTalkieManager.isHoldingWalkieTalkie(player)) {
+        // Only check if player is holding radio and it's powered on
+        if (!RadioManager.isHoldingRadio(player)) {
             return;
         }
         
-        WalkieTalkieManager.WalkieTalkieState state = WalkieTalkieManager.getState(player);
+        RadioManager.RadioState state = RadioManager.getState(player);
         if (!state.isOn()) {
             return;
         }
@@ -285,7 +285,7 @@ public class ModEvents {
         if (event.getEntity().level().getServer() != null && event.getEntity().level().getServer().getPlayerCount() <= 1) {
             uk.co.extraspecialstudio.dead_air.Dead_air.setShutdownRequested(true);
         }
-        WalkieTalkieManager.removePlayer(event.getEntity());
+        RadioManager.removePlayer(event.getEntity());
         uk.co.extraspecialstudio.dead_air.station.StationUnlockManager.removePlayer(event.getEntity());
         NOTIFIED_TOWERS.remove(event.getEntity().getUUID());
     }

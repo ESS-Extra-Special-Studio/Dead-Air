@@ -30,7 +30,7 @@ public final class LootTableInjection {
             event.getTable().addPool(LootPool.lootPool()
                 .name("dead_air_guaranteed_t1")
                 .setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(DeadAirItems.WALKIE_T1.get()))
+                .add(LootItem.lootTableItem(DeadAirItems.RADIO_T1.get()))
                 .build());
             return;
         }
@@ -38,7 +38,7 @@ public final class LootTableInjection {
             event.getTable().addPool(LootPool.lootPool()
                 .name("dead_air_zombie_t1")
                 .setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(DeadAirItems.WALKIE_T1.get())
+                .add(LootItem.lootTableItem(DeadAirItems.RADIO_T1.get())
                     .when(LootItemRandomChanceCondition.randomChance(ZOMBIE_T1_CHANCE)))
                 .build());
         }

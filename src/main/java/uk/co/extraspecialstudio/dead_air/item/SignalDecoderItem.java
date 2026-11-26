@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieNbt;
+import uk.co.extraspecialstudio.dead_air.radio.RadioNbt;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -30,8 +30,8 @@ public class SignalDecoderItem extends Item {
     public @Nonnull InteractionResultHolder<ItemStack> use(@Nonnull Level level, @Nonnull Player player, @Nonnull InteractionHand hand) {
         ItemStack decoder = player.getItemInHand(hand);
         InteractionHand other = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-        ItemStack walkie = player.getItemInHand(other);
-        if (!(walkie.getItem() instanceof WalkieItem w) || w.getTier() != WalkieItem.Tier.T2) {
+        ItemStack radio = player.getItemInHand(other);
+        if (!(radio.getItem() instanceof RadioItem w) || w.getTier() != RadioItem.Tier.T2) {
             if (!level.isClientSide) {
                 player.displayClientMessage(Component.translatable("message.dead_air.decoder.need_t2")
                     .withStyle(ChatFormatting.GRAY), true);
@@ -39,9 +39,9 @@ public class SignalDecoderItem extends Item {
             return InteractionResultHolder.fail(decoder);
         }
         if (!level.isClientSide) {
-            ItemStack upgraded = new ItemStack(DeadAirItems.WALKIE_T3.get());
-            CompoundTag tag = WalkieNbt.get(walkie);
-            if (tag != null) WalkieNbt.set(upgraded, tag.copy());
+            ItemStack upgraded = new ItemStack(DeadAirItems.RADIO_T3.get());
+            CompoundTag tag = RadioNbt.get(radio);
+            if (tag != null) RadioNbt.set(upgraded, tag.copy());
             player.setItemInHand(other, upgraded);
             if (!player.getAbilities().instabuild) decoder.shrink(1);
             level.playSound(null, player.blockPosition(), SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 0.5f, 1.4f);

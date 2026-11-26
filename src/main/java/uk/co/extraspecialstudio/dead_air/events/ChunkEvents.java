@@ -160,7 +160,7 @@ public class ChunkEvents {
                             if (station != null) {
                                 TowerManager.registerTower(level, panelPos, station, towerType);
                                 processedPanels.add(panelPos);
-                                // Persist detection so walkie can point even after chunk unload (no unlock/music)
+                                // Persist detection so radio can point even after chunk unload (no unlock/music)
                                 BlockPos towerPos = panelPos;
                                 uk.co.extraspecialstudio.dead_air.radio.RadioTower reg =
                                     TowerManager.findTowerForPanel(level, panelPos);

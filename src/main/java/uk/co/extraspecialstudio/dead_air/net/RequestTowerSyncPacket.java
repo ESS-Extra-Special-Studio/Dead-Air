@@ -11,10 +11,12 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 public class RequestTowerSyncPacket implements CustomPacketPayload {
     public static final Type<RequestTowerSyncPacket> TYPE =
         new Type<>(new ResourceLocation(Dead_air.MODID, "request_tower_sync"));
+    /** StreamCodec.unit requires the exact same instance on encode — never {@code new}. */
+    public static final RequestTowerSyncPacket INSTANCE = new RequestTowerSyncPacket();
     public static final StreamCodec<RegistryFriendlyByteBuf, RequestTowerSyncPacket> STREAM_CODEC =
-        StreamCodec.unit(new RequestTowerSyncPacket());
+        StreamCodec.unit(INSTANCE);
 
-    public RequestTowerSyncPacket() {}
+    private RequestTowerSyncPacket() {}
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

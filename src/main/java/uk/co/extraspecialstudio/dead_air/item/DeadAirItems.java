@@ -18,13 +18,13 @@ public final class DeadAirItems {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(net.minecraft.core.registries.Registries.ITEM, Dead_air.MODID);
 
     static {
-        // Forge 1.20.1 ships radio_t*; Neo canonical IDs are walkie_t*. Remap legacy radio_* stacks.
-        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "radio_t1"),
-            new ResourceLocation(Dead_air.MODID, "walkie_t1"));
-        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "radio_t2"),
-            new ResourceLocation(Dead_air.MODID, "walkie_t2"));
-        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "radio_t3"),
-            new ResourceLocation(Dead_air.MODID, "walkie_t3"));
+        // Legacy Neo walkie_t* item IDs → canonical radio_t* (existing worlds / inventories).
+        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "walkie_t1"),
+            new ResourceLocation(Dead_air.MODID, "radio_t1"));
+        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "walkie_t2"),
+            new ResourceLocation(Dead_air.MODID, "radio_t2"));
+        REGISTER.addAlias(new ResourceLocation(Dead_air.MODID, "walkie_t3"),
+            new ResourceLocation(Dead_air.MODID, "radio_t3"));
     }
 
     @SuppressWarnings("null")
@@ -51,28 +51,28 @@ public final class DeadAirItems {
         () -> new FieldGuideItem(new Item.Properties().stacksTo(1))
     );
 
-    /** Tier-1 Dead Air walkie (local discovery). */
+    /** Tier-1 Dead Air radio (local discovery). */
     @SuppressWarnings("null")
-    public static final DeferredHolder<Item, WalkieItem> WALKIE_T1 = REGISTER.register(
-        "walkie_t1",
-        () -> new WalkieItem(new Item.Properties().stacksTo(1), WalkieItem.Tier.T1)
+    public static final DeferredHolder<Item, RadioItem> RADIO_T1 = REGISTER.register(
+        "radio_t1",
+        () -> new RadioItem(new Item.Properties().stacksTo(1), RadioItem.Tier.T1)
     );
 
-    /** Tier-2 Walkie Link (cross-dim capable). */
+    /** Tier-2 Radio Link (cross-dim capable). */
     @SuppressWarnings("null")
-    public static final DeferredHolder<Item, WalkieItem> WALKIE_T2 = REGISTER.register(
-        "walkie_t2",
-        () -> new WalkieItem(new Item.Properties().stacksTo(1), WalkieItem.Tier.T2)
+    public static final DeferredHolder<Item, RadioItem> RADIO_T2 = REGISTER.register(
+        "radio_t2",
+        () -> new RadioItem(new Item.Properties().stacksTo(1), RadioItem.Tier.T2)
     );
 
-    /** Tier-3 walkie: T2 features plus Transmit and story broadcasts. */
+    /** Tier-3 radio: T2 features plus Transmit and story broadcasts. */
     @SuppressWarnings("null")
-    public static final DeferredHolder<Item, WalkieItem> WALKIE_T3 = REGISTER.register(
-        "walkie_t3",
-        () -> new WalkieItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE), WalkieItem.Tier.T3)
+    public static final DeferredHolder<Item, RadioItem> RADIO_T3 = REGISTER.register(
+        "radio_t3",
+        () -> new RadioItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE), RadioItem.Tier.T3)
     );
 
-    /** Upgrade module: craft into or use on a T2 Walkie to produce a T3 Walkie. */
+    /** Upgrade module: craft into or use on a T2 Radio to produce a T3 Radio. */
     @SuppressWarnings("null")
     public static final DeferredHolder<Item, Item> SIGNAL_DECODER = REGISTER.register(
         "signal_decoder",

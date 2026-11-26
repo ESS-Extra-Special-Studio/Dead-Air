@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.api.DeadAirAPI;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +36,7 @@ public final class SurvivorPartyRoleEvents {
         if (source instanceof ServerPlayer player) {
             // Require a listening radio (on+tuned), not merely a MUSIC station id in state.
             if (hasFollowingProfession(player, SurvivorEntity.Profession.RADIO_OPERATOR)
-                && WalkieTalkieManager.isListeningToRadio(player)
+                && RadioManager.isListeningToRadio(player)
                 && DeadAirAPI.isPlayerPlayingMusic(player)) {
                 event.setAmount(event.getAmount() * RADIO_MUSIC_DAMAGE);
             }
