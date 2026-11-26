@@ -14,7 +14,7 @@ import uk.co.extraspecialstudio.dead_air.api.events.types.DeadAirEmergencySignal
 import uk.co.extraspecialstudio.dead_air.base.PlayerBaseManager;
 import uk.co.extraspecialstudio.dead_air.client.DeadAirSounds;
 import uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter;
-import uk.co.extraspecialstudio.dead_air.item.WalkieItem;
+import uk.co.extraspecialstudio.dead_air.item.RadioItem;
 import uk.co.extraspecialstudio.dead_air.net.BroadcastMessagePacket;
 import uk.co.extraspecialstudio.dead_air.net.DeadAirNet;
 import uk.co.extraspecialstudio.dead_air.net.ForceEmergencyTunePacket;
@@ -166,10 +166,10 @@ public final class BroadcastScheduler {
 
     public static boolean hasT3(Player player) {
         for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof WalkieItem w && w.getTier() == WalkieItem.Tier.T3) return true;
+            if (stack.getItem() instanceof RadioItem w && w.getTier() == RadioItem.Tier.T3) return true;
         }
         for (ItemStack stack : player.getInventory().offhand) {
-            if (stack.getItem() instanceof WalkieItem w && w.getTier() == WalkieItem.Tier.T3) return true;
+            if (stack.getItem() instanceof RadioItem w && w.getTier() == RadioItem.Tier.T3) return true;
         }
         return false;
     }

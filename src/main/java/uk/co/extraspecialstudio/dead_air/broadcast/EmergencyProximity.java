@@ -13,7 +13,7 @@ import uk.co.extraspecialstudio.dead_air.net.DeadAirNet;
 import uk.co.extraspecialstudio.dead_air.net.EbSignalPromptPacket;
 import uk.co.extraspecialstudio.dead_air.net.ForceEmergencyTunePacket;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public final class EmergencyProximity {
             // Site pins are overworld — same gate as EbHuntTracker.
             if (player.level() != server.overworld()) continue;
             if (!BroadcastScheduler.hasT3(player)) continue;
-            if (!WalkieTalkieManager.isListeningToRadio(player)) continue;
+            if (!RadioManager.isListeningToRadio(player)) continue;
 
             BroadcastProgress.PlayerProgress progress = data.get(player.getUUID());
             PendingSites.Site nearest = nearestOwnedSite(sites, player, radiusSq);
@@ -107,11 +107,11 @@ public final class EmergencyProximity {
         if (player == null || siteKey == null || siteKey.isEmpty()) return;
         PROMPT_PENDING.remove(player.getUUID());
         if (!BroadcastScheduler.hasT3(player)) return;
-        if (!WalkieTalkieManager.hasWalkieTalkieInInventory(player)) return;
+        if (!RadioManager.hasRadioInInventory(player)) return;
 
         var emergency = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
         if (emergency != null) {
-            WalkieTalkieManager.tuneToStation(player, emergency);
+            RadioManager.tuneToStation(player, emergency);
             DeadAirNet.sendTo(player, new ForceEmergencyTunePacket(ForceEmergencyTunePacket.TUNE_EMERGENCY));
         }
         BroadcastProgress data = BroadcastProgress.get(player.server);
@@ -225,8 +225,8 @@ public final class EmergencyProximity {
     }
 
     private static boolean isListeningOnEmergency(ServerPlayer player) {
-        var stack = WalkieTalkieManager.findListeningWalkie(player);
-        return WalkieTalkieManager.isWalkieTunedToStation(stack, StationRegistry.EMERGENCY_BROADCAST_ID);
+        var stack = RadioManager.findListeningRadio(player);
+        return RadioManager.isRadioTunedToStation(stack, StationRegistry.EMERGENCY_BROADCAST_ID);
     }
 
     private static PendingSites.Site nearestOwnedSite(PendingSites sites, ServerPlayer player, long radiusSq) {

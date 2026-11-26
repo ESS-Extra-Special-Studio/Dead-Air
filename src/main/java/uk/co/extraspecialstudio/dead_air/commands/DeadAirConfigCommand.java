@@ -70,9 +70,9 @@ public final class DeadAirConfigCommand {
     private static int checklist(CommandSourceStack src) {
         line(src, "=== Dead Air checks (current values) ===");
         line(src, "1. HUD is " + Config.overlayCorner + " inset "
-            + Config.overlayOffsetX + "," + Config.overlayOffsetY + " â€” look at walkie overlay.");
+            + Config.overlayOffsetX + "," + Config.overlayOffsetY + " â€” look at radio overlay.");
         line(src, "2. radioAlwaysOn=" + Config.radioAlwaysOn
-            + " â€” " + (Config.radioAlwaysOn ? "music should play from inventory." : "music ONLY while walkie is held."));
+            + " â€” " + (Config.radioAlwaysOn ? "music should play from inventory." : "music ONLY while radio is held."));
         line(src, "3. musicStationRange=" + Config.musicStationRange
             + " â€” walk away; bars should drop by ~75-block steps. At 75, you lose signal almost immediately.");
         line(src, "4. emergencyBroadcastRange=" + Config.emergencyBroadcastRange

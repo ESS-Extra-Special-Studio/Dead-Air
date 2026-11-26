@@ -25,13 +25,13 @@ import uk.co.extraspecialstudio.dead_air.music.MusicStationManager;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
 import uk.co.extraspecialstudio.dead_air.station.config.ConfigStationLoader;
 import uk.co.extraspecialstudio.dead_air.tower.ApocalypseTowerDetector;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 /**
  * Dead Air - A survival-driven radio network mod for Zombiecraft.
- * Integrates radio towers and walkie-talkies for
+ * Integrates radio towers and radio-talkies for
  * exploration, tension, and ambient storytelling. Airdrop integration planned for a later update.
  */
 @Mod(Dead_air.MODID)
@@ -152,7 +152,7 @@ public class Dead_air {
         StationRegistry.registerDefaultStations();
         ConfigStationLoader.loadAndRegisterStations();
         uk.co.extraspecialstudio.dead_air.music.CustomStationFolders.registerStationsIntoRegistry();
-        WalkieTalkieManager.initialize();
+        RadioManager.initialize();
         ApocalypseTowerDetector.initialize();
         ensureTowerClassesLoaded();
         ensureSurvivorClassesLoaded();
@@ -171,7 +171,7 @@ public class Dead_air {
                     Class<?> entryCl = Class.forName("net.mcreator.radiotowers.airdrop.AirdropCatalog$Entry");
                     java.lang.reflect.Constructor<?> entryCtor =
                         entryCl.getConstructor(ResourceLocation.class, int.class, int.class);
-                    addons.add(entryCtor.newInstance(ResourceLocation.fromNamespaceAndPath(MODID, "walkie_t1"), 5, 1));
+                    addons.add(entryCtor.newInstance(ResourceLocation.fromNamespaceAndPath(MODID, "radio_t1"), 5, 1));
                     // The catalog caches itself on first use; drop that cache in case it built before we registered.
                     catalog.getMethod("invalidate").invoke(null);
                     LOGGER.info("Dead Air: registered airdrop catalog entry (T1.Radio 1 / 5 points)");
@@ -196,18 +196,18 @@ public class Dead_air {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.setOpenWalkieGuiCallback(() -> {
+            uk.co.extraspecialstudio.dead_air.net.DeadAirNet.setOpenRadioGuiCallback(() -> {
                 net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
                 if (mc.player != null) {
                     net.minecraft.world.InteractionHand hand =
-                        uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager.isWalkieTalkieItem(mc.player.getMainHandItem())
+                        uk.co.extraspecialstudio.dead_air.radio.RadioManager.isRadioItem(mc.player.getMainHandItem())
                             ? net.minecraft.world.InteractionHand.MAIN_HAND
                             : net.minecraft.world.InteractionHand.OFF_HAND;
                     net.minecraft.world.item.ItemStack held = mc.player.getItemInHand(hand);
-                    if (held.getItem() instanceof uk.co.extraspecialstudio.dead_air.item.WalkieItem walkie) {
-                        walkie.openTuningScreen(hand);
+                    if (held.getItem() instanceof uk.co.extraspecialstudio.dead_air.item.RadioItem radio) {
+                        radio.openTuningScreen(hand);
                     } else {
-                        mc.setScreen(new uk.co.extraspecialstudio.dead_air.client.WalkieTalkieTuningScreen(hand));
+                        mc.setScreen(new uk.co.extraspecialstudio.dead_air.client.RadioTuningScreen(hand));
                     }
                 }
             });
@@ -282,12 +282,12 @@ public class Dead_air {
             }
         }
 
-        /** Register walkie HUD overlay so it always renders (not dependent on CROSSHAIR/HOTBAR events). */
+        /** Register radio HUD overlay so it always renders (not dependent on CROSSHAIR/HOTBAR events). */
         @SubscribeEvent
         public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "walkie_hud"), (guiGraphics, deltaTracker) -> {
-                uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.renderRadioPanelTooltip(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
-                uk.co.extraspecialstudio.dead_air.client.WalkieTalkieOverlay.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "radio_hud"), (guiGraphics, deltaTracker) -> {
+                uk.co.extraspecialstudio.dead_air.client.RadioOverlay.renderRadioPanelTooltip(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
+                uk.co.extraspecialstudio.dead_air.client.RadioOverlay.render(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight());
             });
             event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(MODID, "listener_effects"), (guiGraphics, deltaTracker) ->
                 uk.co.extraspecialstudio.dead_air.client.ListenerClientEffects.renderOverlay(guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(),

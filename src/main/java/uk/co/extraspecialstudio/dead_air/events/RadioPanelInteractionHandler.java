@@ -332,7 +332,7 @@ public class RadioPanelInteractionHandler {
         for (net.minecraft.world.entity.player.Player player : players) {
             if (player instanceof ServerPlayer) {
                 ServerPlayer serverPlayer = (ServerPlayer) player;
-                // Check if player is in range and has walkie-talkie
+                // Check if player is in range and has radio-talkie
                 double distance = player.position().distanceTo(tower.getPositionVec());
                 if (distance <= tower.getStation().getBroadcastRange()) {
                     // Check if player has unlocked this station

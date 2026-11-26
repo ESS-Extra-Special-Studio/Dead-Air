@@ -4,7 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import uk.co.extraspecialstudio.dead_air.Config;
 import uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public final class ExploreDiscovery {
             UUID id = player.getUUID();
             if (player.isSpectator()
                 || !BroadcastScheduler.canHearEmergency(player)
-                || !WalkieTalkieManager.isListeningToRadio(player)
+                || !RadioManager.isListeningToRadio(player)
                 || ListenerEncounter.isInvolved(player)) {
                 // Drop anchor so re-listen / re-equip requires a fresh travel segment.
                 LAST_POS.remove(id);

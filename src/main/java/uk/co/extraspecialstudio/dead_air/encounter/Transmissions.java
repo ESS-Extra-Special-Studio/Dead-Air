@@ -12,7 +12,7 @@ import uk.co.extraspecialstudio.dead_air.broadcast.BroadcastProgress;
 import uk.co.extraspecialstudio.dead_air.broadcast.StoryStage;
 import uk.co.extraspecialstudio.dead_air.client.DeadAirSounds;
 import uk.co.extraspecialstudio.dead_air.item.DeadAirItems;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public final class Transmissions {
         // Boss summon is impossible without a T3 radio in hand (Transmit button is T3-only).
         ItemStack main = player.getMainHandItem();
         ItemStack off = player.getOffhandItem();
-        if (!WalkieTalkieManager.isT3(main) && !WalkieTalkieManager.isT3(off)) {
+        if (!RadioManager.isT3(main) && !RadioManager.isT3(off)) {
             say(player, Component.translatable("message.dead_air.transmit.need_radio"), ChatFormatting.DARK_GRAY);
             return;
         }

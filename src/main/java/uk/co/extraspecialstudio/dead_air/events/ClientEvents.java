@@ -20,9 +20,9 @@ import uk.co.extraspecialstudio.dead_air.Dead_air;
 import uk.co.extraspecialstudio.dead_air.audio.AudioManager;
 import uk.co.extraspecialstudio.dead_air.client.KeyBindings;
 import uk.co.extraspecialstudio.dead_air.client.SurvivorPartyHud;
-import uk.co.extraspecialstudio.dead_air.client.WalkieTalkieTuningScreen;
+import uk.co.extraspecialstudio.dead_air.client.RadioTuningScreen;
 import uk.co.extraspecialstudio.dead_air.radio.RadioStation;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 /**
  * Client-side event handlers. Registered via @EventBusSubscriber on FORGE bus so tick handler receives ClientTickEvent.
@@ -72,15 +72,15 @@ public class ClientEvents {
         // stopAnyVanillaMusic removed - empty; MusicManagerMixin disables vanilla music
 
         // Sole music driver (was overlay-only; tick keeps inventory radio alive when HUD hidden).
-        WalkieTalkieManager.ensureSingleActiveListening(mc.player);
-        WalkieTalkieManager.refreshLinkedStation(mc.player);
-        if (!WalkieTalkieManager.shouldPlayRadio(mc.player)) {
+        RadioManager.ensureSingleActiveListening(mc.player);
+        RadioManager.refreshLinkedStation(mc.player);
+        if (!RadioManager.shouldPlayRadio(mc.player)) {
             AudioManager.stopAll();
             return;
         }
 
-        ItemStack listening = WalkieTalkieManager.findListeningWalkie(mc.player);
-        WalkieTalkieManager.WalkieTalkieState state = WalkieTalkieManager.getState(mc.player, listening);
+        ItemStack listening = RadioManager.findListeningRadio(mc.player);
+        RadioManager.RadioState state = RadioManager.getState(mc.player, listening);
         int tick = mc.player.tickCount;
         RadioStation station = state.getCurrentStation();
         if (station == null || !state.isOn()) {
@@ -91,7 +91,7 @@ public class ClientEvents {
             AudioManager.stopAllRadioSounds(); // stop music only; overlay plays static
             return;
         }
-        // Send packets + drive music once per tick from the single active listening walkie.
+        // Send packets + drive music once per tick from the single active listening radio.
         if (mc.getConnection() != null) {
             if (tick % 2 == 0) {
                 uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
@@ -99,7 +99,7 @@ public class ClientEvents {
             }
             if (!uk.co.extraspecialstudio.dead_air.tower.KnownTowersClientCache.hasCachedTowers() && tick % 10 == 0) {
                 uk.co.extraspecialstudio.dead_air.net.DeadAirNet.sendToServer(
-                    new uk.co.extraspecialstudio.dead_air.net.RequestTowerSyncPacket());
+                    uk.co.extraspecialstudio.dead_air.net.RequestTowerSyncPacket.INSTANCE);
             }
         }
         try {
@@ -151,7 +151,7 @@ public class ClientEvents {
         }
     }
 
-    /* Walkie HUD overlay is registered via RegisterGuiOverlaysEvent in Dead_air.ClientModEvents (reliable; not tied to CROSSHAIR/HOTBAR). */
+    /* radio HUD overlay is registered via RegisterGuiOverlaysEvent in Dead_air.ClientModEvents (reliable; not tied to CROSSHAIR/HOTBAR). */
     /* Keys register only in Dead_air.ClientModEvents (MOD bus) — do not also register here on the GAME bus. */
 
     /** Clear tower cache when the client loads a (new) level so we don't use stale towers from a previous world (phantom signal). */
@@ -217,32 +217,32 @@ public class ClientEvents {
     
     @SubscribeEvent
     public static void onClientTickKeybind(ClientTickEvent.Post event) { 
-        // Check for keybind press (N = open our GUI; right-click walkie also opens it)
+        // Check for keybind press (N = open our GUI; right-click radio also opens it)
         while (KeyBindings.TUNE_RADIO.consumeClick()) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null && WalkieTalkieManager.isHoldingWalkieTalkie(mc.player)) {
-                // Prefer off-hand when it holds a walkie and main does not â€” Pip-Boys equip there.
+            if (mc.player != null && RadioManager.isHoldingRadio(mc.player)) {
+                // Prefer off-hand when it holds a radio and main does not â€” Pip-Boys equip there.
                 net.minecraft.world.InteractionHand hand;
-                boolean mainWalkie = WalkieTalkieManager.isWalkieTalkieItem(mc.player.getMainHandItem());
-                boolean offWalkie = WalkieTalkieManager.isWalkieTalkieItem(mc.player.getOffhandItem());
-                if (offWalkie && !mainWalkie) {
+                boolean mainRadio = RadioManager.isRadioItem(mc.player.getMainHandItem());
+                boolean offRadio = RadioManager.isRadioItem(mc.player.getOffhandItem());
+                if (offRadio && !mainRadio) {
                     hand = net.minecraft.world.InteractionHand.OFF_HAND;
-                } else if (mainWalkie) {
+                } else if (mainRadio) {
                     hand = net.minecraft.world.InteractionHand.MAIN_HAND;
                 } else {
                     hand = net.minecraft.world.InteractionHand.OFF_HAND;
                 }
                 net.minecraft.world.item.ItemStack held = mc.player.getItemInHand(hand);
-                if (held.getItem() instanceof uk.co.extraspecialstudio.dead_air.item.WalkieItem walkie) {
-                    walkie.openTuningScreen(hand);
-                } else if (uk.co.extraspecialstudio.dead_air.api.DeadAirAPI.tryOpenCompanionWalkieGui(hand, held)) {
+                if (held.getItem() instanceof uk.co.extraspecialstudio.dead_air.item.RadioItem radio) {
+                    radio.openTuningScreen(hand);
+                } else if (uk.co.extraspecialstudio.dead_air.api.DeadAirAPI.tryOpenCompanionRadioGui(hand, held)) {
                     // Companion radio (e.g. Pip-Boy) opened its own screen.
                 } else {
-                    mc.setScreen(new WalkieTalkieTuningScreen(hand));
+                    mc.setScreen(new RadioTuningScreen(hand));
                 }
             }
         }
     }
 
-    // Walkie right-click GUI: handled by WalkieItem.use() (no longer cancel â€” that blocked our own use()).
+    // radio right-click GUI: handled by RadioItem.use() (no longer cancel â€” that blocked our own use()).
 }

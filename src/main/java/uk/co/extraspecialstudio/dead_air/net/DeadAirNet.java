@@ -9,15 +9,15 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class DeadAirNet {
     public static final String PROTOCOL = "5";
 
-    private static Runnable openWalkieGuiCallback;
+    private static Runnable openRadioGuiCallback;
 
-    public static void setOpenWalkieGuiCallback(Runnable r) {
-        openWalkieGuiCallback = r;
+    public static void setOpenRadioGuiCallback(Runnable r) {
+        openRadioGuiCallback = r;
     }
 
-    static void runOpenWalkieGuiCallback() {
-        if (openWalkieGuiCallback != null) {
-            openWalkieGuiCallback.run();
+    static void runOpenRadioGuiCallback() {
+        if (openRadioGuiCallback != null) {
+            openRadioGuiCallback.run();
         }
     }
 
@@ -27,9 +27,9 @@ public final class DeadAirNet {
         reg.playToClient(RadioSignalResponsePacket.TYPE, RadioSignalResponsePacket.STREAM_CODEC, RadioSignalResponsePacket::handle);
         reg.playToClient(KnownTowersSyncPacket.TYPE, KnownTowersSyncPacket.STREAM_CODEC, KnownTowersSyncPacket::handle);
         reg.playToServer(RequestTowerSyncPacket.TYPE, RequestTowerSyncPacket.STREAM_CODEC, RequestTowerSyncPacket::handle);
-        reg.playToClient(OpenWalkieGuiPacket.TYPE, OpenWalkieGuiPacket.STREAM_CODEC, OpenWalkieGuiPacket::handle);
+        reg.playToClient(OpenRadioGuiPacket.TYPE, OpenRadioGuiPacket.STREAM_CODEC, OpenRadioGuiPacket::handle);
         reg.playToClient(StationRemovedFromListPacket.TYPE, StationRemovedFromListPacket.STREAM_CODEC, StationRemovedFromListPacket::handle);
-        reg.playToServer(WalkieStateSyncPacket.TYPE, WalkieStateSyncPacket.STREAM_CODEC, WalkieStateSyncPacket::handle);
+        reg.playToServer(RadioStateSyncPacket.TYPE, RadioStateSyncPacket.STREAM_CODEC, RadioStateSyncPacket::handle);
         reg.playToClient(ConfigSyncPacket.TYPE, ConfigSyncPacket.STREAM_CODEC, ConfigSyncPacket::handle);
         reg.playToServer(ExpansionPacksAnnouncePacket.TYPE, ExpansionPacksAnnouncePacket.STREAM_CODEC, ExpansionPacksAnnouncePacket::handle);
         reg.playToClient(BroadcastMessagePacket.TYPE, BroadcastMessagePacket.STREAM_CODEC, BroadcastMessagePacket::handle);

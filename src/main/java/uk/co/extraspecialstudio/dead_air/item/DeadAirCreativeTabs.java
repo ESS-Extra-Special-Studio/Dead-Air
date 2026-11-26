@@ -26,9 +26,9 @@ public final class DeadAirCreativeTabs {
                 // Guide
                 output.accept(DeadAirItems.DEAD_AIR_FIELD_GUIDE.get());
                 // Radios
-                output.accept(DeadAirItems.WALKIE_T1.get());
-                output.accept(DeadAirItems.WALKIE_T2.get());
-                output.accept(DeadAirItems.WALKIE_T3.get());
+                output.accept(DeadAirItems.RADIO_T1.get());
+                output.accept(DeadAirItems.RADIO_T2.get());
+                output.accept(DeadAirItems.RADIO_T3.get());
                 output.accept(DeadAirItems.SIGNAL_DECODER.get());
                 output.accept(DeadAirItems.RELAY_LOG.get());
                 // Resources / craft parts

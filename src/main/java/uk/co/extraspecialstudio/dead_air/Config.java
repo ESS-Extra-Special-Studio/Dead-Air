@@ -34,7 +34,7 @@ public class Config {
     private static final ModConfigSpec.BooleanValue AUTO_DISCOVER_MOD_MUSIC;
     private static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> EXPANSION_STATIONS;
 
-    // --- Walkie HUD ---
+    // --- radio HUD ---
     private static final ModConfigSpec.ConfigValue<String> OVERLAY_CORNER;
     private static final ModConfigSpec.IntValue OVERLAY_OFFSET_X;
     private static final ModConfigSpec.IntValue OVERLAY_OFFSET_Y;
@@ -142,7 +142,7 @@ public class Config {
         BUILDER.comment(
                 "============================================================",
                 "RADIO PLAYBACK",
-                "Volume limits and when a tuned walkie is allowed to play.",
+                "Volume limits and when a tuned radio is allowed to play.",
                 "============================================================"
         ).push("playback");
 
@@ -161,8 +161,8 @@ public class Config {
                 .defineInRange("minVolume", 0.1, 0.0, 0.5);
         RADIO_ALWAYS_ON = BUILDER
                 .comment(
-                        "true: the active tuned walkie plays anywhere in your inventory.",
-                        "false: it only plays while held. Dropped walkies never play.",
+                        "true: the active tuned radio plays anywhere in your inventory.",
+                        "false: it only plays while held. Dropped radios never play.",
                         "Default: true."
                 )
                 .define("radioAlwaysOn", true);
@@ -201,11 +201,11 @@ public class Config {
                 .defineListAllowEmpty(java.util.List.of("expansionStations"), java.util.List::of, () -> "", o -> o instanceof String);
         BUILDER.pop();
 
-        // ========== WALKIE HUD ==========
+        // ========== RADIO HUD ==========
         BUILDER.comment(
                 "============================================================",
-                "WALKIE HUD",
-                "Where the walkie overlay sits on screen.",
+                "RADIO HUD",
+                "Where the radio overlay sits on screen.",
                 "============================================================"
         ).push("hud");
 

@@ -25,7 +25,7 @@ public class StaticSoundManager {
 
     /**
      * Update static playback based on station, signal strength, and whether music is playing.
-     * Call from WalkieTalkieOverlay when the HUD is visible.
+     * Call from RadioOverlay when the HUD is visible.
      *
      * @param mc           Minecraft instance
      * @param station      Current tuned station (null if no station)
@@ -39,7 +39,7 @@ public class StaticSoundManager {
                 return;
             }
 
-            // No station or walkie off: no static
+            // No station or radio off: no static
             if (station == null) {
                 stopStatic(mc);
                 return;
@@ -88,7 +88,7 @@ public class StaticSoundManager {
     }
 
     /**
-     * Stop static. Call when walkie off, no station, or switching away.
+     * Stop static. Call when radio off, no station, or switching away.
      */
     public static void stopStatic(Minecraft mc) {
         if (activeStatic != null) {

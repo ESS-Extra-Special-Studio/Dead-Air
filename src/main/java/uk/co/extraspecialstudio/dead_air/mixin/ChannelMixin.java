@@ -21,9 +21,14 @@ public class ChannelMixin {
     private void dead_air$updateRadioVolume(CallbackInfo ci) {
         Channel self = (Channel) (Object) this;
         if (!RadioChannelTracker.isRadioChannel(self)) return;
-        float vol = RadioChannelTracker.getVolumeForChannel(self);
-        if (vol >= 0f) {
-            self.setVolume(vol);
+        try {
+            float vol = RadioChannelTracker.getVolumeForChannel(self);
+            if (vol >= 0f) {
+                self.setVolume(vol);
+            }
+        } catch (Throwable ignored) {
+            // Channel may already be dying during SoundEngine.stopAll / dimension change.
+            RadioChannelTracker.unregister(RadioChannelTracker.getSoundForChannel(self));
         }
     }
 
@@ -39,7 +44,12 @@ public class ChannelMixin {
         }
         Minecraft mc = Minecraft.getInstance();
         if (mc != null) {
-            mc.execute(() -> AudioManager.onRadioStreamEnded(sound));
+            mc.execute(() -> {
+                try {
+                    AudioManager.onRadioStreamEnded(sound);
+                } catch (Throwable ignored) {
+                }
+            });
         }
     }
 }

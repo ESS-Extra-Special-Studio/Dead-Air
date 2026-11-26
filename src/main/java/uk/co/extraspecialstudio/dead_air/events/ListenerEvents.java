@@ -19,8 +19,8 @@ import uk.co.extraspecialstudio.dead_air.commands.DeadAirListenerCommand;
 import uk.co.extraspecialstudio.dead_air.commands.DeadAirCompatCommand;
 import uk.co.extraspecialstudio.dead_air.commands.DeadAirSurvivorCommand;
 import uk.co.extraspecialstudio.dead_air.encounter.ListenerEncounter;
-import uk.co.extraspecialstudio.dead_air.item.WalkieItem;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieNbt;
+import uk.co.extraspecialstudio.dead_air.item.RadioItem;
+import uk.co.extraspecialstudio.dead_air.radio.RadioNbt;
 
 /** Server hooks for broadcasts, relay/camp placement and The Listener. */
 @EventBusSubscriber(modid = Dead_air.MODID)
@@ -58,6 +58,14 @@ public final class ListenerEvents {
         }
     }
 
+
+    @SubscribeEvent
+    public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        EmergencyProximity.clearPending(player.getUUID());
+    }
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
         ListenerEncounter.stopAll();
@@ -75,16 +83,16 @@ public final class ListenerEvents {
      * Shaped T3 craft consumes a T2 â€” copy tune/link NBT onto the result (mirrors SignalDecoderItem use).
      */
     @SubscribeEvent
-    public static void onWalkieT3Crafted(PlayerEvent.ItemCraftedEvent event) {
+    public static void onRadioT3Crafted(PlayerEvent.ItemCraftedEvent event) {
         ItemStack result = event.getCrafting();
-        if (!(result.getItem() instanceof WalkieItem out) || out.getTier() != WalkieItem.Tier.T3) return;
+        if (!(result.getItem() instanceof RadioItem out) || out.getTier() != RadioItem.Tier.T3) return;
         var craftInv = event.getInventory();
         for (int i = 0; i < craftInv.getContainerSize(); i++) {
             ItemStack slot = craftInv.getItem(i);
-            if (slot.getItem() instanceof WalkieItem w && w.getTier() == WalkieItem.Tier.T2) {
-                CompoundTag tag = WalkieNbt.get(slot);
+            if (slot.getItem() instanceof RadioItem w && w.getTier() == RadioItem.Tier.T2) {
+                CompoundTag tag = RadioNbt.get(slot);
                 if (tag != null && !tag.isEmpty()) {
-                    WalkieNbt.set(result, tag.copy());
+                    RadioNbt.set(result, tag.copy());
                 }
                 return;
             }

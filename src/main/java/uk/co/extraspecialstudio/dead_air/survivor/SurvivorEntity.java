@@ -1678,7 +1678,7 @@ public class SurvivorEntity extends PathfinderMob {
         if (isDowned() || owner == null) return;
         ServerPlayer ownerPlayer = getOwnerPlayer();
         if (ownerPlayer == null || ownerPlayer.level() != level()) return;
-        if (!uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager.isListeningToRadio(ownerPlayer)) return;
+        if (!uk.co.extraspecialstudio.dead_air.radio.RadioManager.isListeningToRadio(ownerPlayer)) return;
         if (!uk.co.extraspecialstudio.dead_air.api.DeadAirAPI.isPlayerPlayingMusic(ownerPlayer)) return;
         SurvivorProgress.awardXp(this, 2, SurvivorProgress.SkillBias.RADIO);
     }

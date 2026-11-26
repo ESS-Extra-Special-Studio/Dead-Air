@@ -3,7 +3,7 @@ package uk.co.extraspecialstudio.dead_air.item;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieNbt;
+import uk.co.extraspecialstudio.dead_air.radio.RadioNbt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -43,7 +43,7 @@ public final class PlaceableDecorations {
 
     public static boolean isDecorStack(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        CompoundTag tag = WalkieNbt.get(stack);
+        CompoundTag tag = RadioNbt.get(stack);
         return tag != null && tag.hasUUID(NBT_DECOR);
     }
 
@@ -55,14 +55,14 @@ public final class PlaceableDecorations {
 
     public static void stripDecorTag(ItemStack stack) {
         if (stack.isEmpty()) return;
-        CompoundTag tag = WalkieNbt.get(stack);
+        CompoundTag tag = RadioNbt.get(stack);
         if (tag == null) return;
         tag.remove(NBT_DECOR);
         tag.remove(NBT_BLOCK_X);
         tag.remove(NBT_BLOCK_Y);
         tag.remove(NBT_BLOCK_Z);
         tag.remove(NBT_FACE);
-        WalkieNbt.set(stack, tag);
+        RadioNbt.set(stack, tag);
     }
 
     public static InteractionResult tryPlace(UseOnContext ctx) {
@@ -93,13 +93,13 @@ public final class PlaceableDecorations {
         ItemStack one = held.copy();
         one.setCount(1);
         stripDecorTag(one);
-        CompoundTag tag = WalkieNbt.getOrCreate(one);
+        CompoundTag tag = RadioNbt.getOrCreate(one);
         tag.putUUID(NBT_DECOR, UUID.randomUUID());
         tag.putInt(NBT_BLOCK_X, clicked.getX());
         tag.putInt(NBT_BLOCK_Y, clicked.getY());
         tag.putInt(NBT_BLOCK_Z, clicked.getZ());
         tag.putString(NBT_FACE, face.getSerializedName());
-        WalkieNbt.set(one, tag);
+        RadioNbt.set(one, tag);
 
         ItemEntity entity = new ItemEntity(level, at.x, at.y, at.z, one);
         entity.setDeltaMovement(Vec3.ZERO);
@@ -123,7 +123,7 @@ public final class PlaceableDecorations {
         List<ItemEntity> nearby = level.getEntitiesOfClass(ItemEntity.class, search,
             e -> !e.isRemoved() && isDecorStack(e.getItem()));
         for (ItemEntity entity : nearby) {
-            CompoundTag tag = WalkieNbt.get(entity.getItem());
+            CompoundTag tag = RadioNbt.get(entity.getItem());
             if (tag == null || !tag.contains(NBT_FACE)) continue;
             if (tag.getInt(NBT_BLOCK_X) != block.getX()) continue;
             if (tag.getInt(NBT_BLOCK_Y) != block.getY()) continue;

@@ -1,0 +1,13 @@
+﻿{
+  "replace": false,
+  "values": [
+    "dead_air:folding_chair",
+    "dead_air:survivor_backpack",
+    "dead_air:camp_table",
+    "dead_air:clothesline",
+    "dead_air:survivor_tent",
+    "dead_air:medical_case",
+    "dead_air:disc_compendium_a",
+    "dead_air:disc_compendium_b"
+  ]
+}

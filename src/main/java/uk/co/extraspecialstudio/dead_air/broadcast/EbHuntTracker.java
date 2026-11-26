@@ -5,11 +5,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import uk.co.extraspecialstudio.dead_air.Config;
-import uk.co.extraspecialstudio.dead_air.item.WalkieItem;
+import uk.co.extraspecialstudio.dead_air.item.RadioItem;
 import uk.co.extraspecialstudio.dead_air.net.DeadAirNet;
 import uk.co.extraspecialstudio.dead_air.net.EbHuntSyncPacket;
 import uk.co.extraspecialstudio.dead_air.radio.StationRegistry;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,13 +83,13 @@ public final class EbHuntTracker {
         // Site pins are overworld X/Z — Nether/End coords produce garbage bearing.
         if (player.level() != player.server.overworld()) return false;
         if (!BroadcastScheduler.hasT3(player)) return false;
-        if (!WalkieTalkieManager.isListeningToRadio(player)) return false;
-        if (!Config.radioAlwaysOn && !WalkieTalkieManager.isHoldingWalkieTalkie(player)) return false;
-        ItemStack listening = WalkieTalkieManager.findListeningWalkie(player);
-        if (!(listening.getItem() instanceof WalkieItem walkie) || walkie.getTier() != WalkieItem.Tier.T3) {
+        if (!RadioManager.isListeningToRadio(player)) return false;
+        if (!Config.radioAlwaysOn && !RadioManager.isHoldingRadio(player)) return false;
+        ItemStack listening = RadioManager.findListeningRadio(player);
+        if (!(listening.getItem() instanceof RadioItem radio) || radio.getTier() != RadioItem.Tier.T3) {
             return false;
         }
-        return WalkieTalkieManager.isWalkieTunedToStation(listening, StationRegistry.EMERGENCY_BROADCAST_ID);
+        return RadioManager.isRadioTunedToStation(listening, StationRegistry.EMERGENCY_BROADCAST_ID);
     }
 
     /**

@@ -1,8 +1,4 @@
 {
   "replace": false,
-  "values": [
-    "dead_air:walkie_t1",
-    "dead_air:walkie_t2",
-    "dead_air:walkie_t3"
-  ]
+  "values": [ "#dead_air:radios" ]
 }

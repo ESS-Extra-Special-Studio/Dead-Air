@@ -14,7 +14,7 @@ import uk.co.extraspecialstudio.dead_air.radio.TowerManager;
 import uk.co.extraspecialstudio.dead_air.tower.KnownTowerStorage;
 import uk.co.extraspecialstudio.dead_air.tower.RadioPanelManager;
 import uk.co.extraspecialstudio.dead_air.tower.modules.TowerModuleStorage;
-import uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager;
+import uk.co.extraspecialstudio.dead_air.radio.RadioManager;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -30,19 +30,19 @@ import java.util.function.Predicate;
 @SuppressWarnings("null")
 public class DeadAirAPI {
 
-    private static final CopyOnWriteArrayList<RegisteredWalkieGuiOpener> RADIO_GUI_OPENERS =
+    private static final CopyOnWriteArrayList<RegisteredRadioGuiOpener> RADIO_GUI_OPENERS =
         new CopyOnWriteArrayList<>();
 
     /**
      * Register a client-side radio GUI opener for companion radios that are not
-     * {@link uk.co.extraspecialstudio.dead_air.item.WalkieItem} subclasses.
+     * {@link uk.co.extraspecialstudio.dead_air.item.RadioItem} subclasses.
      * Call from the companion's client setup when Dead Air is present.
      */
-    public static void registerWalkieGuiOpener(Predicate<ItemStack> match, WalkieGuiOpener opener) {
+    public static void registerRadioGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {
         if (match == null || opener == null) {
             return;
         }
-        RADIO_GUI_OPENERS.add(new RegisteredWalkieGuiOpener(match, opener));
+        RADIO_GUI_OPENERS.add(new RegisteredRadioGuiOpener(match, opener));
     }
 
 
@@ -55,7 +55,7 @@ public class DeadAirAPI {
         if (stack == null || stack.isEmpty()) {
             return false;
         }
-        for (RegisteredWalkieGuiOpener entry : RADIO_GUI_OPENERS) {
+        for (RegisteredRadioGuiOpener entry : RADIO_GUI_OPENERS) {
             if (entry.match.test(stack) && entry.opener.tryOpen(hand, stack)) {
                 return true;
             }
@@ -63,15 +63,7 @@ public class DeadAirAPI {
         return false;
     }
 
-    /**
-     * @deprecated Use {@link #tryOpenCompanionRadioGui(InteractionHand, ItemStack)}.
-     */
-    @Deprecated
-    public static boolean tryOpenCompanionWalkieGui(InteractionHand hand, ItemStack stack) {
-        return tryOpenCompanionRadioGui(hand, stack);
-    }
-
-    private record RegisteredWalkieGuiOpener(Predicate<ItemStack> match, WalkieGuiOpener opener) {}
+    private record RegisteredRadioGuiOpener(Predicate<ItemStack> match, RadioGuiOpener opener) {}
     
     /**
      * Register a custom radio station.
@@ -303,11 +295,11 @@ public class DeadAirAPI {
         RadioStation station = StationRegistry.getStation(stationId);
         if (station == null) return;
 
-        if (WalkieTalkieManager.shouldPlayRadio(triggerPlayer)) {
-            WalkieTalkieManager.WalkieTalkieState st = WalkieTalkieManager.getState(triggerPlayer);
+        if (RadioManager.shouldPlayRadio(triggerPlayer)) {
+            RadioManager.RadioState st = RadioManager.getState(triggerPlayer);
             RadioStation tuned = st.getCurrentStation();
             if (st.isOn() && tuned != null && oldStationId != null && oldStationId.equals(tuned.getId())) {
-                WalkieTalkieManager.tuneToStation(triggerPlayer, station);
+                RadioManager.tuneToStation(triggerPlayer, station);
             }
         }
 
@@ -357,7 +349,7 @@ public class DeadAirAPI {
         if (player == null) return;
         RadioStation emergency = StationRegistry.getStation(StationRegistry.EMERGENCY_BROADCAST_ID);
         if (emergency != null) {
-            uk.co.extraspecialstudio.dead_air.walkie.WalkieTalkieManager.tuneToStation(player, emergency);
+            uk.co.extraspecialstudio.dead_air.radio.RadioManager.tuneToStation(player, emergency);
         }
     }
 
@@ -377,7 +369,7 @@ public class DeadAirAPI {
      */
     public static boolean isPlayerPlayingMusic(net.minecraft.world.entity.player.Player player) {
         if (player == null) return false;
-        var state = WalkieTalkieManager.getState(player);
+        var state = RadioManager.getState(player);
         if (!state.isOn() || state.getCurrentStation() == null) return false;
         RadioStation station = state.getCurrentStation();
         return station.getType() == RadioStation.StationType.MUSIC;

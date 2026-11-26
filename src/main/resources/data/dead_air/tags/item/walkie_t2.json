@@ -1,6 +1,4 @@
 {
   "replace": false,
-  "values": [
-    "dead_air:walkie_t2"
-  ]
+  "values": [ "#dead_air:radio_t2" ]
 }
